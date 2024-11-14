@@ -6,8 +6,8 @@
   };
   outputs = { nixpkgs, flake-utils, ... }@inputs:
   let
-    darwinSystems = [ "aarch64-darwin", "x86_64-darwin" ];
-    linuxSystems = [ "x86_64-linux", "aarch64-linux" ];
+    darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
+    linuxSystems = [ "x86_64-linux" "aarch64-linux" ];
     allSystems = linuxSystem ++ darwinSystems;
   in flake-parts.lib.mkFlake (inputs // {}) {
     debug = true;
