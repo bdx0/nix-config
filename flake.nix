@@ -8,7 +8,7 @@
   let
     darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
     linuxSystems = [ "x86_64-linux" "aarch64-linux" ];
-    allSystems = linuxSystem ++ darwinSystems;
+    allSystems = linuxSystems ++ darwinSystems;
   in flake-parts.lib.mkFlake (inputs // {}) {
     debug = true;
     flake = {};
