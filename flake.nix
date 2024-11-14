@@ -4,7 +4,7 @@
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
-  outputs = { nixpkgs, flake-utils, ... }@inputs:
+  outputs = { nixpkgs, flake-parts, ... }@inputs:
   let
     darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
     linuxSystems = [ "x86_64-linux" "aarch64-linux" ];
