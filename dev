@@ -1,0 +1,3 @@
+#!/bin/bash
+
+nix develop github:bdx0/nix-config --extra-experimental-features 'nix-command flakes'

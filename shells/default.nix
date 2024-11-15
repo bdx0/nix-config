@@ -14,7 +14,6 @@ in {
       gh
       nixfmt-classic
       nix
-      home-manager
     ];
     shellHook = ''
       source ${scripts_dir}/bin/bash_aliases
