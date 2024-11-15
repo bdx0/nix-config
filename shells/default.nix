@@ -1,8 +1,11 @@
-{ pkgs ? import <nixpkgs> { }, ... }: {
+{ pkgs ? import <nixpkgs> { }, ... }:
+let scripts_dir = import ../scripts { inherit pkgs; };
+in {
   default = pkgs.mkShell {
     NIX_CONFIG = "experimental-features = nix-command flakes";
     buildInputs = with pkgs; [
       #
+      scripts_dir
       lsd
       tig
       git
@@ -13,5 +16,8 @@
       nix
       home-manager
     ];
+    shellHook = ''
+      source ${scripts_dir}/bin/bash_aliases
+    '';
   };
 }
