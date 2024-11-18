@@ -15,6 +15,7 @@
       systems = allSystems;
       perSystem = { pkgs, system, ... }: {
         devShells = import ./shells { inherit pkgs; };
+        packages.formatDisk = nixpkgs.lib.mkDerivation { };
       };
     };
 
