@@ -6,6 +6,7 @@
     nixos-anywhere.url = "github:nix-community/nixos-anywhere";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
     # disko.url = "github:nix-community/disko";
     # disko.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -17,6 +18,15 @@
     in flake-parts.lib.mkFlake { inherit inputs; } {
       debug = true;
       flake = {
+        nixosConfigurations.basic = nixpkgs.lib.nixosSystem {
+          modules = [
+            inputs.nixos-facter-modules.nixosModules.facter
+            {
+              config.facter.reportPath = ./facter.json;
+            }
+            # ...
+          ];
+        };
         nixosConfigurations.freshHost = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = (inputs // {
