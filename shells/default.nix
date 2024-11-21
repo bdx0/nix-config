@@ -14,6 +14,7 @@ in {
       gh
       nixfmt-classic
       nix
+      git-crypt
     ];
     shellHook = ''
       source ${scripts_dir}/bin/bash_aliases

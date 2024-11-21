@@ -1,6 +1,7 @@
-{ config, lib, pkgs, modulesPath, ... }: {
+{ config, lib, pkgs, modulesPath, ssh-keys, ... }: {
   imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
   boot.initrd.availableKernelModules = [
+    "r8169"
     "uhci_hcd"
     "ehci_pci"
     "ahci"
@@ -10,6 +11,20 @@
     "sr_mod"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
+  boot.kernelModules = [ "ip=dhcp" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.nvidia_x11 ];
+  boot.systemd.users.root.shell = "/bin/cryptsetup-askpass";
+  boot.network.enable = true;
+  boot.initrd.network.ssh.enable = true;
+  boot.initrd.network.ssh.port = 22;
+  # boot.network.ssh.authorizedKeys = let
+  #   authorizedKeys = pkgs.fetchurl {
+  #     url = "https://github.com/bdx0.keys";
+  #     sha256 = "1kril7clfay225xdfhpp770gk60g5rp66nr6hzd5gpxvkynyxlrf";
+  #   };
+  # in pkgs.lib.splitString "\n" (builtins.readFile authorizedKeys);
+  boot.initrd.network.ssh.authorizedKeys =
+    pkgs.lib.splitString "\n" (builtins.readFile ssh-keys.outPath);
+  boot.initrd.network.ssh.hostKeys = [ (builtins.readFile ./ssh_host_rsa_key) ];
+
 }

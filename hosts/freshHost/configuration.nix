@@ -1,6 +1,7 @@
-{ modulesPath, pkgs, ... }: {
+{ modulesPath, pkgs, vscode-server, ssh-keys, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
+    vscode-server.nixosModules.default
     ./hardware-configuration.nix
     "${
       (builtins.fetchTarball {
@@ -60,9 +61,14 @@
     # Created using mkpasswd
     hashedPassword =
       "$y$j9T$vWaaHufiHK9z26Gq8Y2Hz0$1ec79eYer.N97S0nTZfMimfkrGCdPYBuWhIjWaSdW43";
-    openssh.authorizedKeys.keys = [
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCiuM0LPeQ/A+R1zBTsMOlEyLl7KjeSFVXFpn9cqHll3yJRwo+f7s8foROFyj6qZJNAljCz6PoQrVaiTOsafKOlvKw4THCss9sikDFWN24XZ99FjljNW1rPMyhsdOjArxkT4OUyakytVMlMNMZOAG0zg8ZP1qYXR2UJhDUxJDsd/oCG5TxFVosBm+eKUDty9yfeIh7FrsO0c73jVVb8TkicXdpZTifebYCd3NQBmaP5JDmhA4wTMVfXKHC/8radKWAcZBWt+68zzRwDJH6/BLN6s3y3WygJ6X1XNSBMDDSo6YPY8erqNQ2Klvd3lTDC8IG9thvdZVAQqx7yYt8geERzwfPki6e8lMFnykd0mWXqSRirkkW31LyZ4DgWBQ/BIDuqzdOdCKowAjRvBCxTB9IW9uE15X1tgLa+AiEBDU9WlXO/F0+GK5Wi3NZVPjXhCWIvUXDt8FeCEQAbB1lzuFrgO1e0R0I+0gpHW9+i/zgcdyNp9WSvigE54g54MpzZbOAnMMaC5680uBxzahr3ylQYeYe1yLQNoVrX5Y7Fmb0TILZssyc4Wxgk6TS06U/NqYB1hGfJ19Y0mUV/icpyvV/3+UxtpM7IiKl3pb3wdNYQLLxbN9Db4H9glrxeOLX3aAduo90qHrpnSVOzWju+jAQpd/TrPipFDTjO2uGzjb9gNw== duydb2@gmail.com"
-    ];
+    # openssh.authorizedKeys = let
+    #   authorizedKeys = pkgs.fetchurl {
+    #     url = "https://github.com/bdx0.keys";
+    #     sha256 = "1kril7clfay225xdfhpp770gk60g5rp66nr6hzd5gpxvkynyxlrf";
+    #   };
+    # in pkgs.lib.splitString "\n" (builtins.readFile authorizedKeys);
+    openssh.authorizedKeys.keys =
+      pkgs.lib.splitString "\n" (builtins.readFile ssh-keys.outPath);
   };
 
   # Environment packages
@@ -74,11 +80,20 @@
     cifs-utils
     nfs-utils
     git
+    direnv
   ];
 
   # Enable service
   services.openssh.enable = true;
   networking.firewall.enable = false;
+  # How to move this into a seperate file?
+  services.vscode-server.enable = true;
+  services.gitwatch.various-config = {
+    enable = true;
+    path = "/home/surt/syncthing/various-config/";
+    remote = "git@github.com:borgstad/various-config.git";
+    user = "surt";
+  };
 
   system.stateVersion = "24.05";
 }

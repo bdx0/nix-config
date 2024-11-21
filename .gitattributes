@@ -1,0 +1,1 @@
+hosts/freshHost/ssh_host_rsa_key filter=git-crypt diff=git-crypt

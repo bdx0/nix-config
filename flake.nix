@@ -7,6 +7,11 @@
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
+    ssh-keys = {
+      url = "https://github.com/bdx0.keys";
+      flake = false;
+    };
     # disko.url = "github:nix-community/disko";
     # disko.inputs.nixpkgs.follows = "nixpkgs";
   };
