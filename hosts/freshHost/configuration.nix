@@ -1,10 +1,17 @@
-{ modulesPath, lib, pkgs, ... }: {
+{ modulesPath, pkgs, ... }: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ./hardware-configuration.nix
+    "${
+      (builtins.fetchTarball {
+        url = "https://github.com/numtide/nixos-facter-modules/";
+      })
+    }/modules/nixos/facter.nix"
   ];
+
+  config.facter.reportPath = ./facter.json;
   nix = {
-    package = pkgs.nixFlakes;
+    package = pkgs.nixVersions.stable;
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
@@ -28,9 +35,11 @@
 
   networking.hostName = "freshHost";
   networking.useDHCP = true;
-  networking.networkmanager.enable =
-    true; # Easiest to use and most distros use this by default.
   networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+
+  # Easiest to use and most distros use this by default.
+  # FIX: disable because conflict with networking.useDHCP = true
+  # networking.networkmanager.enable = true;
 
   # Set your time
   time.timeZone = "Asia/Ho_Chi_Minh";
