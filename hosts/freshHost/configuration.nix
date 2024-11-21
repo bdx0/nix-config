@@ -3,14 +3,14 @@
     (modulesPath + "/installer/scan/not-detected.nix")
     vscode-server.nixosModules.default
     ./hardware-configuration.nix
-    "${
-      (builtins.fetchTarball {
-        url = "https://github.com/numtide/nixos-facter-modules/";
-      })
-    }/modules/nixos/facter.nix"
+    # "${
+    #   (builtins.fetchTarball {
+    #     url = "https://github.com/numtide/nixos-facter-modules/";
+    #   })
+    # }/modules/nixos/facter.nix"
   ];
 
-  config.facter.reportPath = ./facter.json;
+  # config.facter.reportPath = ./facter.json;
   nix = {
     package = pkgs.nixVersions.stable;
     extraOptions = ''
@@ -81,18 +81,35 @@
     nfs-utils
     git
     direnv
+    google-authenticator
   ];
 
   # Enable service
   services.openssh.enable = true;
+  services.openssh.settings.PermitRootLogin = "yes";
+  services.openssh.settings.PasswordAuthentication = true;
+  services.openssh.settings.KbdInteractiveAuthentication = true;
+  # ssh auth over google auth
+  # "https://discourse.nixos.org/t/setting-up-google-authenticator-for-ssh/36931/7"
+  security.pam = { services.sshd.googleAuthenticator.enable = true; };
+  security.sudo.wheelNeedsPassword = false;
+  users.users.root = {
+    openssh.authorizedKeys.keys =
+      pkgs.lib.splitString "\n" (builtins.readFile ssh-keys.outPath);
+  };
+
   networking.firewall.enable = false;
   # How to move this into a seperate file?
   services.vscode-server.enable = true;
-  services.gitwatch.various-config = {
+  # services.gitwatch.various-config = {
+  #   enable = true;
+  #   path = "/home/dd/code/nix-config/";
+  #   remote = "git@github.com:bdx0/nix-config.git";
+  #   user = "dd";
+  # };
+  services.tor = {
     enable = true;
-    path = "/home/surt/syncthing/various-config/";
-    remote = "git@github.com:borgstad/various-config.git";
-    user = "surt";
+
   };
 
   system.stateVersion = "24.05";

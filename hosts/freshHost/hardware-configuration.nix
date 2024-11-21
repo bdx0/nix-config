@@ -13,8 +13,8 @@
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "ip=dhcp" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.nvidia_x11 ];
-  boot.systemd.users.root.shell = "/bin/cryptsetup-askpass";
-  boot.network.enable = true;
+  # boot.systemd.users.root.shell = "/bin/cryptsetup-askpass";
+  boot.initrd.network.enable = true;
   boot.initrd.network.ssh.enable = true;
   boot.initrd.network.ssh.port = 22;
   # boot.network.ssh.authorizedKeys = let
@@ -25,6 +25,6 @@
   # in pkgs.lib.splitString "\n" (builtins.readFile authorizedKeys);
   boot.initrd.network.ssh.authorizedKeys =
     pkgs.lib.splitString "\n" (builtins.readFile ssh-keys.outPath);
-  boot.initrd.network.ssh.hostKeys = [ (builtins.readFile ./ssh_host_rsa_key) ];
+  boot.initrd.network.ssh.hostKeys = [ ./ssh_host_rsa_key ];
 
 }

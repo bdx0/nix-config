@@ -15,6 +15,10 @@ in {
       nixfmt-classic
       nix
       git-crypt
+      nixos-rebuild
+      age
+      ssh-to-age
+      colmena
     ];
     shellHook = ''
       source ${scripts_dir}/bin/bash_aliases

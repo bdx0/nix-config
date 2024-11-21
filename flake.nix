@@ -8,6 +8,8 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
     vscode-server.url = "github:nix-community/nixos-vscode-server";
+    hardware.url = "github:nixos/nixos-hardware";
+    home-manager.url = "github:nix-community/home-manager";
     ssh-keys = {
       url = "https://github.com/bdx0.keys";
       flake = false;
@@ -41,6 +43,17 @@
           modules = [
             #
             ./hosts/freshHost
+          ];
+        };
+        nixosConfigurations.lina = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = (inputs // {
+            inherit inputs;
+            disks = [ "/dev/sda" ];
+          });
+          modules = [
+            #
+            ./hosts/lina
           ];
         };
       };
