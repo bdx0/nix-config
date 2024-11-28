@@ -2,6 +2,7 @@
   description = "Make flake for nix-config";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
+    nixos.url = "github:nixos/nixpkgs?ref=nixos-24.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixos-anywhere.url = "github:nix-community/nixos-anywhere";
     disko.url = "github:nix-community/disko";
@@ -17,14 +18,22 @@
     # disko.url = "github:nix-community/disko";
     # disko.inputs.nixpkgs.follows = "nixpkgs";
   };
-  outputs = { nixpkgs, flake-parts, ... }@inputs:
+  outputs = { nixos, nixpkgs, flake-parts, ... }@inputs:
     let
       darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
       linuxSystems = [ "x86_64-linux" "aarch64-linux" ];
       allSystems = linuxSystems ++ darwinSystems;
+      pkgsLinux = import nixos { system = "x86_64-linux"; };
     in flake-parts.lib.mkFlake { inherit inputs; } {
       debug = true;
       flake = {
+        colmena = {
+          meta = {
+            nixpkgs = pkgsLinux;
+            specialArgs = (inputs // { inherit inputs; });
+          };
+          nix-infect.local = import ./hosts/lina;
+        };
         nixosConfigurations.basic = nixpkgs.lib.nixosSystem {
           modules = [
             inputs.nixos-facter-modules.nixosModules.facter
@@ -34,7 +43,7 @@
             # ...
           ];
         };
-        nixosConfigurations.freshHost = nixpkgs.lib.nixosSystem {
+        nixosConfigurations.remoteInstall = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = (inputs // {
             inherit inputs;
@@ -90,8 +99,8 @@
           freshInstallScript = writeShellScriptBin "freshInstallScript" ''
             echo "$@"
             # ls -la ${nixos-aw-pkg}/libexec/nixos-anywhere
-            # ${nixos-aw-pkg}/libexec/nixos-anywhere/nixos-anywhere.sh --flake .#freshHost --build-on-remote "$@"
-            ${nixos-aw-pkg}/bin/nixos-anywhere --flake .#freshHost --build-on-remote "$@"
+            # ${nixos-aw-pkg}/libexec/nixos-anywhere/nixos-anywhere.sh --flake .#remoteInstall --build-on-remote "$@"
+            ${nixos-aw-pkg}/bin/nixos-anywhere --flake .#remoteInstall --build-on-remote "$@"
           '';
           runtimeDeps =
             # [ freshInstallScript sshScript sshpassScript sshcopyidScript ];
@@ -103,7 +112,7 @@
             config.allowUnfree = true;
           };
           devShells = import ./shells { inherit pkgs; };
-          packages.installFreshHost = symlinkJoin {
+          packages.remoteInstall = symlinkJoin {
             # "https://ertt.ca/nix/shell-scripts/"
             name = freshInstallScript.name;
             paths = runtimeDeps;
