@@ -10,7 +10,7 @@ build:
 	colmena build
 
 apply:
-	colmena apply
+	colmena apply --impure
 
 update:
 	nix flake update

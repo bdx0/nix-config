@@ -7,6 +7,8 @@
   services.openssh.settings.PermitRootLogin = "yes";
   services.openssh.settings.PasswordAuthentication = true;
   services.openssh.settings.KbdInteractiveAuthentication = true;
+  users.users.root.openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
+  users.users.dd.openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
   services.avahi.enable = true;
   # services.avahi.interfaces = privateZeroTierInterfaces; # ONLY BROADCAST ON VPN
   services.avahi.ipv6 = true;
@@ -19,8 +21,8 @@
   services.tailscale.useRoutingFeatures = "server";
   nix = {
     package = pkgs.nixVersions.stable;
-    warn-dirty = false;
-    experimental-features = [ "nix-command" "flakes" ];
+    settings.warn-dirty = false;
+    settings.experimental-features = [ "nix-command" "flakes" ];
   };
 
   # DEPLOYMENT

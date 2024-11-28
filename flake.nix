@@ -23,16 +23,18 @@
       darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
       linuxSystems = [ "x86_64-linux" "aarch64-linux" ];
       allSystems = linuxSystems ++ darwinSystems;
-      pkgsLinux = import nixos { system = "x86_64-linux"; };
     in flake-parts.lib.mkFlake { inherit inputs; } {
       debug = true;
       flake = {
-        colmena = {
+        colmena = let
+          pkgsLinux = import nixos { system = "x86_64-linux"; };
+          pkgsLinuxArm = import nixos { system = "aarch64-linux"; };
+        in {
           meta = {
-            nixpkgs = pkgsLinux;
+            nixpkgs = pkgsLinuxArm;
             specialArgs = (inputs // { inherit inputs; });
           };
-          nix-infect.local = import ./hosts/lina;
+          "nix-infect.local" = import ./hosts/nix-infect;
         };
         nixosConfigurations.basic = nixpkgs.lib.nixosSystem {
           modules = [
