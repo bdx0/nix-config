@@ -1,6 +1,11 @@
 { name, pkgs, ... }: {
   imports = [ ./docker.nix ];
   time.timeZone = "Asia/Ho_Chi_Minh";
+  i18n = {
+    consoleFont = "Lat2-Terminus16";
+    consoleKeyMap = "us";
+    defaultLocale = "en_US.UTF-8";
+  };
   system.stateVersion = "24.05";
   services.tailscale.enable = true;
   services.openssh.enable = true;
@@ -8,7 +13,13 @@
   services.openssh.settings.PasswordAuthentication = true;
   services.openssh.settings.KbdInteractiveAuthentication = true;
   users.users.root.openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
-  users.users.dd.openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
+  users.users.dd = {
+    isNormalUser = true;
+    home = "/home/dd";
+    extraGroups = [ "wheel" "networkmanager" ];
+    openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
+  };
+  security.sudo.wheelNeedsPassword = false;
   services.avahi.enable = true;
   # services.avahi.interfaces = privateZeroTierInterfaces; # ONLY BROADCAST ON VPN
   services.avahi.ipv6 = true;
@@ -32,4 +43,8 @@
     buildOnTarget = true;
   };
 
+  nixpkgs.config.allowUnfree = true;
+
 }
+
+# "https://gist.github.com/YellowOnion/362cb30dfe895819f06b8d19e5ba5f07"

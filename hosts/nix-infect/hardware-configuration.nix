@@ -6,5 +6,4 @@
     device = "/dev/mapper/lina--vg-root";
     fsType = "ext4";
   };
-  swapDevices = [{ device = "/dev/dm-3"; }];
 }
