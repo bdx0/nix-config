@@ -1,9 +1,22 @@
-{ modulesPath, ... }: {
+{ lib, modulesPath, ... }: {
   imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
-  boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" ];
-  boot.initrd.kernelModules = [ "nvme" ];
+  boot.initrd.availableKernelModules =
+    [ "xhci_pci" "virtio_pci" "usbhid" "usb_storage" "sr_mod" ];
+  boot.initrd.kernelModules = [ "dm-snapshot" ];
+  boot.kernelModules = [ ];
+  boot.extraModulePackages = [ ];
   fileSystems."/" = {
-    device = "/dev/mapper/lina--vg-root";
+    device = "/dev/mapper/ubuntu--vg-ubuntu--lv";
     fsType = "ext4";
   };
+
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/F640-FAAE";
+    fsType = "vfat";
+  };
+
+  networking.useDHCP = lib.mkDefault true;
+
+  nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
+
 }

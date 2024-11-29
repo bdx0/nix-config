@@ -33,7 +33,7 @@
           meta = {
             nixpkgs = pkgsLinux;
             nodeNixpkgs = {
-              nix-infect = pkgsLinuxArm;
+              "nix-infect.local" = pkgsLinuxArm;
               lina = pkgsLinux;
             };
             specialArgs = (inputs // { inherit inputs; });
