@@ -13,9 +13,7 @@
   # config.facter.reportPath = ./facter.json;
   nix = {
     package = pkgs.nixVersions.stable;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
+    settings.experimental-features = [ "nix-command" "flakes" ];
   };
   # boot.loader.grub = {
   #   # no need to set devices, disko will add all devices that have a EF02 partition to the list already
