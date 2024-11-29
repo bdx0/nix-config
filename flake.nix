@@ -31,10 +31,15 @@
           pkgsLinuxArm = import nixos { system = "aarch64-linux"; };
         in {
           meta = {
-            nixpkgs = pkgsLinuxArm;
+            nixpkgs = pkgsLinux;
+            nodeNixpkgs = {
+              nix-infect = pkgsLinuxArm;
+              lina = pkgsLinux;
+            };
             specialArgs = (inputs // { inherit inputs; });
           };
           "nix-infect.local" = import ./hosts/nix-infect;
+          "lina" = import ./hosts/lina;
         };
         nixosConfigurations.basic = nixpkgs.lib.nixosSystem {
           modules = [

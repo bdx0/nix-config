@@ -1,4 +1,4 @@
-{ pkgs, name, ... }: {
+{ pkgs, name, nodes, ... }: {
   imports = [
     ./hardware-configuration.nix
     ../../modules/core/common.nix

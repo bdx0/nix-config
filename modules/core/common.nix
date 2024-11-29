@@ -1,4 +1,4 @@
-{ name, pkgs, ... }: {
+{ name, pkgs, lib, ... }: {
   imports = [ ./docker.nix ];
   time.timeZone = "Asia/Ho_Chi_Minh";
   i18n = {
@@ -30,6 +30,9 @@
   services.avahi.nssmdns = true;
   services.avahi.publish.workstation = true; # ADDED TO DESKTOP MACHINES
   services.tailscale.useRoutingFeatures = "server";
+
+  networking.hostName = lib.mkDefault name;
+
   nix = {
     package = pkgs.nixVersions.stable;
     settings.warn-dirty = false;
