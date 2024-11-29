@@ -8,8 +8,6 @@
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.efiInstallAsRemovable = true;
 
-  boot.tmp.cleanOnBoot = true;
-  zramSwap.enable = false;
   networking.hostName = "nix-infect";
   networking.domain = "nix-infect.bdx0.io.vn";
 
