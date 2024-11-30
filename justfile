@@ -12,6 +12,18 @@ build:
 apply:
 	colmena apply --impure
 
+mac2014:
+	colmena apply --impure --on mac2014
+
+lina:
+	colmena apply --impure --on lina
+
+test:
+	colmena apply --impure --on "nix-infect.local"
+
+bobo:
+	colmena apply --impure --on bobo
+
 update:
 	nix flake update
 

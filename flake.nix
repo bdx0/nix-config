@@ -40,6 +40,8 @@
           };
           "nix-infect.local" = import ./hosts/nix-infect;
           "lina" = import ./hosts/lina;
+          "mac2014" = import ./hosts/mac2014;
+          "bobo" = import ./hosts/bobo;
         };
         nixosConfigurations.basic = nixpkgs.lib.nixosSystem {
           modules = [
