@@ -1,10 +1,13 @@
-{ modulesPath, ... }: {
-  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+{ lib, config, modulesPath, ... }: {
+  imports = [
+    (modulesPath + "/profiles/qemu-guest.nix")
+    (modulesPath + "/installer/scan/not-detected.nix")
+  ];
   boot.initrd.availableKernelModules =
-    [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "sd_mod" ];
-  boot.initrd.kernelModules = [ "dm-snapshot" ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+    [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "sd_mod" "nvme" "usb_storage" ];
+  boot.initrd.kernelModules = [ "dm-snapshot" "wl" ];
+  boot.kernelModules = [ "kvm-intel" "wl" ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
   fileSystems."/boot/efi" = {
     device = "/dev/disk/by-uuid/2BF7-EA6A";
     fsType = "vfat";
@@ -16,4 +19,6 @@
     fsType = "ext4";
   };
   swapDevices = [ ];
+  hardware.cpu.intel.updateMicrocode =
+    lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

@@ -1,9 +1,5 @@
-{ pkgs, name, nodes, ... }: {
-  imports = [
-    ./hardware-configuration.nix
-    ../../modules/core/common.nix
-
-  ];
+{ pkgs, name, ... }: {
+  imports = [ ./hardware-configuration.nix ../../modules/core/common.nix ];
 
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.loader.systemd-boot.enable = true;
@@ -24,5 +20,6 @@
   networking.domain = "lina.bdx0.io.vn";
 
   users.defaultUserShell = pkgs.bash;
+  programs.bash.interactiveShellInit = "figurine ${name}";
   environment.systemPackages = with pkgs; [ wget figurine cmatrix ];
 }
