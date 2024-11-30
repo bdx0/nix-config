@@ -8,4 +8,5 @@
       };
     };
   };
+  services.dockerRegistry.enable = true;
 }

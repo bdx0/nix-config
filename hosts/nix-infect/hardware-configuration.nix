@@ -3,7 +3,7 @@
   boot.initrd.availableKernelModules =
     [ "xhci_pci" "virtio_pci" "usbhid" "usb_storage" "sr_mod" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
-  boot.kernelModules = [ ];
+  boot.kernelModules = [ "ip=dhcp" ];
   boot.extraModulePackages = [ ];
   fileSystems."/" = {
     device = "/dev/mapper/ubuntu--vg-ubuntu--lv";
