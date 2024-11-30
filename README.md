@@ -27,3 +27,7 @@ nix develop github:bdx0/nix-config --extra-experimental-features 'nix-command fl
 - [Installing NixOS on a MacBook Pro](https://www.arthurkoziel.com/installing-nixos-on-a-macbookpro/)
 - [Install linux on a MacBook Air](https://thoughtbot.com/blog/install-linux-on-a-macbook-air)
 - [How to configure dual boot NixOS with MacOSX on an (U)EFI MacBook?](https://superuser.com/questions/795879/how-to-configure-dual-boot-nixos-with-mac-os-x-on-an-uefi-macbook)
+
+## NixOS auto upgrade
+
+- [Using flakes for NixOS configurations](https://stephank.nl/p/2023-02-28-using-flakes-for-nixos-configs.html)

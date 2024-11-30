@@ -32,6 +32,7 @@
 
   networking.hostName = lib.mkDefault name;
   networking.useDHCP = true;
+  networking.wireless.enable = true;
   networking.wireless.networks = {
     "GuaMupWifi" = { # SSID with no spaces or special characters
       psk = "0907650206"; # (password will be written to /nix/store!)
