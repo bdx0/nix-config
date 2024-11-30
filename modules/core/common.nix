@@ -100,7 +100,7 @@
   };
 
   nixpkgs.config.allowUnfree = true;
-
+  hardware.enableAllFirmware = true;
 }
 
 # "https://gist.github.com/YellowOnion/362cb30dfe895819f06b8d19e5ba5f07"
