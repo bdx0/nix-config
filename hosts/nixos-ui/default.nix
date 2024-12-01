@@ -1,0 +1,17 @@
+{ pkgs, name, nodes, ... }: {
+  imports = [
+    ./hardware-configuration.nix
+    ../../modules/core/common.nix
+
+  ];
+  boot.loader.grub.device = "nodev";
+  boot.loader.grub.efiSupport = true;
+  boot.loader.grub.efiInstallAsRemovable = true;
+
+  networking.hostName = "nix-infect";
+  networking.domain = "nix-infect.bdx0.io.vn";
+
+  users.defaultUserShell = pkgs.bash;
+  programs.bash.interactiveShellInit = "figurine ${name}";
+  environment.systemPackages = with pkgs; [ wget figurine cmatrix ];
+}
