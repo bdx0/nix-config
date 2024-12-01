@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modulesPath, ssh-keys, ... }: {
+{ config, modulesPath, ... }: {
   imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
   boot.initrd.availableKernelModules = [
     "r8169"
@@ -17,14 +17,9 @@
   boot.initrd.network.enable = true;
   boot.initrd.network.ssh.enable = true;
   boot.initrd.network.ssh.port = 22;
-  # boot.network.ssh.authorizedKeys = let
-  #   authorizedKeys = pkgs.fetchurl {
-  #     url = "https://github.com/bdx0.keys";
-  #     sha256 = "1kril7clfay225xdfhpp770gk60g5rp66nr6hzd5gpxvkynyxlrf";
-  #   };
-  # in pkgs.lib.splitString "\n" (builtins.readFile authorizedKeys);
   boot.initrd.network.ssh.authorizedKeys =
-    pkgs.lib.splitString "\n" (builtins.readFile ssh-keys.outPath);
+    import ../../modules/ssh/bdx0.keys.nix;
+  # pkgs.lib.splitString "\n" (builtins.readFile ssh-keys.outPath);
   boot.initrd.network.ssh.hostKeys = [ ./ssh_host_rsa_key ];
 
 }
