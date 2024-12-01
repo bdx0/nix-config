@@ -19,6 +19,8 @@ in {
       age
       ssh-to-age
       colmena
+      comma
+      just
     ];
     shellHook = ''
       source ${scripts_dir}/bin/bash_aliases

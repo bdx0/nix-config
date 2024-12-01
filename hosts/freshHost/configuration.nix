@@ -13,9 +13,7 @@
   # config.facter.reportPath = ./facter.json;
   nix = {
     package = pkgs.nixVersions.stable;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
+    settings.experimental-features = [ "nix-command" "flakes" ];
   };
   # boot.loader.grub = {
   #   # no need to set devices, disko will add all devices that have a EF02 partition to the list already
@@ -92,7 +90,47 @@
   # ssh auth over google auth
   # "https://discourse.nixos.org/t/setting-up-google-authenticator-for-ssh/36931/7"
   security.pam = { services.sshd.googleAuthenticator.enable = true; };
+  # "https://discourse.nixos.org/t/dont-prompt-a-user-for-the-sudo-password/9163/2"
   security.sudo.wheelNeedsPassword = false;
+  security.sudo.extraRules = [{
+    users = [ "dd" ];
+    commands = [{
+      command = "ALL";
+      options = [ "NOPASSWD" ];
+    }];
+  }
+  # # Allow execution of any command by all users in group sudo,
+  # # requiring a password.
+  # {
+  #   groups = [ "sudo" ];
+  #   commands = [ "ALL" ];
+  # }
+
+  # # Allow execution of "/home/root/secret.sh" by user `backup`, `database`
+  # # and the group with GID `1006` without a password.
+  # {
+  #   users = [ "backup" "database" ];
+  #   groups = [ 1006 ];
+  #   commands = [{
+  #     command = "/home/root/secret.sh";
+  #     options = [ "SETENV" "NOPASSWD" ];
+  #   }];
+  # }
+
+  # # Allow all users of group `bar` to run two executables as user `foo`
+  # # with arguments being pre-set.
+  # {
+  #   groups = [ "bar" ];
+  #   runAs = "foo";
+  #   commands = [
+  #     "/home/baz/cmd1.sh hello-sudo"
+  #     {
+  #       command = ''/home/baz/cmd2.sh ""'';
+  #       options = [ "SETENV" ];
+  #     }
+  #   ];
+  # }
+    ];
   users.users.root = {
     openssh.authorizedKeys.keys =
       pkgs.lib.splitString "\n" (builtins.readFile ssh-keys.outPath);
