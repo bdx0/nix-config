@@ -1,5 +1,5 @@
 { name, pkgs, lib, ... }: {
-  imports = [ ./docker.nix ];
+  imports = [ ./docker.nix ./libvirtd.nix ];
   time.timeZone = "Asia/Ho_Chi_Minh";
   i18n = {
     consoleFont = "Lat2-Terminus16";
@@ -15,7 +15,7 @@
   users.users.dd = {
     isNormalUser = true;
     home = "/home/dd";
-    extraGroups = [ "wheel" "networkmanager" "docker" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" "libvirtd" ];
     openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
   };
   security.sudo.wheelNeedsPassword = false;
@@ -47,7 +47,7 @@
   # "https://nixos.wiki/wiki/Automatic_system_upgrades"
   # "https://aires.fyi/blog/why-is-enabling-automatic-updates-in-nixos-hard/"
   # "https://github.com/henrydenhengst/mynixos/blob/4fe32e02afa8b42ed05a3f7b7e4de0222a3acaa5/configuration.nix"
-  system.stateVersion = "24.05";
+  system.stateVersion = "24.11";
   # # System-wide settings
   # system.autoUpgrade.enable = true; # Enable automatic system upgrades
   # system.autoUpgrade.allowReboot = true;

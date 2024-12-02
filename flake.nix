@@ -2,7 +2,7 @@
   description = "Make flake for nix-config";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
-    nixos.url = "github:nixos/nixpkgs?ref=nixos-24.05";
+    nixos.url = "github:nixos/nixpkgs?ref=nixos-24.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixos-anywhere.url = "github:nix-community/nixos-anywhere";
     disko.url = "github:nix-community/disko";
@@ -15,8 +15,8 @@
       url = "https://github.com/bdx0.keys";
       flake = false;
     };
-    # disko.url = "github:nix-community/disko";
-    # disko.inputs.nixpkgs.follows = "nixpkgs";
+    nixvirt.url = "github:AshleyYakeley/NixVirt";
+    microvm.url = "github:astro/microvm.nix";
   };
   outputs = { nixos, nixpkgs, flake-parts, ... }@inputs:
     let

@@ -40,3 +40,6 @@ gclocal generations="5":
 	nix-env --delete-generations {{generations}}
 	nix-store --gc
 	nix-collect-garbage -d
+
+repair:
+	nix-store --verify --repair --check-contents
