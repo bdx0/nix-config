@@ -1,5 +1,12 @@
 { name, pkgs, lib, ... }: {
-  imports = [ ./docker.nix ./libvirtd.nix ];
+  imports = [ ./docker.nix ./libvirtd.nix ./hardware.nix ];
+  environment.systemPackages = with pkgs; [
+    wget
+    figurine
+    cmatrix
+    parted
+    comma
+  ];
   time.timeZone = "Asia/Ho_Chi_Minh";
   i18n = {
     consoleFont = "Lat2-Terminus16";

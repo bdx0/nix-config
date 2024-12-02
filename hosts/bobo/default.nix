@@ -18,14 +18,7 @@
     "uas"
     "sd_mod"
   ];
-  boot.initrd.kernelModules = [ "dm-snapshot" ];
-  boot.kernelModules = [ "ip=dhcp" "kvm-amd" "kvm-intel" ];
-  boot.extraModulePackages = [ ];
-  boot.supportedFilesystems = {
-    btrfs = true;
-    zfs = lib.mkForce false;
-    ntfs = true;
-  };
+
   fileSystems."/" = {
     device = "/dev/mapper/bobo--vg-root";
     fsType = "ext4";
@@ -49,6 +42,7 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode =
     lib.mkDefault config.hardware.enableRedistributableFirmware;
+
   boot.loader.grub.device = "nodev";
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.efiInstallAsRemovable = true;
@@ -59,11 +53,4 @@
 
   users.defaultUserShell = pkgs.bash;
   programs.bash.interactiveShellInit = "figurine ${name}";
-  environment.systemPackages = with pkgs; [
-    wget
-    figurine
-    cmatrix
-    parted
-    comma
-  ];
 }
