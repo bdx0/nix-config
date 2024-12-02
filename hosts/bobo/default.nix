@@ -6,6 +6,7 @@
 
     (modulesPath + "/profiles/qemu-guest.nix")
     (modulesPath + "/installer/scan/not-detected.nix")
+    inputs.microvm.nixosModules.host
   ];
   boot.initrd.availableKernelModules = [
     "virtio_pci"
@@ -53,4 +54,11 @@
 
   users.defaultUserShell = pkgs.bash;
   programs.bash.interactiveShellInit = "figurine ${name}";
+  microvm.vms = {
+    test = {
+      inherit pkgs;
+      config = { };
+
+    };
+  };
 }
