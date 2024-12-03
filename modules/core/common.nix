@@ -1,5 +1,10 @@
-{ name, pkgs, lib, ... }: {
-  imports = [ ./docker.nix ./libvirtd.nix ./hardware.nix ];
+{ pkgs, lib, modulesPath, ... }: {
+  imports = [
+    ./docker.nix
+    ./net.nix
+
+    (modulesPath + "/profiles/qemu-guest.nix")
+  ];
   environment.systemPackages = with pkgs; [
     wget
     figurine
@@ -13,39 +18,6 @@
     consoleKeyMap = "us";
     defaultLocale = "en_US.UTF-8";
   };
-  services.tailscale.enable = true;
-  services.openssh.enable = true;
-  services.openssh.settings.PermitRootLogin = "yes";
-  services.openssh.settings.PasswordAuthentication = true;
-  services.openssh.settings.KbdInteractiveAuthentication = true;
-  users.users.root.openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
-  users.users.dd = {
-    isNormalUser = true;
-    home = "/home/dd";
-    extraGroups = [ "wheel" "networkmanager" "docker" "libvirtd" ];
-    openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
-  };
-  security.sudo.wheelNeedsPassword = false;
-  services.avahi.enable = true;
-  # services.avahi.interfaces = privateZeroTierInterfaces; # ONLY BROADCAST ON VPN
-  services.avahi.ipv6 = true;
-  services.avahi.publish.enable = true;
-  services.avahi.publish.userServices = true;
-  services.avahi.publish.addresses = true;
-  services.avahi.publish.domain = true;
-  services.avahi.nssmdns4 = true;
-  services.avahi.publish.workstation = true; # ADDED TO DESKTOP MACHINES
-  services.tailscale.useRoutingFeatures = "server";
-
-  networking.hostName = lib.mkDefault name;
-  networking.useDHCP = true;
-  networking.wireless.enable = true;
-  networking.wireless.networks = {
-    "GuaMupWifi" = { # SSID with no spaces or special characters
-      psk = "0907650206"; # (password will be written to /nix/store!)
-    };
-  };
-  networking.firewall.enable = false;
 
   # automatic upgrade
   # "https://discourse.nixos.org/t/deployment-tools-evaluating-nixops-deploy-rs-and-vanilla-nix-rebuild/36388/25"
@@ -100,14 +72,6 @@
     };
   };
 
-  # DEPLOYMENT
-  deployment.targetHost = name;
-  deployment = {
-    targetUser = "root";
-    buildOnTarget = true;
-  };
-
-  nixpkgs.config.allowUnfree = true;
   hardware.enableAllFirmware = true;
 }
 

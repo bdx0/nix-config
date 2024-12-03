@@ -1,13 +1,15 @@
-{ config, pkgs, lib, name, modulesPath, ... }: {
+{ inputs, config, pkgs, lib, name, modulesPath, ... }: {
   imports = [
-    # ./hardware-configuration.nix
+    inputs.microvm.nixosModules.host
+    ../../modules/core/colmena.nix
     ../../modules/core/common.nix
-
-    (modulesPath + "/profiles/qemu-guest.nix")
+    ../../modules/core/hardware.nix
+    ../../modules/core/libvirtd.nix
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
   boot.initrd.availableKernelModules =
     [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "sd_mod" "nvme" "usb_storage" ];
+
   fileSystems."/boot/efi" = {
     device = "/dev/disk/by-uuid/2BF7-EA6A";
     fsType = "vfat";
@@ -42,5 +44,30 @@
 
   users.defaultUserShell = pkgs.bash;
   programs.bash.interactiveShellInit = "figurine ${name}";
-  environment.systemPackages = with pkgs; [ wget figurine cmatrix ];
+  environment.systemPackages = with pkgs; [ wget figurine cmatrix comma ];
+  nixpkgs.config.allowUnfree = true;
+  microvm.vms = let commonBase = import ../../modules/core/net.nix;
+  in {
+    test = {
+      autostart = true;
+      inherit pkgs;
+      config = { ... }: {
+        imports = [ commonBase ];
+        # system.stateVersion = config.system.version;
+
+        networking.hostName = "test";
+        users.users.root.password = "testtest";
+        services.openssh = {
+          enable = true;
+          settings.PermitRootLogin = "yes";
+        };
+        security.sudo = {
+          enable = true;
+          wheelNeedsPassword = false;
+        };
+        # systemd.network.enable = true;
+      };
+
+    };
+  };
 }

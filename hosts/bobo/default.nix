@@ -1,12 +1,11 @@
 { inputs, config, pkgs, lib, name, modulesPath, nodes, ... }: {
   imports = [
-    # ./hardware-configuration.nix
-    ../../modules/core/common.nix
-    # inputs.microvm.nixosModules.microvm
-
-    (modulesPath + "/profiles/qemu-guest.nix")
-    (modulesPath + "/installer/scan/not-detected.nix")
     inputs.microvm.nixosModules.host
+    ../../modules/core/colmena.nix
+    ../../modules/core/common.nix
+    ../../modules/core/hardware.nix
+    ../../modules/core/libvirtd.nix
+    (modulesPath + "/installer/scan/not-detected.nix")
   ];
   boot.initrd.availableKernelModules = [
     "virtio_pci"
@@ -54,10 +53,17 @@
 
   users.defaultUserShell = pkgs.bash;
   programs.bash.interactiveShellInit = "figurine ${name}";
+  nixpkgs.config.allowUnfree = true;
   microvm.vms = {
     test = {
       inherit pkgs;
       config = { };
+      imports = [
+        ../../modules/core/common.nix
+        inputs.microvm.nixosModules.microvm
+        (modulesPath + "/profiles/qemu-guest.nix")
+        (modulesPath + "/installer/scan/not-detected.nix")
+      ];
 
     };
   };
