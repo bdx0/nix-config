@@ -1,4 +1,7 @@
-default: apply
+# List all the just commands
+default:
+	# apply
+	@just --list
 
 alias b := build
 alias a := apply
@@ -16,7 +19,7 @@ mac2014:
 	colmena apply --impure --on mac2014
 
 lina:
-	colmena apply --impure --on lina
+	colmena apply --impure --on lina --show-trace
 
 test:
 	colmena apply --impure --on "nix-infect.local"

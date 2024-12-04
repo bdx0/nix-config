@@ -1,12 +1,5 @@
-{ inputs, config, pkgs, lib, name, modulesPath, ... }: {
-  imports = [
-    inputs.microvm.nixosModules.host
-    ../../modules/core/colmena.nix
-    ../../modules/core/common.nix
-    ../../modules/core/hardware.nix
-    ../../modules/core/libvirtd.nix
-    (modulesPath + "/installer/scan/not-detected.nix")
-  ];
+{ self, config, pkgs, lib, name, ... }: {
+  imports = [ self.nixosModules.common self.nixosModules.server ];
   boot.initrd.availableKernelModules =
     [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "sd_mod" "nvme" "usb_storage" ];
 
@@ -41,33 +34,9 @@
   boot.tmp.cleanOnBoot = true;
   zramSwap.enable = false;
   networking.domain = "lina.bdx0.io.vn";
+  common.dvm.enable = true;
 
   users.defaultUserShell = pkgs.bash;
   programs.bash.interactiveShellInit = "figurine ${name}";
   environment.systemPackages = with pkgs; [ wget figurine cmatrix comma ];
-  nixpkgs.config.allowUnfree = true;
-  microvm.vms = let commonBase = import ../../modules/core/net.nix;
-  in {
-    test = {
-      autostart = true;
-      inherit pkgs;
-      config = { ... }: {
-        imports = [ commonBase ];
-        # system.stateVersion = config.system.version;
-
-        networking.hostName = "test";
-        users.users.root.password = "testtest";
-        services.openssh = {
-          enable = true;
-          settings.PermitRootLogin = "yes";
-        };
-        security.sudo = {
-          enable = true;
-          wheelNeedsPassword = false;
-        };
-        # systemd.network.enable = true;
-      };
-
-    };
-  };
 }
