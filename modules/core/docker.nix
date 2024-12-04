@@ -1,12 +1,15 @@
 { ... }: {
-  virtualisation = {
-    docker = {
-      enable = true;
-      autoPrune = {
+  options = { };
+  config = {
+    virtualisation = {
+      docker = {
         enable = true;
-        dates = "weekly";
+        autoPrune = {
+          enable = true;
+          dates = "weekly";
+        };
       };
     };
+    services.dockerRegistry.enable = true;
   };
-  services.dockerRegistry.enable = true;
 }

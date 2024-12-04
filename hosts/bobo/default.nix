@@ -1,5 +1,5 @@
-{ self, config, pkgs, lib, name, modulesPath, nodes, ... }: {
-  imports = [ self.nixosModules.common ];
+{ self, config, pkgs, lib, name, nodes, ... }: {
+  imports = [ self.nixosModules.common self.nixosModules.server ];
   boot.initrd.availableKernelModules = [
     "virtio_pci"
     "sr_mod"

@@ -1,4 +1,4 @@
-{ self, inputs, pkgs, lib, config, ... }:
+{ inputs, pkgs, lib, config, ... }:
 let cfg = config.common;
 in {
   options.common = {
@@ -14,25 +14,31 @@ in {
   imports = [ inputs.microvm.nixosModules.host ];
 
   config = lib.mkIf (cfg.dvm.enable) {
-    microvm.vms = {
-      # test = {
-      #   autostart = true;
-      #   inherit pkgs;
-      #   config = { self, ... }: {
-      #     imports = [
-      #       self.nixosModules.common
+    microvm = {
+      autostart = [ "test" "test2" ];
+      vms = {
+        test2 = {
+          autostart = true;
+          inherit pkgs;
+          config = { ... }: {
+            imports = [
+              inputs.self.nixosModules.common
+              inputs.self.nixosModules.vm
 
-      #       # common
-      #     ];
-      #     #     # system.stateVersion = config.system.version;
+              # common
+            ];
+            #     # system.stateVersion = config.system.version;
 
-      #     networking.hostName = "test";
-      #     users.users.root.password = "testtest";
-      #   };
-      # };
-      test = {
-        autostart = true;
-        flake = self;
+            networking.useNetworkd = true;
+            networking.hostName = "test2";
+            users.users.root.password = "testtest";
+            # nixpkgs.config.allowUnfree = true;
+          };
+        };
+        test = {
+          flake = inputs.self;
+          updateFlake = "github:bdx0/nix-config?ref=mkOptions";
+        };
       };
     };
   };

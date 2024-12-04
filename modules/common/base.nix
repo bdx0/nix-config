@@ -1,8 +1,5 @@
 { modulesPath, lib, config, ... }: {
-  imports = [
-    (modulesPath + "/profiles/qemu-guest.nix")
-    (modulesPath + "/installer/scan/not-detected.nix")
-  ];
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
   options.common = {
     base.enable = lib.mkOption {
       type = lib.types.bool;

@@ -15,13 +15,13 @@
       cmatrix
       parted
       comma
+      bottom
+      btop
     ];
     time.timeZone = "Asia/Ho_Chi_Minh";
-    i18n = {
-      consoleFont = "Lat2-Terminus16";
-      consoleKeyMap = "us";
-      defaultLocale = "en_US.UTF-8";
-    };
+    console.keyMap = "us";
+    console.font = "Lat2-Terminus16";
+    i18n.defaultLocale = "en_US.UTF-8";
 
     # automatic upgrade
     # "https://discourse.nixos.org/t/deployment-tools-evaluating-nixops-deploy-rs-and-vanilla-nix-rebuild/36388/25"
@@ -77,7 +77,6 @@
     };
 
     hardware.enableAllFirmware = true;
-    nixpkgs.config.allowUnfree = true;
   };
 }
 

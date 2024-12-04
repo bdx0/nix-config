@@ -62,9 +62,12 @@
           modules = [
             inputs.microvm.nixosModules.microvm
             self.nixosModules.common
+            self.nixosModules.vm
             {
+              networking.useNetworkd = true;
               networking.hostName = "test";
               users.users.root.password = "testtest";
+              nixpkgs.config.allowUnfree = true;
             }
           ];
         };
