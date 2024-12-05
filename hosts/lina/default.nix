@@ -76,6 +76,7 @@
         DHCP = "yes";
         DNSSEC = "yes";
         DNSOverTLS = "yes";
+        IgnoreCarrierLoss = "3s";
         DNS = [ "1.1.1.1" "1.0.0.1" ];
       };
     in {
@@ -86,6 +87,7 @@
       matchConfig.Name = "wlp*";
       # networkConfig.DHCP = "yes";
       # this port is always connected and not required to be onlein
+      dhcpConfig.RouteMetric = 20;
       linkConfig.RequiredForOnline = "routable";
     };
     systemd.network.networks."10-microvm" = {

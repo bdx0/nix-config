@@ -32,13 +32,18 @@
     services.avahi.publish.workstation = true; # ADDED TO DESKTOP MACHINES
 
     networking.useDHCP = true;
-    networking.wireless.enable = true;
+    # networking.wireless.enable = true;
+    networking.wireless.iwd.enable = true;
+    networking.wireless.iwd.settings.IPv6.Enabled = true;
+    networking.wireless.iwd.settings.Settings.AutoConnect = true;
+    networking.wireless.iwd.settings.General.UseDefaultInterface = true;
+
     networking.wireless.userControlled.enable = true;
     networking.wireless.networks = {
       "GuaMupWifi" = { # SSID with no spaces or special characters
-        # psk = "0907650206"; # (password will be written to /nix/store!)
-        pskRaw =
-          "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
+        psk = "0907650206"; # (password will be written to /nix/store!)
+        # pskRaw =
+        #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
       };
     };
     networking.firewall.enable = false;
