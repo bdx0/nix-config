@@ -64,6 +64,16 @@
             self.nixosModules.common
             self.nixosModules.vm
             {
+              microvm = {
+                # ...add additional MicroVM configuration here
+                interfaces = [{
+                  # type = "user";
+                  type = "tap";
+                  id = "vm-test";
+                  mac = "02:00:00:00:00:01";
+                }];
+              };
+
               networking.useNetworkd = true;
               networking.hostName = "test";
               users.users.root.password = "testtest";

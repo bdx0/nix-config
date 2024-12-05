@@ -8,7 +8,6 @@
     };
   };
   config = lib.mkIf config.common.base.enable {
-    services.tailscale.enable = true;
     services.openssh.enable = true;
     services.openssh.settings.PermitRootLogin = "yes";
     services.openssh.settings.PasswordAuthentication = true;
@@ -31,13 +30,15 @@
     services.avahi.publish.domain = true;
     services.avahi.nssmdns4 = true;
     services.avahi.publish.workstation = true; # ADDED TO DESKTOP MACHINES
-    services.tailscale.useRoutingFeatures = "server";
 
     networking.useDHCP = true;
     networking.wireless.enable = true;
+    networking.wireless.userControlled.enable = true;
     networking.wireless.networks = {
       "GuaMupWifi" = { # SSID with no spaces or special characters
-        psk = "0907650206"; # (password will be written to /nix/store!)
+        # psk = "0907650206"; # (password will be written to /nix/store!)
+        pskRaw =
+          "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
       };
     };
     networking.firewall.enable = false;

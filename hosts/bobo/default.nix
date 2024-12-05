@@ -11,6 +11,11 @@
     "uas"
     "sd_mod"
   ];
+  boot.kernelParams = [ "amd_iommu=on" ];
+  boot.blacklistedKernelModules = [ "nvidia" "nouveau" ];
+  # "https://forum.level1techs.com/t/nixos-vfio-pcie-passthrough/130916"
+  boot.kernelModules =
+    [ "kvm-amd" "vfio_virqfd" "vfio_pci" "vfio_iommu_type1" "vfio" ];
 
   fileSystems."/" = {
     device = "/dev/mapper/bobo--vg-root";

@@ -1,12 +1,6 @@
 { pkgs, ... }: {
   # _module.args.config.inputs = self.inputs;
-  imports = [
-    ./base.nix
-    ./qemu.nix
-    ../core/docker.nix
-    ../core/hardware.nix
-    ../core/libvirtd.nix
-  ];
+  imports = [ ./base.nix ./docker.nix ./libvirtd.nix ];
   options.common = { };
   config = {
     environment.systemPackages = with pkgs; [
@@ -17,6 +11,13 @@
       comma
       bottom
       btop
+      bridge-utils
+      qemu
+      qemu_kvm
+      libvirt
+      OVMF
+      pciutils
+      floorp
     ];
     time.timeZone = "Asia/Ho_Chi_Minh";
     console.keyMap = "us";

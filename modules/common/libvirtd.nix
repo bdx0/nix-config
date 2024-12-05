@@ -1,4 +1,5 @@
 { pkgs, ... }: {
+  imports = [ ./vfio.nix ];
   options = { };
   config = {
     # "https://wiki.nixos.org/wiki/Libvirt"

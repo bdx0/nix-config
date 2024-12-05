@@ -20,6 +20,7 @@ in {
         test2 = {
           autostart = true;
           inherit pkgs;
+          specialArgs = { inherit inputs; };
           config = { ... }: {
             imports = [
               inputs.self.nixosModules.common
@@ -28,7 +29,21 @@ in {
               # common
             ];
             #     # system.stateVersion = config.system.version;
+            microvm = {
+              # mem = 8192;
+              # vcpu = 4;
 
+              # ...add additional MicroVM configuration here
+              # Use QEMU because nested virtualization and user networking are required.
+              hypervisor = "qemu";
+              interfaces = [{
+                # type = "user";
+                type = "tap";
+                id = "vm-test2";
+                mac = "02:00:00:00:00:01";
+              }];
+            };
+            systemd.network.enable = true;
             networking.useNetworkd = true;
             networking.hostName = "test2";
             users.users.root.password = "testtest";

@@ -1,5 +1,5 @@
-{ modulesPath, ... }: {
-  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+{ ... }: {
+  imports = [ ../common/qemu.nix ];
   options.vm = { };
   config = { };
 }

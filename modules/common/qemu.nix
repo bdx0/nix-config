@@ -1,8 +1,5 @@
 { modulesPath, lib, config, ... }: {
-  imports = [
-    (modulesPath + "/profiles/qemu-guest.nix")
-    (modulesPath + "/installer/scan/not-detected.nix")
-  ];
+  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
   options = {
     qemuSystem.enable = lib.mkOption {
       type = lib.types.bool;
