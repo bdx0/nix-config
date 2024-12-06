@@ -18,6 +18,8 @@ in {
     };
   };
   config = lib.mkIf cfg.enable {
+    services.tailscale.enable = true;
+    services.tailscale.useRoutingFeatures = "server";
     services.openssh.enable = true;
     services.openssh.settings.PermitRootLogin = "yes";
     services.openssh.settings.PasswordAuthentication = true;
