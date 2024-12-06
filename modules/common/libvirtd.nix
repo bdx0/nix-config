@@ -1,7 +1,15 @@
-{ pkgs, ... }: {
+{ pkgs, config, lib, ... }:
+let cfg = config.bdx0.libvirtd;
+in {
   imports = [ ./vfio.nix ];
-  options = { };
-  config = {
+  options.bdx0.libvirtd = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "";
+    };
+  };
+  config = lib.mkIf cfg.enable {
     # "https://wiki.nixos.org/wiki/Libvirt"
     virtualisation.libvirtd.enable = true;
     # virtualisation.libvirtd.verbose = true;

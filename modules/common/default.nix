@@ -1,8 +1,16 @@
-{ pkgs, ... }: {
+{ pkgs, config, lib, ... }:
+let cfg = config.bdx0.common;
+in {
   # _module.args.config.inputs = self.inputs;
   imports = [ ./base.nix ./docker.nix ./libvirtd.nix ];
-  options.common = { };
-  config = {
+  options.bdx0.common = {
+    enable = lib.mkOption {
+      default = true;
+      type = lib.types.bool;
+      description = "";
+    };
+  };
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       wget
       figurine

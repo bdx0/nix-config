@@ -32,11 +32,12 @@ in {
             #     # system.stateVersion = config.system.version;
             microvm = {
               mem = 8192;
-              cpu = "host";
+              # cpu = "host";
 
               # ...add additional MicroVM configuration here
               # Use QEMU because nested virtualization and user networking are required.
               hypervisor = "qemu";
+              # hypervisor = "kvmtool";
               interfaces = [{
                 # type = "user";
                 type = "tap";
@@ -47,6 +48,7 @@ in {
 
             # Don't interfere with k8s
             networking.firewall.enable = lib.mkForce false;
+            bdx0.docker.enable = false;
 
             services.rke2 = {
               enable = true;

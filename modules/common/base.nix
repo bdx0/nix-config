@@ -7,16 +7,17 @@ let
       #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
     };
   };
+  cfg = config.bdx0.base;
 in {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
-  options.common = {
-    base.enable = lib.mkOption {
+  options.bdx0.base = {
+    enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
       description = "This is the base";
     };
   };
-  config = lib.mkIf config.common.base.enable {
+  config = lib.mkIf cfg.enable {
     services.openssh.enable = true;
     services.openssh.settings.PermitRootLogin = "yes";
     services.openssh.settings.PasswordAuthentication = true;
