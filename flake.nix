@@ -17,7 +17,6 @@
     };
     nixvirt.url = "github:AshleyYakeley/NixVirt";
     microvm.url = "github:astro/microvm.nix";
-    rke2.url = "github:bdx0/nixos-rke2";
   };
   outputs = { self, nixos, nixpkgs, flake-parts, ... }@inputs:
     let
@@ -28,8 +27,14 @@
       debug = true;
       flake = {
         colmena = let
-          pkgsLinux = import nixos { system = "x86_64-linux"; };
-          pkgsLinuxArm = import nixos { system = "aarch64-linux"; };
+          pkgsLinux = import nixos {
+            system = "x86_64-linux";
+            config.allowUnfree = true;
+          };
+          pkgsLinuxArm = import nixos {
+            system = "aarch64-linux";
+            config.allowUnfree = true;
+          };
         in {
           meta = {
             nixpkgs = pkgsLinux;
@@ -40,7 +45,7 @@
             specialArgs = (inputs // { inherit inputs; });
           };
           "nix-infect.local" = import ./hosts/nix-infect;
-          "lina" = import ./hosts/lina;
+          "lina" = { imports = [ ./hosts/lina ]; };
           "mac2014" = import ./hosts/mac2014;
           "bobo" = import ./hosts/bobo;
         };
