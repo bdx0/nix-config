@@ -25,13 +25,14 @@ in {
             imports = [
               inputs.self.nixosModules.common
               inputs.self.nixosModules.vm
+              inputs.rke2.nixosModules.default
 
               # common
             ];
             #     # system.stateVersion = config.system.version;
             microvm = {
-              # mem = 8192;
-              # vcpu = 4;
+              mem = 8192;
+              cpu = "host";
 
               # ...add additional MicroVM configuration here
               # Use QEMU because nested virtualization and user networking are required.
@@ -42,6 +43,18 @@ in {
                 id = "vm-test2";
                 mac = "02:00:00:00:00:01";
               }];
+            };
+
+            # Don't interfere with k8s
+            networking.firewall.enable = lib.mkForce false;
+
+            services.rke2 = {
+              enable = true;
+              role = "server";
+              extraFlags = [ "--disable" "rke2-ingress-nginx" ];
+              # settings.kube-apiserver-arg = [ "anonymous-auth=false" ];
+              # settings.tls-san = [ "<TODO>" ];
+              # settings.write-kubeconfig-mode = "0644";
             };
             systemd.network.enable = true;
             networking.useNetworkd = true;

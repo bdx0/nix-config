@@ -17,6 +17,7 @@
     };
     nixvirt.url = "github:AshleyYakeley/NixVirt";
     microvm.url = "github:astro/microvm.nix";
+    rke2.url = "github:bdx0/nixos-rke2";
   };
   outputs = { self, nixos, nixpkgs, flake-parts, ... }@inputs:
     let
@@ -64,6 +65,7 @@
             self.nixosModules.common
             self.nixosModules.vm
             {
+              imports = [ inputs.rke2.nixosModules.default ];
               microvm = {
                 # ...add additional MicroVM configuration here
                 interfaces = [{
@@ -72,6 +74,18 @@
                   id = "vm-test";
                   mac = "02:00:00:00:00:01";
                 }];
+              };
+
+              # Don't interfere with k8s
+              networking.firewall.enable = nixpkgs.lib.mkForce false;
+
+              services.rke2 = {
+                enable = true;
+                role = "server";
+                extraFlags = [ "--disable" "rke2-ingress-nginx" ];
+                # settings.kube-apiserver-arg = [ "anonymous-auth=false" ];
+                # settings.tls-san = [ "<TODO>" ];
+                # settings.write-kubeconfig-mode = "0644";
               };
 
               networking.useNetworkd = true;
