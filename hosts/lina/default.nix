@@ -61,10 +61,23 @@
     boot.tmp.cleanOnBoot = true;
     zramSwap.enable = false;
     networking.domain = "lina.bdx0.io.vn";
-    common.dvm.enable = true;
+    common.dvm.enable = false;
 
     users.defaultUserShell = pkgs.bash;
     programs.bash.interactiveShellInit = "figurine ${name}";
     nixpkgs.config.allowUnfree = true;
+
+    services.rke2 = {
+      enable = true;
+      role = "server";
+      configPath = ../../modules/common/rke2_config.yaml;
+      # tokenFile = ../../modules/common/token_file;
+      # agentTokenFile = ../../modules/common/token_file;
+      # settings.tls-san = [ "lina" "lina.bdx0.io.vn" "rke2.lina.bdx0.io.vn" ];
+      # extraFlags = [ "--disable" "rke2-ingress-nginx" ];
+      # settings.kube-apiserver-arg = [ "anonymous-auth=false" ];
+      # settings.tls-san = [ "<TODO>" ];
+      # settings.write-kubeconfig-mode = "0644";
+    };
   };
 }
