@@ -1,8 +1,16 @@
-{ pkgs, config, lib, ... }:
-let cfg = config.bdx0.common;
+{ inputs, pkgs, config, lib, ... }:
+let
+  cfg = config.bdx0.common;
+  system = pkgs.system;
 in {
   # _module.args.config.inputs = self.inputs;
-  imports = [ ./base.nix ./docker.nix ./libvirtd.nix ];
+  imports = [
+    inputs.agenix.nixosModules.default
+    ./base.nix
+    ./docker.nix
+    ./libvirtd.nix
+  ];
+
   options.bdx0.common = {
     enable = lib.mkOption {
       default = true;
@@ -11,8 +19,11 @@ in {
     };
   };
   config = lib.mkIf cfg.enable {
+    age.secrets.pg_pass = { file = ../../secrets/pgadmin.age; };
+    age.secrets.rke2_config = { file = ../../secrets/rke2_config.age; };
     environment.systemPackages = with pkgs; [
       wget
+      inputs.agenix.packages.${system}.default
       figurine
       cmatrix
       parted
@@ -26,6 +37,7 @@ in {
       OVMF
       pciutils
       floorp
+      lsof
     ];
     time.timeZone = "Asia/Ho_Chi_Minh";
     console.keyMap = "us";

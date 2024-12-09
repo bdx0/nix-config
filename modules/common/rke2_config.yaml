@@ -1,7 +1,0 @@
-write-kubeconfig-mode: "0644"
-# token: K10141e209972a3c166c0b27a95bf482059220e8589
-tls-san:
-  - "lina"
-  - "lina.bdx0.io.vn"
-  - "rke2.bdx0.io.vn"
-debug: true

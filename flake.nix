@@ -17,6 +17,8 @@
     };
     nixvirt.url = "github:AshleyYakeley/NixVirt";
     microvm.url = "github:astro/microvm.nix";
+    agenix.url = "github:ryantm/agenix";
+    sops-nix.url = "github:Mic92/sops-nix";
   };
   outputs = { self, nixos, nixpkgs, flake-parts, ... }@inputs:
     let
@@ -107,7 +109,10 @@
           inherit system;
           config.allowUnfree = true;
         };
-        devShells = import ./shells { inherit pkgs; };
+        devShells = import ./shells {
+          inherit pkgs;
+          agenixPkg = inputs.agenix.packages.${system}.default;
+        };
         packages = import ./pkgs args;
 
         # nix store repair:
