@@ -4,11 +4,13 @@ let
   '';
   lina =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJqa/VEDPOqNyBnrm91jSGDMZ8VbbKSqqB4+oojcmZi";
-  bobo =
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJqa/VEDPOqNyBnrm91jSGDMZ8VbbKSqqB4+oojcmZi";
+  bobo = ''
+    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAEd4rS2rbTc1ha9hIjlYIBsxUY+5qGo7Kwfgolh2rwC
+  '';
+
   goku =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJqa/VEDPOqNyBnrm91jSGDMZ8VbbKSqqB4+oojcmZi";
 in {
-  "pgadmin.age".publicKeys = [ dd lina ];
-  "rke2_config.age".publicKeys = [ dd lina ];
+  "pgadmin.age".publicKeys = [ dd lina bobo ];
+  "rke2_config.age".publicKeys = [ dd lina bobo ];
 }

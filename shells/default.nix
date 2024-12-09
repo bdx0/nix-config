@@ -22,7 +22,8 @@ in {
         comma
         just
         kubectl
-        helm
+        kubernetes-helm
+        helmfile
         k9s
       ] ++ (if agenixPkg != null then [ agenixPkg ] else [ ]);
     shellHook = ''
