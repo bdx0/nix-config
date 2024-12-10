@@ -2,6 +2,12 @@
 let cfg = config.bdx0.libvirtd;
 in {
   imports = [ ./vfio.nix ];
+  options.virtualisation.libvirtd = {
+    deviceACL = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+    };
+  };
   options.bdx0.libvirtd = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -14,6 +20,7 @@ in {
     virtualisation.libvirtd.enable = true;
     # virtualisation.libvirtd.verbose = true;
     virtualisation.libvirtd.qemu.package = pkgs.qemu_kvm;
+    virtualisation.libvirtd.qemuOvmf = true;
     virtualisation.libvirtd.qemu.runAsRoot = true;
     # Enable TPM emulation (optional)
     virtualisation.libvirtd.qemu.swtpm.enable = true;
@@ -29,5 +36,7 @@ in {
     # Enable USB redirection (optional)
     virtualisation.spiceUSBRedirection.enable = true;
     # services.libvirtd.enable = true;
+    virtualisation.libvirtd.deviceACL = [ ];
+    bdx0.vfio.enable = true;
   };
 }

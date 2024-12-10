@@ -55,7 +55,8 @@
     # boot.loader.efi.canTouchEfiVariables = true;
 
     networking.domain = "bobo.bdx0.io.vn";
-    common.dvm.enable = false;
+    bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
+    bdx0.vfio.IOMMUType = "amd";
 
     users.defaultUserShell = pkgs.bash;
     programs.bash.interactiveShellInit = "figurine ${name}";

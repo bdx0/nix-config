@@ -28,7 +28,56 @@
 # "https://nixos.wiki/wiki/OSX-KVM"
 # "https://nixos.wiki/wiki/Impermanence"
 # "https://github.com/dustinlyons/nixos-config"
-# "https://github.com/Daholli/nixos-config"
+# "https://astrid.tech/2022/09/22/0/nixos-gpu-vfio/"
 
-{ ... }:
-{ }
+# AMD
+# "https://alexbakker.me/post/nixos-pci-passthrough-qemu-vfio.html"
+# "https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF"
+# "https://github.com/Daholli/nixos-config"
+# "https://gist.github.com/CRTified/43b7ce84cd238673f7f24652c85980b3"
+
+{ pkgs, config, lib, ... }:
+let cfg = config.bdx0.vfio;
+in {
+  options.bdx0.vfio = {
+    enable = lib.mkEnableOption "VFIO Configuration";
+    IOMMUType = lib.mkOption {
+      description = "Type of the IOMMU";
+      type = lib.types.enum [ "intel" "amd" ];
+      example = "intel";
+    };
+    devices = lib.mkOption {
+      description = "";
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+    };
+    blacklistNvidia = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Add Nvidia GPU modules to blacklist";
+    };
+  };
+  config = lib.mkMerge [
+    (lib.mkIf cfg.enable {
+      boot.kernelModules = [ "vfio_pci" "vfio" "vfio_iommu_type1" ];
+      boot.initrd.kernelModules = [ "vfio_pci" "vfio" "vfio_iommu_type1" ];
+      boot.blacklistedKernelModules = lib.optionals cfg.blacklistNvidia [
+        "nvidia"
+        "nouveau"
+        "amdgpu"
+        "i915"
+      ];
+      boot.kernelParams = (if (cfg.IOMMUType == "intel") then [
+        "intel_iommu=on"
+        "intel_iommu=igfx_off"
+        "iommu=pt"
+      ] else
+        [ "amd_iommu=on" ]) ++
+        # isolate GPU
+        (lib.optional (builtins.length cfg.devices > 0)
+          ("vfio-pci.ids=" + lib.concatStringsSep "," cfg.devices));
+      hardware.opengl.enable = true;
+      virtualisation.spiceUSBRedirection.enable = true;
+    })
+  ];
+}

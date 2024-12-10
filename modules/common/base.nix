@@ -1,4 +1,4 @@
-{ modulesPath, lib, config, ... }:
+{ pkgs, modulesPath, lib, config, ... }:
 let
   networks = {
     "GuaMupWifi" = { # SSID with no spaces or special characters
@@ -7,6 +7,8 @@ let
       #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
     };
   };
+
+  scripts_dir = import ../../scripts { inherit pkgs; };
   cfg = config.bdx0.base;
 in {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
@@ -18,6 +20,7 @@ in {
     };
   };
   config = lib.mkIf cfg.enable {
+    environment.systemPackages = [ scripts_dir ];
     services.tailscale.enable = true;
     services.tailscale.useRoutingFeatures = "server";
     services.openssh.enable = true;

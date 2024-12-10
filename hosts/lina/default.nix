@@ -17,13 +17,6 @@
       "sd_mod"
     ];
 
-    boot.kernelParams = [
-      "intel_iommu=on"
-      "iommu=pt"
-      #  ''vfio-pci.ids=""''
-    ];
-    boot.kernelModules = [ "kvm-intel" "vfio-pci" ];
-    boot.blacklistedKernelModules = [ "nouveau" "nvidia" ];
     boot.extraModprobeConfig = ''
       options kvm_intel nested=1
       options kvm_intel emulate_invalid_guest_state=0
@@ -61,13 +54,20 @@
     boot.tmp.cleanOnBoot = true;
     zramSwap.enable = false;
     networking.domain = "lina.bdx0.io.vn";
-    common.dvm.enable = false;
+    bdx0.vfio.IOMMUType = "amd";
+    # bdx0.vfio.devices = [ ];
 
     users.defaultUserShell = pkgs.bash;
     programs.bash.interactiveShellInit = "figurine ${name}";
     nixpkgs.config.allowUnfree = true;
     environment.systemPackages = with pkgs; [ kubectl ];
 
+    # systemd.services.postgresql.postStart = pkgs.lib.mkAfter ''
+    #   # $PSQL atticd_v2 -tAc 'GRANT ALL ON ALL TABLES IN SCHEMA public TO atticd' || true
+    #   # $PSQL atticd_v2 -tAc 'GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO atticd' || true
+    #   # $PSQL atticd_v2 -tAc 'ALTER DATABASE atticd_v2 OWNER TO atticd' || true
+    #   # $PSQL atticd_v2 -tAc "ALTER USER atticd WITH PASSWORD 'password'" || true
+    # '';
     services.pgadmin = let initialEmail = "admin@lina.bdx0.io.vn";
     in {
       inherit initialEmail;
