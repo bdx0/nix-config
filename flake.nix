@@ -17,8 +17,10 @@
     };
     nixvirt.url = "github:AshleyYakeley/NixVirt";
     microvm.url = "github:astro/microvm.nix";
+    agenix.url = "github:ryantm/agenix";
+    sops-nix.url = "github:Mic92/sops-nix";
   };
-  outputs = { nixos, nixpkgs, flake-parts, ... }@inputs:
+  outputs = { self, nixos, nixpkgs, flake-parts, ... }@inputs:
     let
       darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
       linuxSystems = [ "x86_64-linux" "aarch64-linux" ];
@@ -27,8 +29,14 @@
       debug = true;
       flake = {
         colmena = let
-          pkgsLinux = import nixos { system = "x86_64-linux"; };
-          pkgsLinuxArm = import nixos { system = "aarch64-linux"; };
+          pkgsLinux = import nixos {
+            system = "x86_64-linux";
+            config.allowUnfree = true;
+          };
+          pkgsLinuxArm = import nixos {
+            system = "aarch64-linux";
+            config.allowUnfree = true;
+          };
         in {
           meta = {
             nixpkgs = pkgsLinux;
@@ -39,111 +47,78 @@
             specialArgs = (inputs // { inherit inputs; });
           };
           "nix-infect.local" = import ./hosts/nix-infect;
-          "lina" = import ./hosts/lina;
+          "lina" = { imports = [ ./hosts/lina ]; };
           "mac2014" = import ./hosts/mac2014;
           "bobo" = import ./hosts/bobo;
         };
         nixosConfigurations.basic = nixpkgs.lib.nixosSystem {
           modules = [
             inputs.nixos-facter-modules.nixosModules.facter
-            {
-              config.facter.reportPath = ./facter.json;
-            }
-            # ...
+            { config.facter.reportPath = ./facter.json; }
           ];
         };
         nixosConfigurations.remoteInstall = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          specialArgs = (inputs // {
-            inherit inputs;
-            disks = [ "/dev/sda" ];
-          });
-          modules = [
-            #
-            ./hosts/freshHost
-          ];
+          modules = [ ./hosts/freshHost ];
         };
         nixosConfigurations.lina = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          specialArgs = (inputs // {
-            inherit inputs;
-            disks = [ "/dev/sda" ];
-          });
+          modules = [ ./hosts/lina ];
+        };
+        nixosConfigurations.test = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
           modules = [
-            #
-            ./hosts/lina
+            inputs.microvm.nixosModules.microvm
+            self.nixosModules.common
+            self.nixosModules.vm
+            {
+              imports = [ inputs.rke2.nixosModules.default ];
+              microvm = {
+                # ...add additional MicroVM configuration here
+                interfaces = [{
+                  # type = "user";
+                  type = "tap";
+                  id = "vm-test";
+                  mac = "02:00:00:00:00:01";
+                }];
+              };
+
+              # Don't interfere with k8s
+              networking.firewall.enable = nixpkgs.lib.mkForce false;
+
+              services.rke2 = {
+                enable = true;
+                role = "server";
+                extraFlags = [ "--disable" "rke2-ingress-nginx" ];
+                # settings.kube-apiserver-arg = [ "anonymous-auth=false" ];
+                # settings.tls-san = [ "<TODO>" ];
+                # settings.write-kubeconfig-mode = "0644";
+              };
+
+              networking.useNetworkd = true;
+              networking.hostName = "test";
+              users.users.root.password = "testtest";
+              nixpkgs.config.allowUnfree = true;
+            }
           ];
         };
       };
       systems = allSystems;
-      perSystem = { system, pkgs, inputs', ... }:
-        let
-          nixos-aw = inputs'.nixos-anywhere;
-          nixos-aw-pkg = nixos-aw.packages.default;
-          inherit (pkgs)
-            runCommand writeShellScriptBin writeScriptBin symlinkJoin writeText;
-          sshScript = writeShellScriptBin "ssh" ''
-            echo "ssh call"
-            echo "$@"
-            ${pkgs.openssh}/bin/ssh -F${sshConfig} $@
-          '';
-          sshpassScript = writeShellScriptBin "sshpass" ''
-            echo "sshpass: $@"
-            ${pkgs.openssh}/bin/sshpass $@
-          '';
-          sshcopyidScript = writeShellScriptBin "ssh-copy-id" ''
-            echo "ssh-copy-id: $@"
-            ${pkgs.openssh}/bin/ssh-copy-id $@
-            echo $@
-          '';
-          sshConfig = writeText "ssh_config" ''
-            Host freshHost
-              HostName 192.168.110.4
-              User root
-
-            Host *
-              LogLevel INFO
-
-          '';
-          freshInstallScript = writeShellScriptBin "freshInstallScript" ''
-            echo "$@"
-            # ls -la ${nixos-aw-pkg}/libexec/nixos-anywhere
-            # ${nixos-aw-pkg}/libexec/nixos-anywhere/nixos-anywhere.sh --flake .#remoteInstall --build-on-remote "$@"
-            ${nixos-aw-pkg}/bin/nixos-anywhere --flake .#remoteInstall --build-on-remote "$@"
-          '';
-          runtimeDeps =
-            # [ freshInstallScript sshScript sshpassScript sshcopyidScript ];
-            # [ freshInstallScript sshScript ];
-            [ freshInstallScript ];
-        in {
-          _module.args.pkgs = import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-          };
-          devShells = import ./shells { inherit pkgs; };
-          packages.remoteInstall = symlinkJoin {
-            # "https://ertt.ca/nix/shell-scripts/"
-            name = freshInstallScript.name;
-            paths = runtimeDeps;
-            buildInputs = [ pkgs.makeWrapper ];
-            postBuild = ''
-              wrapProgram $out/bin/${freshInstallScript.name} \
-                            --prefix PATH : ${
-                              pkgs.lib.makeBinPath runtimeDeps
-                            } \
-                            --suffix PATH : $out/bin'';
-          };
-          packages.test = writeShellScriptBin "test" ''
-            echo $@
-          '';
-          packages.repair = writeShellScriptBin "repair" ''
-            echo $@
-            nix-store --verify --repair --check-contents
-          '';
-          packages.default = pkgs.hello-unfree;
-
-          # nix store repair:
-          # nix-store --verify --repair --check-contents
+      perSystem = { system, pkgs, inputs', ... }@args: {
+        _module.args.pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
         };
+        devShells = import ./shells {
+          inherit pkgs;
+          agenixPkg = inputs.agenix.packages.${system}.default;
+        };
+        packages = import ./pkgs args;
+
+        # nix store repair:
+        # nix-store --verify --repair --check-contents
+      };
+    } // {
+      nixosModules = import ./modules/core;
     };
 }

@@ -1,4 +1,9 @@
-default: apply
+SOPS_FILE := "secrets/secrets.yaml"
+
+# List all the just commands
+default:
+	# apply
+	@just --list
 
 alias b := build
 alias a := apply
@@ -16,7 +21,7 @@ mac2014:
 	colmena apply --impure --on mac2014
 
 lina:
-	colmena apply --impure --on lina
+	colmena apply --impure --on lina --show-trace
 
 test:
 	colmena apply --impure --on "nix-infect.local"
@@ -34,6 +39,9 @@ gc HOST generations="5":
 		nix-store --gc &&
 		nix-collect-garbage -d
 
+
+k8s_bootstrap:
+	nix run nixpkgs#kubectl -- apply -f k8s/cloudflared.yaml
 
 # Garbage collect old OS generations and remove stable packages from the nix store
 gclocal generations="5":

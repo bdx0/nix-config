@@ -31,3 +31,7 @@ nix develop github:bdx0/nix-config --extra-experimental-features 'nix-command fl
 ## NixOS auto upgrade
 
 - [Using flakes for NixOS configurations](https://stephank.nl/p/2023-02-28-using-flakes-for-nixos-configs.html)
+
+## NixOS system-networkd configurations
+
+- [Networking: need to configure networking a bit differently](https://discourse.nixos.org/t/networking-need-to-configure-networking-a-bit-differently/27292)
