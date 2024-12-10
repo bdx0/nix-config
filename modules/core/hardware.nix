@@ -12,5 +12,13 @@
       zfs = lib.mkForce false;
       ntfs = true;
     };
+
+    swapDevices = [
+      # { device = "/dev/disk/by-uuid/b5a4686e-7d68-4fbb-b335-c837a48f40a6"; }
+      {
+        device = "/.swapfile";
+        size = 32 * 1024; # 32GB
+      }
+    ];
   };
 }

@@ -37,13 +37,6 @@
       fsType = "ntfs-3g";
       options = [ "rw" "uid=1000" ];
     };
-    swapDevices = [
-      # { device = "/dev/disk/by-uuid/b5a4686e-7d68-4fbb-b335-c837a48f40a6"; }
-      {
-        device = "/.swapfile";
-        size = 16 * 2014; # 16GB
-      }
-    ];
 
     hardware.cpu.amd.updateMicrocode =
       lib.mkDefault config.hardware.enableRedistributableFirmware;
