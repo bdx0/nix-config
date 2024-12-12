@@ -27,7 +27,13 @@
       allSystems = linuxSystems ++ darwinSystems;
     in flake-parts.lib.mkFlake { inherit inputs; } {
       debug = true;
-      flake = {
+      flake = let
+        nodes = [
+          { name = "homelab-0"; }
+          { name = "homelab-1"; }
+          { name = "homelab-2"; }
+        ];
+      in {
         colmena = let
           pkgsLinux = import nixos {
             system = "x86_64-linux";
@@ -51,57 +57,21 @@
           "mac2014" = import ./hosts/mac2014;
           "bobo" = import ./hosts/bobo;
         };
-        nixosConfigurations.basic = nixpkgs.lib.nixosSystem {
-          modules = [
-            inputs.nixos-facter-modules.nixosModules.facter
-            { config.facter.reportPath = ./facter.json; }
-          ];
-        };
-        nixosConfigurations.remoteInstall = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/freshHost ];
-        };
-        nixosConfigurations.lina = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [ ./hosts/lina ];
-        };
-        nixosConfigurations.test = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            inputs.microvm.nixosModules.microvm
-            self.nixosModules.common
-            self.nixosModules.vm
-            {
-              imports = [ inputs.rke2.nixosModules.default ];
-              microvm = {
-                # ...add additional MicroVM configuration here
-                interfaces = [{
-                  # type = "user";
-                  type = "tap";
-                  id = "vm-test";
-                  mac = "02:00:00:00:00:01";
-                }];
+        nixosConfigurations = builtins.listToAttrs (map
+          ({ name, system ? "x86_64-linux", ... }: {
+            name = name;
+            value = nixpkgs.lib.nixosSystem {
+              inherit system;
+              specialArgs = {
+                meta = {
+                  hostname = name;
+                  inherit system;
+                };
               };
+              modules = [ self.nixosModules.hosts.${name} ];
+            };
+          }) nodes);
 
-              # Don't interfere with k8s
-              networking.firewall.enable = nixpkgs.lib.mkForce false;
-
-              services.rke2 = {
-                enable = true;
-                role = "server";
-                extraFlags = [ "--disable" "rke2-ingress-nginx" ];
-                # settings.kube-apiserver-arg = [ "anonymous-auth=false" ];
-                # settings.tls-san = [ "<TODO>" ];
-                # settings.write-kubeconfig-mode = "0644";
-              };
-
-              networking.useNetworkd = true;
-              networking.hostName = "test";
-              users.users.root.password = "testtest";
-              nixpkgs.config.allowUnfree = true;
-            }
-          ];
-        };
       };
       systems = allSystems;
       perSystem = { system, pkgs, inputs', ... }@args: {
@@ -119,6 +89,6 @@
         # nix-store --verify --repair --check-contents
       };
     } // {
-      nixosModules = import ./modules/core;
+      nixosModules = import ./modules;
     };
 }
