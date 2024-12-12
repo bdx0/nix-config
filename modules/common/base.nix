@@ -31,8 +31,10 @@ in {
     users.users.dd = {
       isNormalUser = true;
       home = "/home/dd";
-      extraGroups = [ "wheel" "networkmanager" "docker" "libvirtd" ];
+      extraGroups =
+        [ "wheel" "networkmanager" "docker" "libvirtd" "incus-admin" ];
       openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
+      packages = with pkgs; [ tree neovim ];
     };
     security.sudo.wheelNeedsPassword = false;
     security.sudo.enable = true;

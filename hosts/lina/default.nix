@@ -62,6 +62,12 @@
     nixpkgs.config.allowUnfree = true;
     environment.systemPackages = with pkgs; [ kubectl ];
 
+    boot.kernelModules = [ "overlay" "br_netfilter" ];
+    boot.kernel.sysctl = {
+      "net.bridge.bridge-nf-call-iptables" = 1;
+      "net.bridge.bridge-nf-call-ip6tables" = 1;
+      "net.ipv4.ip_forward" = 1;
+    };
     # systemd.services.postgresql.postStart = pkgs.lib.mkAfter ''
     #   # $PSQL atticd_v2 -tAc 'GRANT ALL ON ALL TABLES IN SCHEMA public TO atticd' || true
     #   # $PSQL atticd_v2 -tAc 'GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO atticd' || true

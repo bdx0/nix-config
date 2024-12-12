@@ -16,12 +16,15 @@ in {
     };
   };
   config = lib.mkIf cfg.enable {
+    # required bylibvirtd
+    securiy.polkit.enable = true;
     # "https://wiki.nixos.org/wiki/Libvirt"
     virtualisation.libvirtd.enable = true;
     # virtualisation.libvirtd.verbose = true;
     virtualisation.libvirtd.qemu.package = pkgs.qemu_kvm;
     virtualisation.libvirtd.qemuOvmf = true;
     virtualisation.libvirtd.qemu.runAsRoot = true;
+    # virtualisation.libvirtd.allowedBridges = [ "br0"];
     # Enable TPM emulation (optional)
     virtualisation.libvirtd.qemu.swtpm.enable = true;
     virtualisation.libvirtd.qemu.ovmf.enable = true;
