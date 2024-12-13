@@ -17,7 +17,7 @@ in {
   };
   config = lib.mkIf cfg.enable {
     # required bylibvirtd
-    securiy.polkit.enable = true;
+    security.polkit.enable = true;
     # "https://wiki.nixos.org/wiki/Libvirt"
     virtualisation.libvirtd.enable = true;
     # virtualisation.libvirtd.verbose = true;

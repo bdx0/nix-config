@@ -23,6 +23,14 @@ in {
     environment.systemPackages = [ scripts_dir ];
     services.tailscale.enable = true;
     services.tailscale.useRoutingFeatures = "server";
+    # "https://www.reddit.com/r/NixOS/comments/14w1404/every_nixos_rebuild_creates_a_new_tailscale/"
+    # "https://discourse.nixos.org/t/solved-possible-to-automatically-authenticate-tailscale-after-every-rebuild-reboot/14296"
+    # "https://tailscale.com/blog/nixos-minecraft"
+    # "https://xeiaso.net/blog/borg-backup-2021-01-09/"
+
+    # systemd.tmpfiles.rules = [
+    #   "L /var/lib/tailscale/tailscaled.state - - - - /persist/var/lib/tailscale/tailscaled.state"
+    # ];
     services.openssh.enable = true;
     services.openssh.settings.PermitRootLogin = "yes";
     services.openssh.settings.PasswordAuthentication = true;
@@ -103,8 +111,23 @@ in {
       ];
       ipv6Prefixes = [{ ipv6PrefixConfig.Prefix = "fd12:3456:789a::/64"; }];
     };
+    networking.resolvconf.enable = false;
+    # "https://github.com/NixOS/nixpkgs/issues/114118"
+    networking.resolvconf.dnsExtensionMechanism = false;
     services.resolved.enable = true;
-    networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+    services.resolved.dnssec = "true";
+    services.resolved.domains = [ "~" ];
+    services.resolved.fallbackDns = [
+
+      "8.8.8.8#eight.eight.eight.eight"
+      "1.1.1.1#one.one.one.one"
+    ];
+    services.resolved.dnsovertls = "true";
+    networking.nameservers = [
+
+      "8.8.8.8#eight.eight.eight.eight"
+      "1.1.1.1#one.one.one.one"
+    ];
     networking.useNetworkd = true;
     networking.nat = {
       enable = true;
@@ -113,6 +136,11 @@ in {
       # externalInterface = "eno1";
       internalInterfaces = [ "microvm" ];
     };
+
+    # Fixes for longhorn
+    systemd.tmpfiles.rules =
+      [ "L+ /usr/local/bin - - - - /run/current-system/sw/bin/" ];
+    virtualisation.docker.logDriver = "json-file";
     # microvm network configurations
     # "https://uint.one/posts/configuring-wireguard-using-systemd-networkd-on-nixos/"
     # "https://xeiaso.net/blog/paranoid-nixos-2021-07-18/"

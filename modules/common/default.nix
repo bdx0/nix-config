@@ -6,6 +6,7 @@ in {
   # _module.args.config.inputs = self.inputs;
   imports = [
     inputs.agenix.nixosModules.default
+    inputs.impermanence.nixosModules.impermanence
     ./base.nix
     ./docker.nix
     ./libvirtd.nix

@@ -19,6 +19,7 @@
     microvm.url = "github:astro/microvm.nix";
     agenix.url = "github:ryantm/agenix";
     sops-nix.url = "github:Mic92/sops-nix";
+    impermanence.url = "github:nix-community/impermanence";
   };
   outputs = { self, nixos, nixpkgs, flake-parts, ... }@inputs:
     let
