@@ -13,4 +13,5 @@ let
 in {
   "pgadmin.age".publicKeys = [ dd lina bobo ];
   "rke2_config.age".publicKeys = [ dd lina bobo ];
+  "dd_pass.age".publicKeys = [ dd lina bobo ];
 }

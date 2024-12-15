@@ -5,6 +5,8 @@
     inputs.self.nixosModules.server
   ];
   config = {
+    boot.kernelModules =
+      [ "overlay" "br_netfilter" "ip=dhcp" "kvm-intel" "wl" ];
     boot.initrd.availableKernelModules = [
 
       "sr_mod"
@@ -62,7 +64,6 @@
     nixpkgs.config.allowUnfree = true;
     environment.systemPackages = with pkgs; [ kubectl ];
 
-    boot.kernelModules = [ "overlay" "br_netfilter" ];
     boot.kernel.sysctl = {
       "net.bridge.bridge-nf-call-iptables" = 1;
       "net.bridge.bridge-nf-call-ip6tables" = 1;
@@ -223,6 +224,7 @@
       enable = true;
       role = "server";
       configPath = config.age.secrets.rke2_config.path;
+      debug = true;
     };
   };
 }

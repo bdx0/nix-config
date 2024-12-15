@@ -5,22 +5,25 @@
     inputs.self.nixosModules.server
   ];
   config = {
+    boot.kernelModules = [ "ip=dhcp" "kvm-amd" "wl" ];
     boot.initrd.availableKernelModules = [
       "virtio_pci"
       "sr_mod"
-      "usbhid"
       "nvme"
       "xhci_pci"
+      "ehci_pci"
+      "ohci_pci"
+      "ehci_hcd"
+      "uhci_hcd"
+      "ohci_hcd"
       "ahci"
       "usb_storage"
-      "uas"
+      "usbcore"
       "sd_mod"
+      "scsi_mod"
+      "usbhid"
+      "uas"
     ];
-    boot.kernelParams = [ "amd_iommu=on" ];
-    boot.blacklistedKernelModules = [ "nvidia" "nouveau" ];
-    # "https://forum.level1techs.com/t/nixos-vfio-pcie-passthrough/130916"
-    boot.kernelModules =
-      [ "kvm-amd" "vfio_virqfd" "vfio_pci" "vfio_iommu_type1" "vfio" ];
 
     fileSystems."/" = {
       device = "/dev/mapper/bobo--vg-root";
@@ -32,11 +35,11 @@
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
-    fileSystems."/run/media/Data1T" = {
-      device = "/dev/sdd2";
-      fsType = "ntfs-3g";
-      options = [ "rw" "uid=1000" ];
-    };
+    # fileSystems."/run/media/Data1T" = {
+    #   device = "/dev/sda2";
+    #   fsType = "ntfs-3g";
+    #   options = [ "rw" "uid=1000" ];
+    # };
 
     hardware.cpu.amd.updateMicrocode =
       lib.mkDefault config.hardware.enableRedistributableFirmware;
@@ -48,7 +51,7 @@
     # boot.loader.efi.canTouchEfiVariables = true;
 
     networking.domain = "bobo.bdx0.io.vn";
-    bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
+    # bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
     bdx0.vfio.IOMMUType = "amd";
 
     users.defaultUserShell = pkgs.bash;

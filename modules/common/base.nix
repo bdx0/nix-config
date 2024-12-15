@@ -1,5 +1,7 @@
-{ pkgs, modulesPath, lib, config, ... }:
+{ pkgs, modulesPath, lib, config, name ? null, ... }:
 let
+  meta = null;
+  hostname = (if (meta != null) then meta.hostname else name);
   networks = {
     "GuaMupWifi" = { # SSID with no spaces or special characters
       psk = "0907650206"; # (password will be written to /nix/store!)
@@ -22,7 +24,9 @@ in {
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [ scripts_dir ];
     services.tailscale.enable = true;
-    services.tailscale.useRoutingFeatures = "server";
+    services.tailscale.useRoutingFeatures = "both";
+    # systemd.services.tailscaled.after =
+    #   [ "network-online.target" "systemd-resolved.service" ];
     # "https://www.reddit.com/r/NixOS/comments/14w1404/every_nixos_rebuild_creates_a_new_tailscale/"
     # "https://discourse.nixos.org/t/solved-possible-to-automatically-authenticate-tailscale-after-every-rebuild-reboot/14296"
     # "https://tailscale.com/blog/nixos-minecraft"
@@ -43,32 +47,33 @@ in {
         [ "wheel" "networkmanager" "docker" "libvirtd" "incus-admin" ];
       openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
       packages = with pkgs; [ tree neovim ];
+      hashedPasswordFile = config.age.secrets.dd_pass.path;
     };
     security.sudo.wheelNeedsPassword = false;
     security.sudo.enable = true;
     services.avahi.enable = true;
     # services.avahi.interfaces = privateZeroTierInterfaces; # ONLY BROADCAST ON VPN
+    services.avahi.nssmdns4 = true;
     services.avahi.ipv6 = true;
     services.avahi.publish.enable = true;
     services.avahi.publish.userServices = true;
     services.avahi.publish.addresses = true;
     services.avahi.publish.domain = true;
-    services.avahi.nssmdns4 = true;
     services.avahi.publish.workstation = true; # ADDED TO DESKTOP MACHINES
 
     # configuration systemd.network for microvm
     # "https://github.com/astro/microvm.nix/blob/0ab757d2d3e3214b0034b00f9cc3dcdba0b8c563/examples/microvms-host.nix" # L131
     networking.useDHCP = true;
-    # networking.wireless.enable = true;
-    networking.wireless.iwd.enable = true;
+    networking.wireless.enable = true;
+    networking.wireless.iwd.enable = false;
     networking.wireless.iwd.settings.IPv6.Enabled = true;
     networking.wireless.iwd.settings.Settings.AutoConnect = true;
     networking.wireless.iwd.settings.General.UseDefaultInterface = true;
 
-    networking.wireless.userControlled.enable = true;
+    networking.wireless.userControlled.enable = false;
     networking.wireless.networks = networks;
     networking.firewall.enable = false;
-    systemd.network.enable = true;
+    systemd.network.enable = false;
     systemd.network.netdevs."10-microvm".netdevConfig = {
       Kind = "bridge";
       Name = "microvm";
@@ -115,20 +120,25 @@ in {
     # "https://github.com/NixOS/nixpkgs/issues/114118"
     networking.resolvconf.dnsExtensionMechanism = false;
     services.resolved.enable = true;
+    services.resolved.dnsovertls = "true";
     services.resolved.dnssec = "true";
-    services.resolved.domains = [ "~" ];
+    services.resolved.domains = [
+      # "bdx0.io"
+      "."
+    ];
     services.resolved.fallbackDns = [
 
+      "100.100.100.100#tailscale dns"
       "8.8.8.8#eight.eight.eight.eight"
       "1.1.1.1#one.one.one.one"
     ];
-    services.resolved.dnsovertls = "true";
     networking.nameservers = [
 
+      "100.100.100.100#tailscale dns"
       "8.8.8.8#eight.eight.eight.eight"
       "1.1.1.1#one.one.one.one"
     ];
-    networking.useNetworkd = true;
+    networking.useNetworkd = false;
     networking.nat = {
       enable = true;
       enableIPv6 = true;
@@ -136,10 +146,28 @@ in {
       # externalInterface = "eno1";
       internalInterfaces = [ "microvm" ];
     };
+    environment.etc = {
+      "resolv.conf" = {
+        source = lib.mkForce "/run/systemd/resolve/resolv.conf";
+      };
+    };
 
     # Fixes for longhorn
-    systemd.tmpfiles.rules =
-      [ "L+ /usr/local/bin - - - - /run/current-system/sw/bin/" ];
+    systemd.tmpfiles.rules = [
+      "L+ /usr/local/bin - - - - /run/current-system/sw/bin/"
+      "L+ /usr/bin/nsenter - - - - /run/current-system/sw/bin/nsenter"
+    ];
+
+    # "https://discourse.nixos.org/t/how-setup-iscsi/42129/4"
+    services.openiscsi = {
+      enable = true;
+      name = "iqn.2016-04.com.open-iscsi:${hostname}";
+      extraConfig = ''
+        node.startup=automatic
+        node.session.auth.authmethod=None
+      '';
+    };
+
     virtualisation.docker.logDriver = "json-file";
     # microvm network configurations
     # "https://uint.one/posts/configuring-wireguard-using-systemd-networkd-on-nixos/"

@@ -6,7 +6,7 @@ in {
   # _module.args.config.inputs = self.inputs;
   imports = [
     inputs.agenix.nixosModules.default
-    inputs.impermanence.nixosModules.impermanence
+    # inputs.impermanence.nixosModules.impermanence
     ./base.nix
     ./docker.nix
     ./libvirtd.nix
@@ -22,6 +22,7 @@ in {
   config = lib.mkIf cfg.enable {
     age.secrets.pg_pass = { file = ../../secrets/pgadmin.age; };
     age.secrets.rke2_config = { file = ../../secrets/rke2_config.age; };
+    age.secrets.dd_pass = { file = ../../secrets/dd_pass.age; };
     environment.systemPackages = with pkgs; [
       wget
       inputs.agenix.packages.${system}.default
@@ -39,6 +40,8 @@ in {
       pciutils
       floorp
       lsof
+      lshw
+      openiscsi
     ];
     time.timeZone = "Asia/Ho_Chi_Minh";
     console.keyMap = "us";

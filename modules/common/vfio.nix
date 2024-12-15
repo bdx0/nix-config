@@ -31,6 +31,7 @@
 # "https://astrid.tech/2022/09/22/0/nixos-gpu-vfio/"
 
 # AMD
+# "https://forum.level1techs.com/t/nixos-vfio-pcie-passthrough/130916"
 # "https://alexbakker.me/post/nixos-pci-passthrough-qemu-vfio.html"
 # "https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF"
 # "https://github.com/Daholli/nixos-config"
@@ -53,26 +54,30 @@ in {
     };
     blacklistNvidia = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = true;
       description = "Add Nvidia GPU modules to blacklist";
     };
   };
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
-      boot.kernelModules = [ "vfio_pci" "vfio" "vfio_iommu_type1" ];
-      boot.initrd.kernelModules = [ "vfio_pci" "vfio" "vfio_iommu_type1" ];
+      boot.kernelModules =
+        [ "vfio_pci" "vfio" "vfio_iommu_type1" "amdgpu" "pci_stub" ];
+      boot.initrd.kernelModules =
+        [ "vfio_pci" "vfio" "vfio_iommu_type1" "amdgpu" "pci_stub" ];
       boot.blacklistedKernelModules = lib.optionals cfg.blacklistNvidia [
         "nvidia"
+        "nvidia_drm"
+        "nvidia_modeset"
         "nouveau"
-        "amdgpu"
+        # "amdgpu"
         "i915"
       ];
-      boot.kernelParams = (if (cfg.IOMMUType == "intel") then [
-        "intel_iommu=on"
-        "intel_iommu=igfx_off"
-        "iommu=pt"
-      ] else
-        [ "amd_iommu=on" ]) ++
+      boot.kernelParams = [ "iommu=pt" ]
+        ++ (if (cfg.IOMMUType == "intel") then [
+          "intel_iommu=on"
+          "intel_iommu=igfx_off"
+        ] else
+          [ "amd_iommu=on" ]) ++
         # isolate GPU
         (lib.optional (builtins.length cfg.devices > 0)
           ("vfio-pci.ids=" + lib.concatStringsSep "," cfg.devices));

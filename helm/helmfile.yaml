@@ -9,6 +9,8 @@ repositories:
     url: https://releases.rancher.com/server-charts/stable
   - name: jetstack
     url: https://charts.jetstack.io
+  - name: incubator
+    url: https://charts.helm.sh/incubator
 ---
 releases:
   # Distributed storage
@@ -36,14 +38,29 @@ releases:
   - name: cert-manager
     namespace: cert-manager
     chart: jetstack/cert-manager
-    version: 1.5.1
+    version: 1.16.0
     values:
       - ./values/cert-manager.values.yaml
-
+    # hooks:
+    #   - events: ["prepare"]
+    #     showlogs: true
+    #     command: kubectl
+    #     args:
+    #       - -n
+    #       - cert-manager
+    #       - apply
+    #       - -f
+    #       - https://github.com/jetstack/cert-manager/releases/download/v1.16.0/cert-manager.crds.yaml
   # Rancher
   - name: rancher
     namespace: cattle-system
     chart: rancher-stable/rancher
-    version: 2.3.6
+    version: 2.10.0
     values:
       - ./values/rancher.values.yaml
+
+  # Update coredns configmap
+  # - name: raw_update_coredns_configmap
+  #   chart: incubator/raw
+  #   values:
+  #     - resources:
