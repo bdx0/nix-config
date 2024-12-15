@@ -26,7 +26,8 @@
     ];
 
     fileSystems."/" = {
-      device = "/dev/mapper/bobo--vg-root";
+      device = "/dev/disk/by-uuid/a60f182a-d292-45f2-921f-3eebb049a775";
+      # "/dev/mapper/bobo--vg-root";
       fsType = "ext4";
     };
     fileSystems."/boot" = {
@@ -35,11 +36,11 @@
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
-    # fileSystems."/run/media/Data1T" = {
-    #   device = "/dev/sda2";
-    #   fsType = "ntfs-3g";
-    #   options = [ "rw" "uid=1000" ];
-    # };
+    fileSystems."/run/media/Data1T" = {
+      device = "/dev/disk/by-uuid/58169EF3169ED0FC";
+      fsType = "ntfs-3g";
+      options = [ "rw" "uid=1000" ];
+    };
 
     hardware.cpu.amd.updateMicrocode =
       lib.mkDefault config.hardware.enableRedistributableFirmware;
