@@ -1,3 +1,3 @@
 hosts/freshHost/ssh_host_rsa_key filter=git-crypt diff=git-crypt
 modules/common/rke2_config.yaml filter=git-crypt diff=git-crypt
-modules/common/token_file filter=git-crypt diff=git-crypt
+helm/k8s/cloudflared.yaml filter=git-crypt diff=git-crypt

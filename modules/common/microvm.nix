@@ -101,7 +101,6 @@ in {
               enable = true;
               role = "agent";
               serverAddr = "https://rke2:9345";
-              tokenFile = ./token_file;
             };
             systemd.network.enable = true;
             networking.useNetworkd = true;
