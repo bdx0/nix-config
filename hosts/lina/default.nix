@@ -35,7 +35,6 @@
       device = "/dev/mapper/lina--vg-root";
       fsType = "ext4";
     };
-    swapDevices = [ ];
     hardware.cpu.intel.updateMicrocode =
       lib.mkDefault config.hardware.enableRedistributableFirmware;
 
@@ -56,7 +55,7 @@
     boot.tmp.cleanOnBoot = true;
     zramSwap.enable = false;
     networking.domain = "lina.bdx0.io.vn";
-    bdx0.vfio.IOMMUType = "amd";
+    bdx0.vfio.IOMMUType = "intel";
     # bdx0.vfio.devices = [ ];
 
     users.defaultUserShell = pkgs.bash;

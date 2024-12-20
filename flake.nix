@@ -57,6 +57,7 @@
           "lina" = { imports = [ ./hosts/lina ]; };
           "mac2014" = import ./hosts/mac2014;
           "bobo" = import ./hosts/bobo;
+          "goku" = import ./hosts/goku;
         };
         nixosConfigurations = builtins.listToAttrs (map
           ({ name, system ? "x86_64-linux", ... }: {

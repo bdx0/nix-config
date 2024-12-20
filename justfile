@@ -23,6 +23,9 @@ mac2014:
 lina:
 	colmena apply --impure --on lina --show-trace
 
+goku:
+	colmena apply --impure --on goku --show-trace
+
 test:
 	colmena apply --impure --on "nix-infect.local"
 

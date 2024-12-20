@@ -5,7 +5,7 @@
       "fs.file-max" = 8192;
       "fs.inotify.max_user_instances" = 8192;
     };
-    boot.initrd.kernelModules = [ "dm-snapshot" "wl" ];
+    boot.initrd.kernelModules = [ "nvme" "dm-snapshot" "wl" ];
     boot.extraModulePackages = [
       config.boot.kernelPackages.broadcom_sta
       config.boot.kernelPackages.rtl8192eu
