@@ -35,11 +35,6 @@
 
     ];
 
-    boot.extraModprobeConfig = ''
-      options kvm_intel nested=1
-      options kvm_intel emulate_invalid_guest_state=0
-      options kvm ignore_msrs=1
-    '';
     boot.extraModulePackages = [ ];
 
     fileSystems."/" = {
@@ -65,7 +60,7 @@
     zramSwap.enable = false;
     networking.domain = "bobo.bdx0.io.vn";
     bdx0.vfio.IOMMUType = "intel";
-    # bdx0.vfio.devices = [ ];
+    bdx0.vfio.devices = [ "10de:21c4" "10de:1aeb" "10de:1aec" "10de:1aed" ];
 
     users.defaultUserShell = pkgs.bash;
     programs.bash.interactiveShellInit = "figurine ${name}";
@@ -78,8 +73,13 @@
       "net.ipv4.ip_forward" = 1;
     };
 
-    virtualisation.incus.enable = true;
-    virtualisation.incus.ui.enable = true;
-    networking.nftables.enable = true;
+    # services.xserver = { videoDrivers = [ "nvidia" ]; };
+    # hardware.nvidia.open = true;
+    # hardware.nvidia.modesetting.enable = true;
+    # hardware.nvidia.powerManagement.enable = true;
+    # hardware.nvidia.powerManagement.finegrained = true;
+    # hardware.nvidia.nvidiaSettings = false;
+    # hardware.nvidia-container-toolkit.enable = true;
+    # hardware.graphics.enable = true;
   };
 }

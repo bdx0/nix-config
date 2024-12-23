@@ -42,6 +42,7 @@ in {
       lsof
       lshw
       openiscsi
+      atop
     ];
     time.timeZone = "Asia/Ho_Chi_Minh";
     console.keyMap = "us";

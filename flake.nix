@@ -58,6 +58,9 @@
           "mac2014" = import ./hosts/mac2014;
           "bobo" = import ./hosts/bobo;
           "goku" = import ./hosts/goku;
+          "nix01" = import ./hosts/nix01;
+          "nix02" = import ./hosts/nix02;
+          "nix03" = import ./hosts/nix03;
         };
         nixosConfigurations = builtins.listToAttrs (map
           ({ name, system ? "x86_64-linux", ... }: {

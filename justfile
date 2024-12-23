@@ -12,13 +12,13 @@ hostname := `hostname | cut -d "." -f 1`
 
 # build main
 build:
-	colmena build
+	colmena build --show-trace
 
 apply:
-	colmena apply --impure
+	colmena apply --impure --show-trace
 
 mac2014:
-	colmena apply --impure --on mac2014
+	colmena apply --impure --on mac2014 --show-trace
 
 lina:
 	colmena apply --impure --on lina --show-trace
@@ -30,7 +30,16 @@ test:
 	colmena apply --impure --on "nix-infect.local"
 
 bobo:
-	colmena apply --impure --on bobo
+	colmena apply --impure --on bobo --show-trace
+
+nix01:
+	colmena apply --impure --on nix01 --show-trace
+
+nix02:
+	colmena apply --impure --on nix02 --show-trace
+
+nix03:
+	colmena apply --impure --on nix03 --show-trace
 
 update:
 	nix flake update

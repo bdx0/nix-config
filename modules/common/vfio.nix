@@ -61,26 +61,41 @@ in {
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
       boot.kernelModules =
-        [ "vfio_pci" "vfio" "vfio_iommu_type1" "amdgpu" "pci_stub" ];
+        [ "vfio_pci" "vfio" "vfio_iommu_type1" "pci_stub" ]; # "amdgpu"
       boot.initrd.kernelModules =
-        [ "vfio_pci" "vfio" "vfio_iommu_type1" "amdgpu" "pci_stub" ];
+        [ "vfio_pci" "vfio" "vfio_iommu_type1" "pci_stub" ]; # "amdgpu"
       boot.blacklistedKernelModules = lib.optionals cfg.blacklistNvidia [
         "nvidia"
         "nvidia_drm"
         "nvidia_modeset"
         "nouveau"
         # "amdgpu"
+        "radeon"
         "i915"
       ];
+
+      boot.extraModprobeConfig = (if (cfg.IOMMUType == "intel") then ''
+        options kvm_intel nested=1
+        options kvm_intel emulate_invalid_guest_state=0
+        options kvm ignore_msrs=1
+        options vfio-pci ${
+          if (builtins.length cfg.devices > 0) then
+            "ids=" + (lib.concatStringsSep "," cfg.devices)
+          else
+            ""
+        } disable_vga=1
+      '' else
+        "");
       boot.kernelParams = [ "iommu=pt" ]
         ++ (if (cfg.IOMMUType == "intel") then [
           "intel_iommu=on"
           "intel_iommu=igfx_off"
         ] else
-          [ "amd_iommu=on" ]) ++
-        # isolate GPU
-        (lib.optional (builtins.length cfg.devices > 0)
-          ("vfio-pci.ids=" + lib.concatStringsSep "," cfg.devices));
+          [ "amd_iommu=on" ]);
+      # ++
+      # # isolate GPU
+      # (lib.optional (builtins.length cfg.devices > 0)
+      #   ("vfio-pci.ids=" + lib.concatStringsSep "," cfg.devices));
       hardware.opengl.enable = true;
       virtualisation.spiceUSBRedirection.enable = true;
     })
