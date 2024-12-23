@@ -39,11 +39,12 @@
     hardware.cpu.intel.updateMicrocode =
       lib.mkDefault config.hardware.enableRedistributableFirmware;
 
-    networking.domain = "nix03.bdx0.io.vn";
+    networking.domain = "cephlina.bdx0.io.vn";
     bdx0.vfio.IOMMUType = "intel";
 
     users.defaultUserShell = pkgs.bash;
     programs.bash.interactiveShellInit = "figurine ${name}";
     nixpkgs.config.allowUnfree = true;
+
   };
 }

@@ -41,6 +41,15 @@ nix02:
 nix03:
 	colmena apply --impure --on nix03 --show-trace
 
+cephgoku:
+	colmena apply --impure --on cephgoku --show-trace
+
+cephbobo:
+	colmena apply --impure --on cephbobo --show-trace
+
+cephlina:
+	colmena apply --impure --on cephlina --show-trace
+
 update:
 	nix flake update
 

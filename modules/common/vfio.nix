@@ -85,7 +85,12 @@ in {
             ""
         } disable_vga=1
       '' else
-        "");
+        "options vfio-pci ${
+          if (builtins.length cfg.devices > 0) then
+            "ids=" + (lib.concatStringsSep "," cfg.devices)
+          else
+            ""
+        } disable_vga=1\\n        ");
       boot.kernelParams = [ "iommu=pt" ]
         ++ (if (cfg.IOMMUType == "intel") then [
           "intel_iommu=on"

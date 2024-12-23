@@ -6,8 +6,7 @@
   ];
   config = {
     boot.loader.grub.device = "/dev/vda";
-    boot.kernelModules =
-      [ "overlay" "br_netfilter" "ip=dhcp" "kvm-intel" "wl" ];
+    boot.kernelModules = [ "overlay" "br_netfilter" "ip=dhcp" "kvm-amd" "wl" ];
     boot.initrd.availableKernelModules = [
       "virtio_blk"
       "virtio_pci"
@@ -39,11 +38,12 @@
     hardware.cpu.intel.updateMicrocode =
       lib.mkDefault config.hardware.enableRedistributableFirmware;
 
-    networking.domain = "nix03.bdx0.io.vn";
-    bdx0.vfio.IOMMUType = "intel";
+    networking.domain = "cephbobo.bdx0.io.vn";
+    bdx0.vfio.IOMMUType = "amd";
 
     users.defaultUserShell = pkgs.bash;
     programs.bash.interactiveShellInit = "figurine ${name}";
     nixpkgs.config.allowUnfree = true;
+
   };
 }

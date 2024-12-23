@@ -28,9 +28,10 @@ in {
         };
         # storageDriver = "btrfs";
         daemon.settings.features.cdi = true;
+        package = pkgs.docker_27;
       };
 
-      docker.package = pkgs.docker_25;
+      containers.cdi.dynamic.nvidia.enable = true;
     };
     services.dockerRegistry.enable = true;
   };

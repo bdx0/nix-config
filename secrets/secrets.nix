@@ -10,8 +10,15 @@ let
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIETZqu2CdooOe7ZWpxZd/KHWJLJ0YN1iW0Ld3ZFahBu+";
   mac2014 =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGyH+fE7kqY+XQifW1i52BvcjeckRKVvT1wqik4iwtKt";
+  nix01 =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVbs8p57Dn1yp0W17uGxKv4ZGGjTstC/imwJaX1qyky";
+  nix02 =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVbs8p57Dn1yp0W17uGxKv4ZGGjTstC/imwJaX1qyky";
+  nix03 =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVbs8p57Dn1yp0W17uGxKv4ZGGjTstC/imwJaX1qyky";
 in {
-  "pgadmin.age".publicKeys = [ dd lina bobo goku mac2014 ];
-  "rke2_config.age".publicKeys = [ dd lina bobo goku mac2014 ];
-  "dd_pass.age".publicKeys = [ dd lina bobo goku mac2014 ];
+  "pgadmin.age".publicKeys = [ dd lina bobo goku mac2014 nix01 nix02 nix03 ];
+  "rke2_config.age".publicKeys =
+    [ dd lina bobo goku mac2014 nix01 nix02 nix03 ];
+  "dd_pass.age".publicKeys = [ dd lina bobo goku mac2014 nix01 nix02 nix03 ];
 }

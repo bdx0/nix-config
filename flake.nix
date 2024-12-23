@@ -61,6 +61,9 @@
           "nix01" = import ./hosts/nix01;
           "nix02" = import ./hosts/nix02;
           "nix03" = import ./hosts/nix03;
+          "cephgoku" = import ./hosts/cephgoku;
+          "cephbobo" = import ./hosts/cephbobo;
+          "cephlina" = import ./hosts/cephlina;
         };
         nixosConfigurations = builtins.listToAttrs (map
           ({ name, system ? "x86_64-linux", ... }: {

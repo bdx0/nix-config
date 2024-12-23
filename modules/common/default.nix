@@ -43,6 +43,7 @@ in {
       lshw
       openiscsi
       atop
+      guestfs-tools
     ];
     time.timeZone = "Asia/Ho_Chi_Minh";
     console.keyMap = "us";
