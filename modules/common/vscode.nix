@@ -1,4 +1,4 @@
-{ pkgs, modulesPath, lib, config, name ? null, ... }:
+{ pkgs, modulesPath, lib, config, ... }@args:
 let cfg = config.bdx0.base;
 in {
   imports = [ ];
@@ -42,3 +42,4 @@ in {
 
 # "https://nixos.wiki/wiki/Visual_Studio_Code" # Remote_SSH
 # "https://discourse.nixos.org/t/vscode-remote-ssh-on-nixos-could-not-start-dynamically-linked-executable-error/54591"
+# "https://www.reddit.com/r/NixOS/comments/ivzrm2/trying_to_get_vscode_to_work_remotely_on_a_nixos/"

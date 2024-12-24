@@ -32,14 +32,21 @@
     ];
 
     fileSystems."/" = {
-      device = "/dev/disk/by-uuid/d00f6f52-c387-47b7-b0a7-5180d509707c";
-      fsType = "xfs";
+      device = "/dev/disk/by-uuid/525e3a71-757e-49ab-b271-e47a73ce9641";
+      fsType = "ext4";
+      # options = [ "nouuid" ];
+    };
+
+    fileSystems."/boot" = {
+      device = "/dev/disk/by-uuid/F640-FAAE";
+      fsType = "vfat";
+      options = [ "fmask=0022" "dmask=0022" ];
     };
 
     hardware.cpu.intel.updateMicrocode =
       lib.mkDefault config.hardware.enableRedistributableFirmware;
 
-    networking.domain = "nix01.bdx0.io.vn";
+    networking.domain = "dev.bdx0.io.vn";
     bdx0.vfio.enable = false;
     bdx0.libvirtd.enable = false;
 

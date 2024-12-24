@@ -1,7 +1,8 @@
 {
-  common = ./common;
-  core = ./core;
-  server = ./server;
-  vm = ./vm;
-  hosts = ./hosts;
+  common = import ./common;
+  core = import ./core;
+  server = import ./server;
+  vm = import ./vm;
+  hosts = import ./hosts;
+  disko = import ./disko.nix;
 }

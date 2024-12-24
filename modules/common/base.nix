@@ -1,7 +1,11 @@
-{ pkgs, modulesPath, lib, config, name ? null, ... }:
+{ pkgs, modulesPath, lib, config, ... }@args:
 let
-  meta = null;
-  hostname = (if (meta != null) then meta.hostname else name);
+  hostname = (if (builtins.hasAttr "meta" args) then
+    args.meta.hostname
+  else if (builtins.hasAttr "name" args) then
+    args.name
+  else
+    "unknown");
   networks = {
     "GuaMupWifi" = { # SSID with no spaces or special characters
       psk = "0907650206"; # (password will be written to /nix/store!)

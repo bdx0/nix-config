@@ -32,6 +32,7 @@ test:
 bobo:
 	colmena apply --impure --on bobo --show-trace
 
+
 nix01:
 	colmena apply --impure --on nix01 --show-trace
 
@@ -49,6 +50,12 @@ cephbobo:
 
 cephlina:
 	colmena apply --impure --on cephlina --show-trace
+
+dev:
+	colmena apply --impure --on dev --show-trace
+
+scratchHost:
+	nix run .#remoteInstall -- scratchHost --debug -L
 
 update:
 	nix flake update

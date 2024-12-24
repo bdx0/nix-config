@@ -31,7 +31,7 @@ let
     echo "$@"
     # ls -la ${nixos-aw-pkg}/libexec/nixos-anywhere
     # ${nixos-aw-pkg}/libexec/nixos-anywhere/nixos-anywhere.sh --flake .#remoteInstall --build-on-remote "$@"
-    ${nixos-aw-pkg}/bin/nixos-anywhere --flake .#remoteInstall --build-on-remote "$@"
+    ${nixos-aw-pkg}/bin/nixos-anywhere --flake ".#scratchHost" --build-on-remote "$@"
   '';
   runtimeDeps =
     # [ freshInstallScript sshScript sshpassScript sshcopyidScript ];

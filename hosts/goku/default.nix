@@ -58,6 +58,8 @@
 
     boot.tmp.cleanOnBoot = true;
     zramSwap.enable = false;
+    bdx0.libvirtd.enable = true;
+    bdx0.vfio.enable = true;
     networking.domain = "bobo.bdx0.io.vn";
     bdx0.vfio.IOMMUType = "intel";
     bdx0.vfio.devices = [ "10de:21c4" "10de:1aeb" "10de:1aec" "10de:1aed" ];

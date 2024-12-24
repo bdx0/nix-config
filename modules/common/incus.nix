@@ -1,4 +1,4 @@
-{ pkgs, modulesPath, lib, config, name ? null, ... }:
+{ pkgs, modulesPath, lib, config, ... }@args:
 let cfg = config.bdx0.base;
 in {
   imports = [ ];

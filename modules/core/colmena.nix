@@ -1,13 +1,14 @@
-{ name ? null, lib, ... }: {
+{ lib, ... }@args: {
   imports = [ ];
   options = { };
-  config = lib.mkIf (name != null) {
-    networking.hostName = lib.mkDefault name;
+  config = if (builtins.hasAttr "name" args) then {
+    networking.hostName = lib.mkDefault args.name;
     # DEPLOYMENT
-    deployment.targetHost = name;
+    deployment.targetHost = args.name;
     deployment = {
       targetUser = "root";
       buildOnTarget = true;
     };
-  };
+  } else
+    { };
 }

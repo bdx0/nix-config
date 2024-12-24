@@ -16,12 +16,14 @@
       flake = false;
     };
     nixvirt.url = "github:AshleyYakeley/NixVirt";
+    darwin.url = "github:LnL7/nix-darwin";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
     microvm.url = "github:astro/microvm.nix";
     agenix.url = "github:ryantm/agenix";
     sops-nix.url = "github:Mic92/sops-nix";
     impermanence.url = "github:nix-community/impermanence";
   };
-  outputs = { self, nixos, nixpkgs, flake-parts, ... }@inputs:
+  outputs = { self, nixos, nixpkgs, flake-parts, darwin, ... }@inputs:
     let
       darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
       linuxSystems = [ "x86_64-linux" "aarch64-linux" ];
@@ -33,6 +35,7 @@
           { name = "homelab-0"; }
           { name = "homelab-1"; }
           { name = "homelab-2"; }
+          { name = "scratchHost"; }
         ];
       in {
         colmena = let
@@ -64,19 +67,45 @@
           "cephgoku" = import ./hosts/cephgoku;
           "cephbobo" = import ./hosts/cephbobo;
           "cephlina" = import ./hosts/cephlina;
+          "dev" = import ./hosts/dev;
         };
-        nixosConfigurations = builtins.listToAttrs (map
-          ({ name, system ? "x86_64-linux", ... }: {
-            name = name;
+        nixosConfigurations = builtins.listToAttrs (map (node:
+          let system = node.system or "x86_64-linux";
+          in {
+            name = node.name;
             value = nixpkgs.lib.nixosSystem {
               inherit system;
               specialArgs = {
+                inherit inputs;
                 meta = {
-                  hostname = name;
+                  hostname = node.name;
                   inherit system;
                 };
               };
-              modules = [ self.nixosModules.hosts.${name} ];
+              modules = [
+                self.nixosModules.hosts.${node.name}
+
+              ];
+
+            };
+          }) nodes);
+
+        darwinConfigurations = builtins.listToAttrs (map (node:
+          let system = node.system or "aarch64-darwin";
+          in {
+            name = node.name;
+            value = darwin.lib.darwinSystem {
+              inherit system;
+              specialArgs = {
+                meta = {
+                  hostname = node.name;
+                  inherit system;
+                };
+              };
+              modules = [
+
+                self.nixosModules.hosts.${node.name}
+              ];
             };
           }) nodes);
 
