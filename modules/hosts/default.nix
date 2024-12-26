@@ -8,7 +8,7 @@
       { config.facter.reportPath = ./facter.json; }
     ];
   };
-  scratchHost = { inputs, ... }: {
+  scratchHost = { inputs, modulesPath, ... }: {
     imports = [
       inputs.self.nixosModules.disko.btrfs
       inputs.self.nixosModules.common
@@ -20,6 +20,22 @@
       networking.domain = "scratchHost.bdx0.io.vn";
       services.xserver.videoDrivers = [ "nvidia" "amdgpu" ];
       hardware.nvidia.open = true;
+
+      imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+      boot.initrd.availableKernelModules = [
+        "xhci_pci"
+        "virtio_pci"
+        "ehci_pci"
+        "uhci_hcd"
+        "ahci"
+        "usbhid"
+        "virtio_scsi"
+        "sd_mod"
+        "sr_mod"
+        "virtio_blk"
+      ];
+      boot.initrd.kernelModules = [ ];
+      boot.kernelModules = [ "ip=dhcp" ];
     };
   };
   dev = { inputs, config, pkgs, lib, ... }: {

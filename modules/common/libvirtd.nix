@@ -41,5 +41,13 @@ in {
     # services.libvirtd.enable = true;
     virtualisation.libvirtd.deviceACL = [ ];
     bdx0.vfio.enable = true;
+    environment.systemPackages = with pkgs; [
+
+      qemu
+      qemu_kvm
+      libvirt
+      OVMF
+      guestfs-tools
+    ];
   };
 }

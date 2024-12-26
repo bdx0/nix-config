@@ -8,7 +8,7 @@
         disks = lib.mkOption {
           type = lib.types.listOf lib.types.string;
           description = "Disks to partition";
-          default = [ "/dev/sda" ];
+          default = [ "/dev/vda" ];
         };
       };
       # _module.args.disks = [ "/dev/vda" ];

@@ -42,19 +42,13 @@
     networking.domain = "nix01.bdx0.io.vn";
     bdx0.vfio.enable = false;
     bdx0.libvirtd.enable = false;
+    bdx0.docker.enable = true;
+    bdx0.docker.nvidia.enable = true;
 
     users.defaultUserShell = pkgs.bash;
     programs.bash.interactiveShellInit = "figurine ${name}";
     nixpkgs.config.allowUnfree = true;
 
-    services.xserver.videoDrivers = [ "nvidia" "amdgpu" ];
-    hardware.nvidia.open = true;
-    hardware.nvidia.modesetting.enable = true;
-    hardware.nvidia.powerManagement.enable = true;
-    # hardware.nvidia.powerManagement.finegrained = true;
-    hardware.nvidia.nvidiaSettings = false;
-    hardware.nvidia-container-toolkit.enable = true;
-    hardware.graphics.enable = true;
     programs.nix-ld.enable = true;
     environment.systemPackages = with pkgs; [
       lsd

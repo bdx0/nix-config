@@ -33,17 +33,12 @@ in {
       bottom
       btop
       bridge-utils
-      qemu
-      qemu_kvm
-      libvirt
-      OVMF
       pciutils
       floorp
       lsof
       lshw
       openiscsi
       atop
-      guestfs-tools
     ];
     time.timeZone = "Asia/Ho_Chi_Minh";
     console.keyMap = "us";

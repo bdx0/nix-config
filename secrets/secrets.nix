@@ -16,9 +16,13 @@ let
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVbs8p57Dn1yp0W17uGxKv4ZGGjTstC/imwJaX1qyky";
   nix03 =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOVbs8p57Dn1yp0W17uGxKv4ZGGjTstC/imwJaX1qyky";
+  scratchHost =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFedwiLhQC1Hh7gTXMk9ntQzZsJZVTfkDr9sPFvERpdd";
 in {
-  "pgadmin.age".publicKeys = [ dd lina bobo goku mac2014 nix01 nix02 nix03 ];
+  "pgadmin.age".publicKeys =
+    [ dd lina bobo goku mac2014 nix01 nix02 nix03 scratchHost ];
   "rke2_config.age".publicKeys =
     [ dd lina bobo goku mac2014 nix01 nix02 nix03 ];
-  "dd_pass.age".publicKeys = [ dd lina bobo goku mac2014 nix01 nix02 nix03 ];
+  "dd_pass.age".publicKeys =
+    [ dd lina bobo goku mac2014 nix01 nix02 nix03 scratchHost ];
 }
