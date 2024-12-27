@@ -1,9 +1,6 @@
-{ inputs, config, pkgs, lib, name, nodes, ... }: {
-  imports = [
-    inputs.self.nixosModules.common
-
-    inputs.self.nixosModules.server
-  ];
+{ inputs, ... }: {
+  imports =
+    [ inputs.self.nixosModules.common inputs.self.nixosModules.disko.btrfs ];
   config = {
     boot.loader.grub.device = "/dev/vda";
     boot.kernelModules =
@@ -32,18 +29,25 @@
     ];
 
     fileSystems."/" = {
-      device = "/dev/disk/by-uuid/d00f6f52-c387-47b7-b0a7-5180d509707c";
-      fsType = "xfs";
+      device = "/dev/disk/by-uuid/525e3a71-757e-49ab-b271-e47a73ce9641";
+      fsType = "ext4";
+      # options = [ "nouuid" ];
     };
 
-    hardware.cpu.intel.updateMicrocode =
-      lib.mkDefault config.hardware.enableRedistributableFirmware;
+    fileSystems."/boot" = {
+      device = "/dev/disk/by-uuid/F640-FAAE";
+      fsType = "vfat";
+      options = [ "fmask=0022" "dmask=0022" ];
+    };
 
-    networking.domain = "nix03.bdx0.io.vn";
-    bdx0.vfio.IOMMUType = "intel";
+    bdx0.hardware.enable = true;
+    bdx0.hardware.type = "intel";
+    bdx0.libvirtd.enable = false;
+    bdx0.vfio.enable = false;
+    bdx0.docker.enable = true;
 
-    users.defaultUserShell = pkgs.bash;
-    programs.bash.interactiveShellInit = "figurine ${name}";
     nixpkgs.config.allowUnfree = true;
+
+    programs.nix-ld.enable = true;
   };
 }

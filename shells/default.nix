@@ -1,4 +1,7 @@
-{ pkgs ? import <nixpkgs> { }, agenixPkg ? null, ... }:
+{ pkgs ? import <nixpkgs> {
+  system = builtins.system;
+  config.allowUnfree = true;
+}, agenixPkg ? null, ... }:
 let scripts_dir = import ../scripts { inherit pkgs; };
 in {
   default = pkgs.mkShell {

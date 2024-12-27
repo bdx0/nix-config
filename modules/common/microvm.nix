@@ -1,19 +1,11 @@
 { inputs, pkgs, lib, config, ... }:
-let cfg = config.common;
+let cfg = config.bdx0.server.microvm;
 in {
-  options.common = {
-    dvm.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Enable MicroVM system";
-    };
-  };
-  # imports = [ ]
-  #   ++ (lib.optionals (cfg.dvn.enable) [ inputs.microvm.nixosModules.host ]);
-
   imports = [ inputs.microvm.nixosModules.host ];
-
-  config = lib.mkIf (cfg.dvm.enable) {
+  options.bdx0.server.microvm = {
+    enable = lib.mkEnableOption "Enable MicroVM system";
+  };
+  config = lib.mkIf cfg.enable {
     microvm = {
       autostart = [ "test" "test2" ];
       vms = {

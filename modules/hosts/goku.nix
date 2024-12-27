@@ -1,10 +1,8 @@
 { inputs, config, pkgs, lib, name, ... }: {
-  imports = [
-    inputs.self.nixosModules.common
-
-    inputs.self.nixosModules.server
-  ];
+  imports = [ inputs.self.nixosModules.common ];
   config = {
+    bdx0.hardware.enable = true;
+    bdx0.hardware.type = "intel";
 
     boot.loader.grub.enable = true;
     boot.loader.systemd-boot.enable = false;
@@ -16,24 +14,24 @@
     boot.loader.grub.efiSupport = true;
     boot.loader.grub.efiInstallAsRemovable = false;
     # boot.supportedFilesystems = ["zfs"];
-    boot.kernelModules =
-      [ "overlay" "br_netfilter" "ip=dhcp" "kvm-intel" "wl" ];
-    boot.initrd.availableKernelModules = [
+    # boot.kernelModules =
+    #   [ "overlay" "br_netfilter" "ip=dhcp" "kvm-intel" "wl" ];
+    # boot.initrd.availableKernelModules = [
 
-      "sr_mod"
-      "usbhid"
-      "usb_storage"
-      "ata_piix"
-      "uhci_hcd"
-      "xen_blkfront"
-      "vmw_pvscsi"
-      "ehci_pci"
-      "ahci"
-      "nvme"
-      "xhci_pci"
-      "sd_mod"
+    #   "sr_mod"
+    #   "usbhid"
+    #   "usb_storage"
+    #   "ata_piix"
+    #   "uhci_hcd"
+    #   "xen_blkfront"
+    #   "vmw_pvscsi"
+    #   "ehci_pci"
+    #   "ahci"
+    #   "nvme"
+    #   "xhci_pci"
+    #   "sd_mod"
 
-    ];
+    # ];
 
     boot.extraModulePackages = [ ];
 
@@ -53,21 +51,17 @@
       fsType = "ext4";
     };
 
-    hardware.cpu.intel.updateMicrocode =
-      lib.mkDefault config.hardware.enableRedistributableFirmware;
-
     boot.tmp.cleanOnBoot = true;
     zramSwap.enable = false;
     bdx0.libvirtd.enable = true;
     bdx0.vfio.enable = true;
-    networking.domain = "bobo.bdx0.io.vn";
     bdx0.vfio.IOMMUType = "intel";
     bdx0.vfio.devices = [ "10de:21c4" "10de:1aeb" "10de:1aec" "10de:1aed" ];
 
-    users.defaultUserShell = pkgs.bash;
-    programs.bash.interactiveShellInit = "figurine ${name}";
+    # users.defaultUserShell = pkgs.bash;
+    # programs.bash.interactiveShellInit = "figurine ${name}";
     nixpkgs.config.allowUnfree = true;
-    environment.systemPackages = with pkgs; [ kubectl nvtopPackages.full ];
+    # environment.systemPackages = with pkgs; [ kubectl nvtopPackages.full ];
 
     boot.kernel.sysctl = {
       "net.bridge.bridge-nf-call-iptables" = 1;

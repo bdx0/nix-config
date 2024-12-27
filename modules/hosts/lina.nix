@@ -1,9 +1,5 @@
 { inputs, config, pkgs, lib, name, ... }: {
-  imports = [
-    inputs.self.nixosModules.common
-
-    inputs.self.nixosModules.server
-  ];
+  imports = [ inputs.self.nixosModules.common ];
   config = {
     boot.kernelModules =
       [ "overlay" "br_netfilter" "ip=dhcp" "kvm-intel" "wl" ];
@@ -56,7 +52,6 @@
     zramSwap.enable = false;
     bdx0.libvirtd.enable = true;
     bdx0.vfio.enable = true;
-    networking.domain = "lina.bdx0.io.vn";
     bdx0.vfio.IOMMUType = "intel";
     # bdx0.vfio.devices = [ ];
 
@@ -83,6 +78,8 @@
       settings = {
         "ALLOW_HOSTS" = [ "*" ];
         "DEFAULT_SERVER" = "0.0.0.0";
+        "CONFIG_DATABASE_URI" =
+          "postgresql://pgadmin:pgadmin@127.0.0.1/pgadmin";
       };
       initialPasswordFile = config.age.secrets.pg_pass.path;
     };
@@ -136,6 +133,8 @@
         # ipv6
         host  all      all     ::1/128        trust
 
+        # rke2 database
+        # local rke2     rke2    127.0.0.1/32   trust
       '';
       # https://pgtune.leopard.in.ua/#/
       # https://pgconfigurator.cybertec.at/
@@ -228,4 +227,5 @@
       debug = true;
     };
   };
+
 }

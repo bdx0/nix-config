@@ -2,7 +2,6 @@
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     vscode-server.nixosModules.default
-    ./hardware-configuration.nix
     # "${
     #   (builtins.fetchTarball {
     #     url = "https://github.com/numtide/nixos-facter-modules/";

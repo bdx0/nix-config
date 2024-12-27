@@ -17,7 +17,7 @@
     };
     nixvirt.url = "github:AshleyYakeley/NixVirt";
     darwin.url = "github:LnL7/nix-darwin";
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
+    # darwin.inputs.nixpkgs.follows = "nixpkgs";
     microvm.url = "github:astro/microvm.nix";
     agenix.url = "github:ryantm/agenix";
     sops-nix.url = "github:Mic92/sops-nix";
@@ -32,43 +32,55 @@
       debug = true;
       flake = let
         nodes = [
-          { name = "homelab-0"; }
-          { name = "homelab-1"; }
-          { name = "homelab-2"; }
+          { name = "bobo"; }
+          { name = "goku"; }
+          { name = "lina"; }
+          { name = "mac2014"; }
           { name = "scratchHost"; }
+          { name = "nix01"; }
+          { name = "nix02"; }
+          { name = "nix03"; }
         ];
       in {
         colmena = let
-          pkgsLinux = import nixos {
+          confs = self.nixosConfigurations;
+          pkgsLinux = import nixpkgs {
             system = "x86_64-linux";
             config.allowUnfree = true;
           };
-          pkgsLinuxArm = import nixos {
+          pkgsLinuxArm = import nixpkgs {
             system = "aarch64-linux";
             config.allowUnfree = true;
           };
         in {
           meta = {
+            description = "Colmena";
             nixpkgs = pkgsLinux;
             nodeNixpkgs = {
               "nix-infect.local" = pkgsLinuxArm;
               lina = pkgsLinux;
-            };
-            specialArgs = (inputs // { inherit inputs; });
+            } // builtins.mapAttrs (name: value: value.pkgs) confs;
+            # specialArgs = (inputs // { inherit inputs; });
+            nodeSpecialArgs =
+              builtins.mapAttrs (name: value: value._module.specialArgs) confs;
           };
-          "nix-infect.local" = import ./hosts/nix-infect;
-          "lina" = { imports = [ ./hosts/lina ]; };
-          "mac2014" = import ./hosts/mac2014;
-          "bobo" = import ./hosts/bobo;
-          "goku" = import ./hosts/goku;
-          "nix01" = import ./hosts/nix01;
-          "nix02" = import ./hosts/nix02;
-          "nix03" = import ./hosts/nix03;
-          "cephgoku" = import ./hosts/cephgoku;
-          "cephbobo" = import ./hosts/cephbobo;
-          "cephlina" = import ./hosts/cephlina;
-          "dev" = import ./hosts/dev;
-        };
+          # "nix-infect.local" = import ./hosts/nix-infect;
+          # "nix02" = { self, name, ... }: {
+          #   imports = self.nixosConfigurations.${name}._module.args.modules ++ [
+          #
+          #     # self.nixosModules.colmena
+          #     # self.nixosConfigurations.nix02
+          #   ];
+          # };
+          # "cephgoku" = import ./hosts/cephgoku;
+          # "cephbobo" = import ./hosts/cephbobo;
+          # "cephlina" = import ./hosts/cephlina;
+        } // builtins.mapAttrs (name: value: {
+          imports = value._module.args.modules ++ [
+
+            self.nixosModules.colmena
+          ];
+        }) confs;
         nixosConfigurations = builtins.listToAttrs (map (node:
           let system = node.system or "x86_64-linux";
           in {

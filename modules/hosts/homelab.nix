@@ -18,7 +18,8 @@
     lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   nix = {
-    packages = pkgs.nixFlakes;
+    # packages = pkgs.nixFlakes;
+    package = pkgs.nixVersions.stable;
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
@@ -53,7 +54,7 @@
     clusterInit = (meta.hostname == "homelab-0");
   };
   # fixes for longhorn
-  system.tmpfiles.rules =
+  systemd.tmpfiles.rules =
     [ "L+ /usr/local/bin - - - - /run/current-system/sw/bin" ];
   virtualisation.docker.logDriver = "json-file";
 

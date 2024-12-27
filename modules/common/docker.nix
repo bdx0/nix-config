@@ -2,20 +2,17 @@
 let cfg = config.bdx0.docker;
 in {
   options.bdx0.docker = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "docker";
-    };
-    nvidia = {
-      enable = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "docker with nvidia support";
-      };
-    };
+    enable = lib.mkEnableOption "Docker";
+    nvidia = { enable = lib.mkEnableOption "docker with nvidia support"; };
     storageDriver = lib.mkOption {
-      type = lib.types.string;
+      type = lib.types.nullOr (lib.types.enum [
+        "aufs"
+        "btrfs"
+        "devicemapper"
+        "overlay"
+        "overlay2"
+        "zfs"
+      ]);
       default = null; # aufs btrfs overlay2 zfs overlay
       description = "docker storage driver";
     };
@@ -26,6 +23,7 @@ in {
       # environment.persistence = lib.mkIf cfg.persistence.enable {
       #   "/persist" = { directories = [ "/var/lib/docker" ]; };
       # };
+      boot.kernelModules = [ "overlay" "br_netfilter" ];
       virtualisation = {
         docker = {
           enable = true;

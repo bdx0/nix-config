@@ -1,29 +1,17 @@
-{ inputs, config, pkgs, lib, name, nodes, ... }: {
-  imports = [
-    inputs.self.nixosModules.common
-
-    inputs.self.nixosModules.server
-  ];
+{ inputs, config, pkgs, ... }: {
+  imports = [ inputs.self.nixosModules.common ];
   config = {
-    boot.kernelModules = [ "ip=dhcp" "kvm-amd" "wl" ];
-    boot.initrd.availableKernelModules = [
-      "virtio_pci"
-      "sr_mod"
-      "nvme"
-      "xhci_pci"
-      "ehci_pci"
-      "ohci_pci"
-      "ehci_hcd"
-      "uhci_hcd"
-      "ohci_hcd"
-      "ahci"
-      "usb_storage"
-      "usbcore"
-      "sd_mod"
-      "scsi_mod"
-      "usbhid"
-      "uas"
-    ];
+    bdx0.hardware.enable = true;
+    bdx0.hardware.type = "amd";
+    bdx0.libvirtd.enable = true;
+    bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
+    bdx0.vfio.IOMMUType = "amd";
+    bdx0.vfio.enable = true;
+    bdx0.docker.enable = true;
+    bdx0.docker.nvidia.enable = true;
+    # boot.kernelModules = [ "ip=dhcp" "kvm-amd" "wl" ];
+    # boot.initrd.availableKernelModules = [ ]
+    #   ++ config.bdx0.common.initrd.availableKernelModules;
 
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/a60f182a-d292-45f2-921f-3eebb049a775";
@@ -42,8 +30,8 @@
       options = [ "rw" "uid=1000" ];
     };
 
-    hardware.cpu.amd.updateMicrocode =
-      lib.mkDefault config.hardware.enableRedistributableFirmware;
+    # hardware.cpu.amd.updateMicrocode =
+    #   lib.mkDefault config.hardware.enableRedistributableFirmware;
 
     boot.loader.grub.device = "nodev";
     boot.loader.grub.efiSupport = true;
@@ -51,14 +39,6 @@
     # boot.loader.systemd-boot.enable = true;
     # boot.loader.efi.canTouchEfiVariables = true;
 
-    bdx0.libvirtd.enable = true;
-    bdx0.vfio.enable = true;
-    networking.domain = "bobo.bdx0.io.vn";
-    bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
-    bdx0.vfio.IOMMUType = "amd";
-
-    users.defaultUserShell = pkgs.bash;
-    programs.bash.interactiveShellInit = "figurine ${name}";
     nixpkgs.config.allowUnfree = true;
 
     # systemd.services.postgresql.postStart = pkgs.lib.mkAfter ''

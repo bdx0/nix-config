@@ -8,13 +8,7 @@ in {
       default = [ ];
     };
   };
-  options.bdx0.libvirtd = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "";
-    };
-  };
+  options.bdx0.libvirtd = { enable = lib.mkEnableOption "Enable libvirtd"; };
   config = lib.mkIf cfg.enable {
     # required bylibvirtd
     security.polkit.enable = true;

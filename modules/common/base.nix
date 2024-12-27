@@ -17,7 +17,10 @@ let
   scripts_dir = import ../../scripts { inherit pkgs; };
   cfg = config.bdx0.base;
 in {
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+  imports = [
+    (modulesPath + "/profiles/qemu-guest.nix")
+    (modulesPath + "/installer/scan/not-detected.nix")
+  ];
   options.bdx0.base = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -26,7 +29,32 @@ in {
     };
   };
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ scripts_dir ];
+    programs.fish.enable = true;
+    # programs.zsh.enable = true;
+    # programs.zsh.enableAutosuggestions = true;
+    # programs.zsh.enableCompletion = true;
+    # programs.zsh.enableLsColors = true;
+    # programs.zsh.interactiveShellInit =
+    #   "${pkgs.figurine}/bin/figurine ${config.networking.domain}";
+    users.defaultUserShell = pkgs.fish;
+    programs.fish.interactiveShellInit =
+      "${pkgs.figurine}/bin/figurine ${config.networking.domain}";
+    networking.hostName = hostname;
+    networking.domain = "${hostname}.bdx0.io.vn";
+
+    environment.systemPackages = [
+      scripts_dir
+      pkgs.fishPlugins.z
+      pkgs.fishPlugins.done
+      pkgs.fishPlugins.gruvbox
+      pkgs.fishPlugins.fzf-fish
+      pkgs.fishPlugins.forgit
+      pkgs.fishPlugins.grc
+      pkgs.fishPlugins.hydro
+      pkgs.fzf
+      pkgs.grc
+    ] ++ config.bdx0.${hostname}.environment.systemPackages;
+
     services.tailscale.enable = true;
     services.tailscale.useRoutingFeatures = "both";
     # systemd.services.tailscaled.after =

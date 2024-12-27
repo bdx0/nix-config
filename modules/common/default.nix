@@ -7,11 +7,13 @@ in {
   imports = [
     inputs.agenix.nixosModules.default
     # inputs.impermanence.nixosModules.impermanence
+    ./options.nix
     ./base.nix
     ./docker.nix
     ./libvirtd.nix
+    ./hardware.nix
+    ./server.nix
   ];
-
   options.bdx0.common = {
     enable = lib.mkOption {
       default = true;
@@ -20,13 +22,13 @@ in {
     };
   };
   config = lib.mkIf cfg.enable {
+    bdx0.server.enable = true;
     age.secrets.pg_pass = { file = ../../secrets/pgadmin.age; };
     age.secrets.rke2_config = { file = ../../secrets/rke2_config.age; };
     age.secrets.dd_pass = { file = ../../secrets/dd_pass.age; };
     environment.systemPackages = with pkgs; [
       wget
       inputs.agenix.packages.${system}.default
-      figurine
       cmatrix
       parted
       comma
