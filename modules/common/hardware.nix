@@ -18,8 +18,8 @@ in {
   };
   config = lib.mkIf cfg.enable {
     boot.kernel.sysctl = {
-      "fs.file-max" = 8192;
-      "fs.inotify.max_user_instances" = 8192;
+      "fs.file-max" = 1000000;
+      "fs.inotify.max_user_instances" = 1000000;
     };
     boot.initrd.kernelModules =
       [ "nvme" "dm-snapshot" "wl" "dm-raid" "dm-cache-default" ];

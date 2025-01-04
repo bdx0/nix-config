@@ -1,25 +1,6 @@
 { inputs, config, pkgs, lib, name, ... }: {
   imports = [ inputs.self.nixosModules.common ];
   config = {
-    boot.kernelModules =
-      [ "overlay" "br_netfilter" "ip=dhcp" "kvm-intel" "wl" ];
-    boot.initrd.availableKernelModules = [
-
-      "sr_mod"
-      "usbhid"
-      "nvme"
-      "xhci_pci"
-      "ehci_pci"
-      "ahci"
-      "usb_storage"
-      "sd_mod"
-    ];
-
-    boot.extraModprobeConfig = ''
-      options kvm_intel nested=1
-      options kvm_intel emulate_invalid_guest_state=0
-      options kvm ignore_msrs=1
-    '';
 
     fileSystems."/boot/efi" = {
       device = "/dev/disk/by-uuid/2BF7-EA6A";
@@ -31,8 +12,6 @@
       device = "/dev/mapper/lina--vg-root";
       fsType = "ext4";
     };
-    hardware.cpu.intel.updateMicrocode =
-      lib.mkDefault config.hardware.enableRedistributableFirmware;
 
     boot.loader.efi.efiSysMountPoint = "/boot/efi";
     boot.loader.systemd-boot.enable = true;
@@ -50,15 +29,17 @@
 
     boot.tmp.cleanOnBoot = true;
     zramSwap.enable = false;
+    bdx0.hardware.enable = true;
+    bdx0.hardware.type = "intel";
     bdx0.libvirtd.enable = true;
     bdx0.vfio.enable = true;
     bdx0.vfio.IOMMUType = "intel";
     # bdx0.vfio.devices = [ ];
 
-    users.defaultUserShell = pkgs.bash;
-    programs.bash.interactiveShellInit = "figurine ${name}";
+    # users.defaultUserShell = pkgs.bash;
+    # programs.bash.interactiveShellInit = "figurine ${name}";
     nixpkgs.config.allowUnfree = true;
-    environment.systemPackages = with pkgs; [ kubectl ];
+    # environment.systemPackages = with pkgs; [ kubectl ];
 
     boot.kernel.sysctl = {
       "net.bridge.bridge-nf-call-iptables" = 1;
@@ -120,22 +101,6 @@
         }
       ];
       enableTCPIP = true;
-      authentication = pkgs.lib.mkOverride 10 ''
-        #type database DBuser origin-address auth-method
-        # pgadmin
-        local all      pgadmin peer
-        local all      rke2    peer
-        local all      all     trust
-
-        # ipv4
-        host  all      all     127.0.0.1/32   trust
-        # host  all      all      0.0.0.0/0 trust
-        # ipv6
-        host  all      all     ::1/128        trust
-
-        # rke2 database
-        # local rke2     rke2    127.0.0.1/32   trust
-      '';
       # https://pgtune.leopard.in.ua/#/
       # https://pgconfigurator.cybertec.at/
       # https://github.com/NixOS/infra/blob/4b5dd4f974d3f707b64ad60793b8182e645631ed/build/haumea/postgresql.nix
@@ -177,8 +142,9 @@
           "pl"; # track execution times of pl-language procedures if any
 
         # Replication
-        wal_level = "replica"; # consider using at least "replica"
-        max_wal_senders = 0;
+        # wal_level = "replica"; # consider using at least "replica"
+        wal_level = "logical";
+        max_wal_senders = 10;
         synchronous_commit = "on";
 
         # Checkpointing:
@@ -226,6 +192,22 @@
       configPath = config.age.secrets.rke2_config.path;
       debug = true;
     };
+    services.cron = {
+      enable = true;
+      systemCronJobs = [ "0 3 * * * /sbin/reboot" ];
+    };
+
+    services.monit.enable = true;
+    # "https://blog.vinahost.vn/cai-dat-cau-hinh-monit/"
+    # "https://viblo.asia/p/gioi-thieu-ve-monit-cong-cu-giam-sat-server-manh-me-gAm5ybDXKdb"
+    services.monit.config = ''
+      set daemon 120
+      set log /var/log/monit/monit.log
+      set httpd port 2812 and
+        use address 100.113.208.51
+        allow 100.106.121.43
+        allow dd
+    '';
   };
 
 }

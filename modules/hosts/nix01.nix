@@ -1,4 +1,4 @@
-{ inputs, ... }: {
+{ inputs, config, ... }: {
   imports =
     [ inputs.self.nixosModules.common inputs.self.nixosModules.disko.btrfs ];
   config = {
@@ -17,5 +17,10 @@
 
     nixpkgs.config.allowUnfree = true;
     programs.nix-ld.enable = true;
+    bdx0.services.postgresql.enable = true;
+    bdx0.services.postgresql.enableTCPIP = true;
+    bdx0.services.postgresql.authentication =
+      config.services.postgresql.authentication;
+    bdx0.services.postgresql.settings = { wal_level = "logical"; };
   };
 }

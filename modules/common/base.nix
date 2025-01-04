@@ -72,9 +72,19 @@ in {
     services.openssh.settings.PasswordAuthentication = true;
     services.openssh.settings.KbdInteractiveAuthentication = true;
     users.users.root.openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
+    users.mutableUsers = false;
     users.users.dd = {
       isNormalUser = true;
       home = "/home/dd";
+      extraGroups =
+        [ "wheel" "networkmanager" "docker" "libvirtd" "incus-admin" ];
+      openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
+      packages = with pkgs; [ tree neovim ];
+      hashedPasswordFile = config.age.secrets.dd_pass.path;
+    };
+    users.users.code = {
+      isNormalUser = true;
+      home = "/home/code";
       extraGroups =
         [ "wheel" "networkmanager" "docker" "libvirtd" "incus-admin" ];
       openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;

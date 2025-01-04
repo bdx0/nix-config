@@ -1,4 +1,19 @@
 { pkgs, lib, config, ... }: {
+  options.bdx0.goku.environment.systemPackages = lib.mkOption {
+    description = "nix01's system packages";
+    type = lib.types.listOf lib.types.package;
+    default = [ ];
+  };
+  options.bdx0.lina.environment.systemPackages = lib.mkOption {
+    description = "nix01's system packages";
+    type = lib.types.listOf lib.types.package;
+    default = [ ];
+  };
+  options.bdx0.bobo.environment.systemPackages = lib.mkOption {
+    description = "nix01's system packages";
+    type = lib.types.listOf lib.types.package;
+    default = [ ];
+  };
   options.bdx0.nix01.environment.systemPackages = lib.mkOption {
     description = "nix01's system packages";
     type = lib.types.listOf lib.types.package;
@@ -25,6 +40,21 @@
     default = [ ];
   };
   options.bdx0.nix03.initrd.availableKernelModules = lib.mkOption {
+    description = "List of kernel modules to include in the initrd";
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+  };
+  options.bdx0.bobo.initrd.availableKernelModules = lib.mkOption {
+    description = "List of kernel modules to include in the initrd";
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+  };
+  options.bdx0.lina.initrd.availableKernelModules = lib.mkOption {
+    description = "List of kernel modules to include in the initrd";
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+  };
+  options.bdx0.goku.initrd.availableKernelModules = lib.mkOption {
     description = "List of kernel modules to include in the initrd";
     type = lib.types.listOf lib.types.str;
     default = [ ];
@@ -107,11 +137,23 @@
       config.bdx0.environment.systemPackages;
     bdx0.nix03.environment.systemPackages =
       config.bdx0.environment.systemPackages;
+    bdx0.goku.environment.systemPackages =
+      config.bdx0.environment.systemPackages;
+    bdx0.lina.environment.systemPackages =
+      config.bdx0.environment.systemPackages;
+    bdx0.bobo.environment.systemPackages =
+      config.bdx0.environment.systemPackages;
     bdx0.nix01.initrd.availableKernelModules =
       config.bdx0.initrd.availableKernelModules;
     bdx0.nix02.initrd.availableKernelModules =
       config.bdx0.initrd.availableKernelModules;
     bdx0.nix03.initrd.availableKernelModules =
+      config.bdx0.initrd.availableKernelModules;
+    bdx0.goku.initrd.availableKernelModules =
+      config.bdx0.initrd.availableKernelModules;
+    bdx0.lina.initrd.availableKernelModules =
+      config.bdx0.initrd.availableKernelModules;
+    bdx0.bobo.initrd.availableKernelModules =
       config.bdx0.initrd.availableKernelModules;
   };
 }
