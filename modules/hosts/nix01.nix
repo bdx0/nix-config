@@ -12,15 +12,19 @@
 
     bdx0.hardware.enable = true;
     bdx0.hardware.type = "intel";
-    bdx0.docker.enable = true;
-    bdx0.docker.nvidia.enable = true;
+    bdx0.container.engine = "docker";
+    bdx0.container.nvidia.enable = true;
 
     nixpkgs.config.allowUnfree = true;
     programs.nix-ld.enable = true;
-    bdx0.services.postgresql.enable = true;
+    bdx0.services.postgresql.enable = false;
     bdx0.services.postgresql.enableTCPIP = true;
     bdx0.services.postgresql.authentication =
       config.services.postgresql.authentication;
     bdx0.services.postgresql.settings = { wal_level = "logical"; };
+
+    bdx0.services.monit.enable = true;
+    bdx0.services.monit.address = "100.126.131.77";
+
   };
 }

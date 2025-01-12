@@ -22,8 +22,9 @@
     agenix.url = "github:ryantm/agenix";
     sops-nix.url = "github:Mic92/sops-nix";
     impermanence.url = "github:nix-community/impermanence";
+    nix2container.url = "github:nlewo/nix2container";
   };
-  outputs = { self, nixos, nixpkgs, flake-parts, darwin, ... }@inputs:
+  outputs = { self, nixpkgs, flake-parts, darwin, ... }@inputs:
     let
       darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
       linuxSystems = [ "x86_64-linux" "aarch64-linux" ];

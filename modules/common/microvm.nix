@@ -40,7 +40,7 @@ in {
             environment.systemPackages = with pkgs; [ lsof ];
             # Don't interfere with k8s
             networking.firewall.enable = lib.mkForce false;
-            bdx0.docker.enable = false;
+            bdx0.container.engine = "docker";
             bdx0.libvirtd.enable = false;
 
             services.rke2 = {
@@ -86,7 +86,7 @@ in {
             environment.systemPackages = with pkgs; [ lsof ];
             # Don't interfere with k8s
             networking.firewall.enable = lib.mkForce false;
-            bdx0.docker.enable = false;
+            bdx0.container.engine = "docker";
             bdx0.libvirtd.enable = false;
 
             services.rke2 = {

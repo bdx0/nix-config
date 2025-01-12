@@ -136,5 +136,70 @@
         };
       };
     };
+  # "https://www.youtube.com/watch?v=YPKwkWtK7l0&ab_channel=Vimjoyer"
+  # RUN
+  # sudo nix --experimental-features 'nix-command flakes' run github:nix-community/disko -- --mode disko /tmp/disko.nix --arg device '"/dev/vda"'
+  # lsblk
+  lvm = { device ? throw "Set this to you disk device, e.g. /dev/sda", ... }: {
+    config = {
+      disko.devices = {
+        disk.main = {
+          inherit device;
+          type = "disk";
+          content = {
+            type = "gpt";
+            partitions = {
+              boot = {
+                size = "1M";
+                type = "EF02";
+              };
+              esp = {
+                name = "ESP";
+                size = "1G";
+                type = "EF00";
+                content = {
+                  type = "filesystem";
+                  format = "vfat";
+                  mountPoint = "/boot";
+                };
+              };
+              root = {
+                size = "100%FREE";
+                content = {
+                  type = "lvm_pv";
+                  vg = "root_vg";
+                };
+              };
+            };
+          };
+        };
+        lvm_vg = {
+          root_vg = {
+            type = "lvm_vg";
+            lvs = {
+              root = {
+                size = "100%FREE";
+                content = {
+                  type = "btrfs";
+                  extraArgs = [ "-f" ];
+                  subvolume = {
+                    "/root" = { mountpoint = "/"; };
+                    "/persist" = {
+                      mountOptions = [ "subvol=persist" "noatime" ];
+                      mountpoint = "/persist";
+                    };
+                    "/nix" = {
+                      mountOptions = [ "subvol=nix" "noatime" ];
+                      mountpoint = "/nix";
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+  };
 
 }

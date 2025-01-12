@@ -44,7 +44,7 @@
     bdx0.hardware.type = "intel";
     bdx0.libvirtd.enable = false;
     bdx0.vfio.enable = false;
-    bdx0.docker.enable = true;
+    bdx0.container.engine = "docker";
 
     nixpkgs.config.allowUnfree = true;
 

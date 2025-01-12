@@ -8,18 +8,16 @@ let
     mkPackageOption mkRemovedOptionModule mkRenamedOptionModule optionalString
     types versionAtLeast warn;
 
-  cfg = config.bdx0.services.postgresql;
+  cfg = config.bdx0.services.pgpool;
 
   # ensure that
-  #   services.postgresql = {
-  #     enableJIT = true;
-  #     package = pkgs.postgresql_<major>;
+  #   bdx0.services.pgpool = {
+  #     package = pkgs.pgpool;
   #   };
   # works.
-  basePackage =
-    if cfg.enableJIT then cfg.package.withJIT else cfg.package.withoutJIT;
+  basePackage = cfg.package;
 
-  postgresql = if cfg.extensions == [ ] then
+  pgpool = if cfg.extensions == [ ] then
     basePackage
   else
     basePackage.withPackages cfg.extensions;
@@ -35,7 +33,7 @@ let
       builtins.toString value;
 
   # The main PostgreSQL configuration file.
-  configFile = pkgs.writeTextDir "postgresql.conf" (concatStringsSep "\n"
+  configFile = pkgs.writeTextDir "pgpool.conf" (concatStringsSep "\n"
     (mapAttrsToList (n: v: "${n} = ${toStr v}")
       (filterAttrs (const (x: x != null)) cfg.settings)));
 
@@ -45,9 +43,6 @@ let
   '';
 
   groupAccessAvailable = versionAtLeast cfg.finalPackage.version "11.0";
-
-  extensionNames = map getName postgresql.installedExtensions;
-  extensionInstalled = extension: elem extension extensionNames;
 
 in {
   imports = [
@@ -75,18 +70,16 @@ in {
 
   ###### interface
 
-  options.bdx0.services.pgbouncer = {
+  options.bdx0.services.repmgr = {
 
-    enable = mkEnableOption "PostgreSQL Server";
+    enable = mkEnableOption "PGPool Server";
 
-    enableJIT = mkEnableOption "JIT support";
-
-    package = mkPackageOption pkgs "postgresql" { example = "postgresql_15"; };
+    package = mkPackageOption pkgs "pgpool" { example = "pgpool"; };
 
     finalPackage = mkOption {
       type = types.package;
       readOnly = true;
-      default = postgresql;
+      default = pgpool;
       defaultText =
         "with config.services.postgresql; package.withPackages extensions";
       description = ''
@@ -472,6 +465,9 @@ in {
   ###### implementation
 
   config = mkIf cfg.enable {
+    bdx0.services.postgresql.enable = true;
+    bdx0.services.postgresql.enableTCPIP = true;
+    bdx0.services.postgresql.settings = { wal_level = "logical"; };
 
     assertions = map ({ name, ensureDBOwnership, ... }: {
       assertion = ensureDBOwnership -> elem name cfg.ensureDatabases;
@@ -484,50 +480,19 @@ in {
       '';
     }) cfg.ensureUsers;
 
-    bdx0.services.postgresql.settings = {
-      hba_file = "${pkgs.writeText "pg_hba.conf" cfg.authentication}";
-      ident_file = "${pkgs.writeText "pg_ident.conf" cfg.identMap}";
-      log_destination = "stderr";
-      listen_addresses = if cfg.enableTCPIP then "*" else "localhost";
-      jit = mkDefault (if cfg.enableJIT then "on" else "off");
-    };
+    bdx0.services.pgpool.settings = { };
 
-    bdx0.services.postgresql.package = let
-      mkThrow = ver:
-        throw
-        "postgresql_${ver} was removed, please upgrade your postgresql version.";
-      mkWarn = ver:
-        warn ''
-          The postgresql package is not pinned and selected automatically by
-          `system.stateVersion`. Right now this is `pkgs.postgresql_${ver}`, the
-          oldest postgresql version available and thus the next that will be
-          removed when EOL on the next stable cycle.
-
-          See also https://endoflife.date/postgresql
-        '';
-      base = if versionAtLeast config.system.stateVersion "24.11" then
-        pkgs.postgresql_16
-      else if versionAtLeast config.system.stateVersion "23.11" then
-        pkgs.postgresql_15
-      else if versionAtLeast config.system.stateVersion "22.05" then
-        pkgs.postgresql_14
-      else if versionAtLeast config.system.stateVersion "21.11" then
-        mkWarn "13" pkgs.postgresql_13
-      else if versionAtLeast config.system.stateVersion "20.03" then
-        mkThrow "11"
-      else if versionAtLeast config.system.stateVersion "17.09" then
-        mkThrow "9_6"
-      else
-        mkThrow "9_5";
+    bdx0.services.pgpool.package = let
+      base = pkgs.pgpool;
       # Note: when changing the default, make it conditional on
       # ‘system.stateVersion’ to maintain compatibility with existing
       # systems!
-    in mkDefault (if cfg.enableJIT then base.withJIT else base);
+    in mkDefault base;
 
-    bdx0.services.postgresql.dataDir =
-      mkDefault "/var/lib/postgresql/${cfg.package.psqlSchema}";
+    bdx0.services.pgpool.dataDir = mkDefault "/var/lib/pgpool";
+    # mkDefault "/var/lib/pgpool/${cfg.package.psqlSchema}";
 
-    bdx0.services.postgresql.authentication = mkMerge [
+    bdx0.services.pgpool.authentication = mkMerge [
       (mkBefore "# Generated file; do not edit!")
       (mkAfter ''
         # default value of services.postgresql.authentication
@@ -537,29 +502,16 @@ in {
       '')
     ];
 
-    users.users.postgres = {
-      name = "postgres";
-      uid = config.ids.uids.postgres;
-      group = "postgres";
-      description = "PostgreSQL server user";
-      home = "${cfg.dataDir}/..";
-      # users.users.postgres.home =
-      #   lib.mkForce "${config.services.postgresql.dataDir}/..";
-      useDefaultShell = true;
-    };
-
-    users.groups.postgres.gid = config.ids.gids.postgres;
-
     environment.systemPackages = [ cfg.finalPackage ];
 
-    environment.pathsToLink = [ "/share/postgresql" ];
+    environment.pathsToLink = [ "/share/pgpool" ];
 
-    system.checks = lib.optional
-      (cfg.checkConfig && pkgs.stdenv.hostPlatform == pkgs.stdenv.buildPlatform)
-      configFileCheck;
+    # system.checks = lib.optional
+    #   (cfg.checkConfig && pkgs.stdenv.hostPlatform == pkgs.stdenv.buildPlatform)
+    #   configFileCheck;
 
-    systemd.services.postgresql = {
-      description = "PostgreSQL Server";
+    systemd.services.pgpool = {
+      description = "PGPool Server";
 
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
@@ -573,27 +525,22 @@ in {
           # Cleanup the data directory.
           rm -f ${cfg.dataDir}/*.conf
 
-          # Initialise the database.
-          [ -d ${cfg.dataDir} ] || initdb -U ${cfg.superUser} ${
-            escapeShellArgs cfg.initdbArgs
-          }
-
           # See postStart!
           touch "${cfg.dataDir}/.first_startup"
         fi
 
-        ln -sfn "${configFile}/postgresql.conf" "${cfg.dataDir}/postgresql.conf"
+        ln -sfn "${configFile}/pgpool.conf" "${cfg.dataDir}/pgpool.conf"
         ${optionalString (cfg.recoveryConfig != null) ''
           ln -sfn "${pkgs.writeText "recovery.conf" cfg.recoveryConfig}" \
             "${cfg.dataDir}/recovery.conf"
         ''}
       '';
 
-      # Wait for PostgreSQL to be ready to accept connections.
+      # Wait for PGPool to be ready to accept connections.
       postStart = ''
         PSQL="psql --port=${builtins.toString cfg.settings.port}"
 
-        while ! $PSQL -d postgres -c "" 2> /dev/null; do
+        while ! $PSQL -d pgpool -c "" 2> /dev/null; do
             if ! kill -0 "$MAINPID"; then exit 1; fi
             sleep 0.1
         done
@@ -634,71 +581,66 @@ in {
           '') cfg.ensureUsers}
       '';
 
-      serviceConfig = mkMerge [
-        {
-          ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
-          User = "postgres";
-          Group = "postgres";
-          RuntimeDirectory = "postgresql";
-          Type = if versionAtLeast cfg.package.version "9.6" then
-            "notify"
-          else
-            "simple";
+      serviceConfig = mkMerge [{
+        ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
+        User = "postgres";
+        Group = "postgres";
+        RuntimeDirectory = "pgpool";
+        Type = "notify";
 
-          # Shut down Postgres using SIGINT ("Fast Shutdown mode").  See
-          # https://www.postgresql.org/docs/current/server-shutdown.html
-          KillSignal = "SIGINT";
-          KillMode = "mixed";
+        # Shut down Postgres using SIGINT ("Fast Shutdown mode").  See
+        # https://www.postgresql.org/docs/current/server-shutdown.html
+        KillSignal = "SIGINT";
+        KillMode = "mixed";
 
-          # Give Postgres a decent amount of time to clean up after
-          # receiving systemd's SIGINT.
-          TimeoutSec = 120;
+        # Give Postgres a decent amount of time to clean up after
+        # receiving systemd's SIGINT.
+        TimeoutSec = 120;
 
-          ExecStart = "${cfg.finalPackage}/bin/postgres";
+        ExecStart = "${cfg.finalPackage}/bin/postgres";
 
-          # Hardening
-          CapabilityBoundingSet = [ "" ];
-          DevicePolicy = "closed";
-          PrivateTmp = true;
-          ProtectHome = true;
-          ProtectSystem = "strict";
-          MemoryDenyWriteExecute = lib.mkDefault
-            (cfg.settings.jit == "off" && (!any extensionInstalled [ "plv8" ]));
-          NoNewPrivileges = true;
-          LockPersonality = true;
-          PrivateDevices = true;
-          PrivateMounts = true;
-          ProcSubset = "pid";
-          ProtectClock = true;
-          ProtectControlGroups = true;
-          ProtectHostname = true;
-          ProtectKernelLogs = true;
-          ProtectKernelModules = true;
-          ProtectKernelTunables = true;
-          ProtectProc = "invisible";
-          RemoveIPC = true;
-          RestrictAddressFamilies = [
-            "AF_INET"
-            "AF_INET6"
-            "AF_NETLINK" # used for network interface enumeration
-            "AF_UNIX"
-          ];
-          RestrictNamespaces = true;
-          RestrictRealtime = true;
-          RestrictSUIDSGID = true;
-          SystemCallArchitectures = "native";
-          SystemCallFilter = [ "@system-service" "~@privileged @resources" ]
-            ++ lib.optionals (any extensionInstalled [ "plv8" ]) [ "@pkey" ];
-          UMask = if groupAccessAvailable then "0027" else "0077";
-        }
-        (mkIf (cfg.dataDir != "/var/lib/postgresql") {
-          ReadWritePaths = [ cfg.dataDir ];
-        })
-        (mkIf (cfg.dataDir == "/var/lib/postgresql/${cfg.package.psqlSchema}") {
-          StateDirectory = "postgresql postgresql/${cfg.package.psqlSchema}";
-          StateDirectoryMode = if groupAccessAvailable then "0750" else "0700";
-        })
-      ];
+        # Hardening
+        CapabilityBoundingSet = [ "" ];
+        DevicePolicy = "closed";
+        PrivateTmp = true;
+        ProtectHome = true;
+        ProtectSystem = "strict";
+        # MemoryDenyWriteExecute = false;
+        NoNewPrivileges = true;
+        LockPersonality = true;
+        PrivateDevices = true;
+        PrivateMounts = true;
+        ProcSubset = "pid";
+        ProtectClock = true;
+        ProtectControlGroups = true;
+        ProtectHostname = true;
+        ProtectKernelLogs = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        ProtectProc = "invisible";
+        RemoveIPC = true;
+        RestrictAddressFamilies = [
+          "AF_INET"
+          "AF_INET6"
+          "AF_NETLINK" # used for network interface enumeration
+          "AF_UNIX"
+        ];
+        RestrictNamespaces = true;
+        RestrictRealtime = true;
+        RestrictSUIDSGID = true;
+        SystemCallArchitectures = "native";
+        # SystemCallFilter = [ "@system-service" "~@privileged @resources" ]
+        #   ++ lib.optionals (any extensionInstalled [ "plv8" ]) [ "@pkey" ];
+        UMask = if groupAccessAvailable then "0027" else "0077";
+      }
+      # (mkIf (cfg.dataDir != "/var/lib/pgpool") {
+      #   ReadWritePaths = [ cfg.dataDir ];
+      # })
+      # (mkIf (cfg.dataDir == "/var/lib/pgpool/${cfg.package.psqlSchema}") {
+      #   StateDirectory = "postgresql postgresql/${cfg.package.psqlSchema}";
+      #   StateDirectoryMode = if groupAccessAvailable then "0750" else "0700";
+      # })
+        ];
 
       unitConfig.RequiresMountsFor = "${cfg.dataDir}";
     };

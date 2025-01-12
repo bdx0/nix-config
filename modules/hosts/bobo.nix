@@ -7,8 +7,8 @@
     bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
     bdx0.vfio.IOMMUType = "amd";
     bdx0.vfio.enable = true;
-    bdx0.docker.enable = true;
-    bdx0.docker.nvidia.enable = true;
+    bdx0.container.engine = "docker";
+    bdx0.container.nvidia.enable = true;
     # boot.kernelModules = [ "ip=dhcp" "kvm-amd" "wl" ];
     # boot.initrd.availableKernelModules = [ ]
     #   ++ config.bdx0.common.initrd.availableKernelModules;

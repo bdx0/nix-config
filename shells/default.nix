@@ -28,6 +28,7 @@ in {
         kubernetes-helm
         helmfile
         k9s
+        nix-prefetch-docker
       ] ++ (if agenixPkg != null then [ agenixPkg ] else [ ]);
     shellHook = ''
       source ${scripts_dir}/bin/bash_aliases

@@ -82,6 +82,26 @@
       helmfile
       k9s
       nixd
+      pstree
+      tree
+      skopeo
+      buildah
+      nix-prefetch-docker
+      dive
+      # # "https://discourse.nixos.org/t/pull-docker-image-for-later-use/52106/6"
+      # (pkgs.writeShellScriptBin "preload-images" ''
+      #   # nix run nixpkgs#nix-prefetch-docker -- --image-name debian --image-tag buster
+      #   docker load -i ${
+      #     pkgs.dockerTools.pullImage {
+      #       imageName = "debian";
+      #       imageDigest =
+      #         "sha256:58ce6f1271ae1c8a2006ff7d3e54e9874d839f573d8009c20154ad0f2fb0a225";
+      #       sha256 = "1gybjys977mr4108bzkwhfb03qrrl6fxgr6jy67k3p1bx7s4jxwf";
+      #       finalImageName = "debian";
+      #       finalImageTag = "buster";
+      #     }
+      #   }
+      # '')
     ];
   };
   options.bdx0.initrd.availableKernelModules = lib.mkOption {
@@ -112,27 +132,7 @@
   };
   config = {
     bdx0.nix01.environment.systemPackages =
-      config.bdx0.environment.systemPackages ++ (with pkgs; [
-        lsd
-        tig
-        git
-        neovim
-        emacs
-        gh
-        nixfmt-classic
-        nix
-        git-crypt
-        nixos-rebuild
-        age
-        colmena
-        comma
-        just
-        kubectl
-        kubernetes-helm
-        helmfile
-        k9s
-        nixd
-      ]);
+      config.bdx0.environment.systemPackages;
     bdx0.nix02.environment.systemPackages =
       config.bdx0.environment.systemPackages;
     bdx0.nix03.environment.systemPackages =
