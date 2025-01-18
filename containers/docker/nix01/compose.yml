@@ -1,0 +1,89 @@
+# https://blog.shiftasia.com/postgres-failover-with-repmgr/
+services:
+  test:
+    image: busybox
+    command: ["sleep", "3600"]
+    dns:
+      - 100.100.100.100
+  pg1:
+    build: ./postgres
+    restart: always
+    ports:
+      - 5432:5432
+    dns:
+      - 100.100.100.100
+    environment:
+      REPMGR_PARTNER_NODES: nix01,nix03
+      BITNAMI_DEBUG: true
+      REPMGR_NODE_ID: 1
+      REPMGR_NODE_NAME: nix-01
+      REPMGR_NODE_NETWORK_NAME: nix01
+      REPMGR_PRIMARY_HOST: nix01
+      REPMGR_PASSWORD: repmgr
+      POSTGRESQL_PASSWORD: postgres
+      # REPMGR_PORT_NUMBER: 5432
+      # REPMGR_PRIMARY_PORT: 5432
+      # REPMGR_ROLE: primary
+      # POSTGRESQL_POSTGRES_PASSWORD: postgres123
+      # POSTGRESQL_USERNAME: docker
+      # POSTGRESQL_PASSWORD: docker
+      # POSTGRESQL_DATABASE: docker
+      # POSTGRESQL_SHARED_PRELOAD_LIBRARIES: paudit, pt_stat_statements
+      POSTGRESQL_SYNCHRONOUS_COMMIT_MODE: remote_write
+      # POSTGRESQL_NUM_SYNCHRONOUS_REPLICAS: 1
+    develop:
+      watch:
+        - action: rebuild
+          path: ./postgres/Dockerfile
+  # pg2:
+  #   build: ./postgres
+  #   container_name: pg2
+  #   restart: always
+  #   # network_mode: "host"
+  #   # volumes:
+  #   # - pg0_data:/bitnami/postgresql
+  #   # dns:
+  #   #   - 100.100.100.100
+  #   #   - 8.8.8.8
+  #   environment:
+  #     REPMGR_NODE_ID: 2
+  #     REPMGR_NODE_NAME: nix-02
+  #     REPMGR_NODE_NETWORK_NAME: pg2
+  #     REPMGR_PASSWORD: repmgr
+  #     REPMGR_PARTNER_NODES: nix01,pg2
+  #     REPMGR_PORT_NUMBER: 5432
+  #     REPMGR_PRIMARY_HOST: nix01
+  #     REPMGR_PRIMARY_PORT: 5432
+  #     POSTGRESQL_POSTGRES_PASSWORD: postgres
+  #     POSTGRESQL_USERNAME: repmgr
+  #     POSTGRESQL_PASSWORD: repmgr
+  #     POSTGRESQL_DATABASE: repmgr
+  #     # POSTGRESQL_SHARED_PRELOAD_LIBRARIES: paudit, pt_stat_statements
+  #     POSTGRESQL_SYNCHRONOUS_COMMIT_MODE: remote_write
+  #     POSTGRESQL_NUM_SYNCHRONOUS_REPLICAS: 1
+  #   develop:
+  #     watch:
+  #       - action: rebuild
+  #         path: ./postgres/Dockerfile
+  haproxy:
+    build: ./haproxy
+    restart: always
+    mem_limit: 8192m
+    ports:
+      - 3000:3000
+      - 5444:5432
+      - 5445:5433
+    privileged: true
+    dns:
+      - 100.100.100.100
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./haproxy/haproxy.cfg
+          target: /usr/local/etc/haproxy/haproxy.cfg
+        - action: rebuild
+          path: ./haproxy/scripts
+        - action: rebuild
+          path: ./haproxy/Dockerfile
+        # - action: rebuild
+        #   path: ./compose.yml

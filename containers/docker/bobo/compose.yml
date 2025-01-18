@@ -1,0 +1,6 @@
+# https://blog.shiftasia.com/postgres-failover-with-repmgr/
+services:
+  mytor:
+    image: dperson/torproxy
+    ports:
+      - 9050:9050

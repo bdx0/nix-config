@@ -11,13 +11,13 @@
 
     bdx0.hardware.enable = true;
     bdx0.hardware.type = "intel";
+    bdx0.container.engine = "docker";
 
     nixpkgs.config.allowUnfree = true;
     programs.nix-ld.enable = true;
 
     bdx0.services.monit.enable = true;
     bdx0.services.monit.address = "100.80.223.12";
-    bdx0.containers.hello_world.enable = true;
 
   };
 }

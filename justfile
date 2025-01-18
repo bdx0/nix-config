@@ -77,5 +77,10 @@ gclocal generations="5":
 	nix-store --gc
 	nix-collect-garbage -d
 
+
+# alias j := `just --justfile ./containers/docker/justfile --working-directory ./containers/docker`
+j *args:
+	cd ./containers/docker && just {{args}}
+
 repair:
 	nix-store --verify --repair --check-contents

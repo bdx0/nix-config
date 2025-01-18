@@ -17,11 +17,11 @@
 
     nixpkgs.config.allowUnfree = true;
     programs.nix-ld.enable = true;
-    bdx0.services.postgresql.enable = false;
-    bdx0.services.postgresql.enableTCPIP = true;
-    bdx0.services.postgresql.authentication =
-      config.services.postgresql.authentication;
-    bdx0.services.postgresql.settings = { wal_level = "logical"; };
+    # bdx0.services.postgresql.enable = false;
+    # bdx0.services.postgresql.enableTCPIP = true;
+    # bdx0.services.postgresql.authentication =
+    #   config.services.postgresql.authentication;
+    # bdx0.services.postgresql.settings = { wal_level = "logical"; };
 
     bdx0.services.monit.enable = true;
     bdx0.services.monit.address = "100.126.131.77";

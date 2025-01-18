@@ -1,0 +1,1 @@
+FROM docker.io/bitmani/postgresql-repmgr:15

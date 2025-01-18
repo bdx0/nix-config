@@ -1,0 +1,4 @@
+# https://blog.shiftasia.com/postgres-failover-with-repmgr/
+services:
+  postgres:
+    build: .

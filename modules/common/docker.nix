@@ -41,9 +41,9 @@ in {
         };
         enableOnBoot = true;
         #   extraOptions = "--registry-mirror=https://mirror.gcr.io --add-runtime crun=${pkgs.crun}/bin/crun --default-runtime=crun";
-        enableNvidia = lib.mkIf
-          (builtins.any (v: v == "nvidia") config.services.xserver.videoDrivers)
-          true;
+        # enableNvidia = lib.mkIf
+        #   (builtins.any (v: v == "nvidia") config.services.xserver.videoDrivers)
+        #   true;
         rootless = {
           enable = false;
           setSocketVariable = true;
