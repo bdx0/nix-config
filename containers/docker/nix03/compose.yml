@@ -5,7 +5,7 @@ services:
     command: ["sleep", "3600"]
     dns:
       - 100.100.100.100
-  pg3:
+  pg1:
     build: ./postgres
     restart: always
     dns:
@@ -13,7 +13,7 @@ services:
     ports:
       - 5432:5432
     environment:
-      REPMGR_PARTNER_NODES: nix01,nix03
+      REPMGR_PARTNER_NODES: nix01,nix03,bobo,lina,goku
       BITNAMI_DEBUG: true
       REPMGR_NODE_ID: 3
       REPMGR_NODE_NAME: nix-03
@@ -21,6 +21,7 @@ services:
       REPMGR_PRIMARY_HOST: nix01
       REPMGR_PASSWORD: repmgr
       POSTGRESQL_PASSWORD: postgres
+      POSTGRESQL_WAL_LEVEL: logical
       # REPMGR_PRIMARY_PORT: 5432
       # REPMGR_LOG_LEVEL: DEBUG
       # POSTGRESQL_POSTGRES_PASSWORD: postgres

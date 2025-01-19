@@ -34,12 +34,10 @@
     bdx0.libvirtd.enable = true;
     bdx0.vfio.enable = true;
     bdx0.vfio.IOMMUType = "intel";
+    bdx0.container.engine = "docker";
     # bdx0.vfio.devices = [ ];
 
-    # users.defaultUserShell = pkgs.bash;
-    # programs.bash.interactiveShellInit = "figurine ${name}";
     nixpkgs.config.allowUnfree = true;
-    # environment.systemPackages = with pkgs; [ kubectl ];
 
     boot.kernel.sysctl = {
       "net.bridge.bridge-nf-call-iptables" = 1;
@@ -197,17 +195,20 @@
       systemCronJobs = [ "0 3 * * * /sbin/reboot" ];
     };
 
-    services.monit.enable = true;
+    # services.monit.enable = true;
     # "https://blog.vinahost.vn/cai-dat-cau-hinh-monit/"
     # "https://viblo.asia/p/gioi-thieu-ve-monit-cong-cu-giam-sat-server-manh-me-gAm5ybDXKdb"
-    services.monit.config = ''
-      set daemon 120
-      set log /var/log/monit/monit.log
-      set httpd port 2812 and
-        use address 100.113.208.51
-        allow 100.106.121.43
-        allow dd
-    '';
+    # services.monit.config = ''
+    #   set daemon 120
+    #   set log /var/log/monit/monit.log
+    #   set httpd port 2812 and
+    #     use address 100.113.208.51
+    #     allow 100.106.121.43
+    #     allow dd
+    # '';
+
+    bdx0.services.monit.enable = true;
+    bdx0.services.monit.address = "100.113.208.51";
   };
 
 }

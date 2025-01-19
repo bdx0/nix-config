@@ -1,17 +1,6 @@
 { inputs, config, pkgs, ... }: {
   imports = [ inputs.self.nixosModules.common ];
   config = {
-    bdx0.hardware.enable = true;
-    bdx0.hardware.type = "amd";
-    bdx0.libvirtd.enable = true;
-    bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
-    bdx0.vfio.IOMMUType = "amd";
-    bdx0.vfio.enable = true;
-    bdx0.container.engine = "docker";
-    bdx0.container.nvidia.enable = true;
-    # boot.kernelModules = [ "ip=dhcp" "kvm-amd" "wl" ];
-    # boot.initrd.availableKernelModules = [ ]
-    #   ++ config.bdx0.common.initrd.availableKernelModules;
 
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/a60f182a-d292-45f2-921f-3eebb049a775";
@@ -30,14 +19,23 @@
       options = [ "rw" "uid=1000" ];
     };
 
-    # hardware.cpu.amd.updateMicrocode =
-    #   lib.mkDefault config.hardware.enableRedistributableFirmware;
-
     boot.loader.grub.device = "nodev";
     boot.loader.grub.efiSupport = true;
     boot.loader.grub.efiInstallAsRemovable = true;
     # boot.loader.systemd-boot.enable = true;
     # boot.loader.efi.canTouchEfiVariables = true;
+
+    bdx0.hardware.enable = true;
+    bdx0.hardware.type = "amd";
+    bdx0.libvirtd.enable = true;
+    bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
+    bdx0.vfio.IOMMUType = "amd";
+    bdx0.vfio.enable = true;
+    bdx0.container.engine = "docker";
+    # bdx0.container.nvidia.enable = true;
+    # boot.kernelModules = [ "ip=dhcp" "kvm-amd" "wl" ];
+    # boot.initrd.availableKernelModules = [ ]
+    #   ++ config.bdx0.common.initrd.availableKernelModules;
 
     nixpkgs.config.allowUnfree = true;
 
@@ -195,9 +193,10 @@
     # };
 
     services.rke2 = {
-      enable = false;
+      enable = true;
       role = "server";
-      configPath = config.age.secrets.rke2_config.path;
+      configPath = config.age.secrets.bobo_rke2_config.path;
+      debug = true;
     };
   };
 }

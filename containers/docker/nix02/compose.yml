@@ -15,7 +15,7 @@ services:
     environment:
       REPMGR_PARTNER_NODES: nix01,nix03,nix02
       BITNAMI_DEBUG: true
-      REPMGR_NODE_ID: 1
+      REPMGR_NODE_ID: 2
       REPMGR_NODE_NAME: nix-02
       REPMGR_NODE_NETWORK_NAME: nix02
       REPMGR_PRIMARY_HOST: nix01

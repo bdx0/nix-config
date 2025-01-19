@@ -1,10 +1,10 @@
 # https://blog.shiftasia.com/postgres-failover-with-repmgr/
 services:
-  test:
-    image: busybox
-    command: ["sleep", "3600"]
-    dns:
-      - 100.100.100.100
+  # test:
+  #   image: busybox
+  #   command: ["sleep", "3600"]
+  #   dns:
+  #     - 100.100.100.100
   pg1:
     build: ./postgres
     restart: always
@@ -13,7 +13,7 @@ services:
     dns:
       - 100.100.100.100
     environment:
-      REPMGR_PARTNER_NODES: nix01,nix03
+      REPMGR_PARTNER_NODES: nix01,nix03,bobo,lina,goku
       BITNAMI_DEBUG: true
       REPMGR_NODE_ID: 1
       REPMGR_NODE_NAME: nix-01
@@ -21,6 +21,7 @@ services:
       REPMGR_PRIMARY_HOST: nix01
       REPMGR_PASSWORD: repmgr
       POSTGRESQL_PASSWORD: postgres
+      POSTGRESQL_WAL_LEVEL: logical
       # REPMGR_PORT_NUMBER: 5432
       # REPMGR_PRIMARY_PORT: 5432
       # REPMGR_ROLE: primary

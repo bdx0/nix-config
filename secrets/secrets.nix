@@ -23,6 +23,8 @@ in {
     [ dd lina bobo goku mac2014 nix01 nix02 nix03 scratchHost ];
   "rke2_config.age".publicKeys =
     [ dd lina bobo goku mac2014 nix01 nix02 nix03 ];
+  "bobo_rke2_config.age".publicKeys =
+    [ dd lina bobo goku mac2014 nix01 nix02 nix03 ];
   "dd_pass.age".publicKeys =
     [ dd lina bobo goku mac2014 nix01 nix02 nix03 scratchHost ];
   "repmgr_pass.age".publicKeys =

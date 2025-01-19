@@ -1,1 +1,1 @@
-FROM docker.io/bitmani/postgresql-repmgr:15
+FROM bitnami/postgresql-repmgr:15

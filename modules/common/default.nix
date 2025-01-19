@@ -63,6 +63,9 @@ in {
       bdx0.server.enable = true;
       age.secrets.pg_pass = { file = ../../secrets/pgadmin.age; };
       age.secrets.rke2_config = { file = ../../secrets/rke2_config.age; };
+      age.secrets.bobo_rke2_config = {
+        file = ../../secrets/bobo_rke2_config.age;
+      };
       age.secrets.dd_pass = { file = ../../secrets/dd_pass.age; };
       environment.systemPackages = with pkgs; [
         wget
@@ -75,9 +78,9 @@ in {
         bridge-utils
         pciutils
         floorp
-        lsof
-        lshw
-        openiscsi
+        # lsof
+        # lshw
+        # openiscsi
         atop
       ];
       time.timeZone = "Asia/Ho_Chi_Minh";
@@ -166,6 +169,9 @@ in {
         host  all           postgres 100.106.121.43/32          trust
         # host  all           postgres 100.113.208.51/32         md5
         # host  all           postgres 100.79.175.84/32          md5
+        host  all           repuser 100.126.131.77/32          trust
+        host  all           repuser 100.106.121.43/32          trust
+
 
         # ipv6
         host  all           all     ::1/128                    trust
