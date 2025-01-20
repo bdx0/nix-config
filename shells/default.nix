@@ -29,6 +29,7 @@ in {
         helmfile
         k9s
         nix-prefetch-docker
+        virt-manager
       ] ++ (if agenixPkg != null then [ agenixPkg ] else [ ]);
     shellHook = ''
       source ${scripts_dir}/bin/bash_aliases

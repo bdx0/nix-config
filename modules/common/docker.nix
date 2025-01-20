@@ -5,6 +5,7 @@ in {
     engine = lib.mkOption {
       description = "Which is the engine turn on?";
       type = lib.types.enum [ "podman" "docker" "" ];
+      default = "";
     };
     nvidia = { enable = lib.mkEnableOption "docker with nvidia support"; };
     storageDriver = lib.mkOption {

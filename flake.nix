@@ -34,13 +34,16 @@
       flake = let
         nodes = [
           { name = "bobo"; }
-          { name = "goku"; }
+          { name = "bobo01"; }
           { name = "lina"; }
+          { name = "lina01"; }
           { name = "mac2014"; }
           { name = "scratchHost"; }
           { name = "nix01"; }
           { name = "nix02"; }
           { name = "nix03"; }
+          { name = "goku"; }
+          { name = "goku01"; }
         ];
       in {
         colmena = let

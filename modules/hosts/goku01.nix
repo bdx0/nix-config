@@ -20,7 +20,7 @@
     programs.nix-ld.enable = true;
 
     bdx0.services.monit.enable = true;
-    bdx0.services.monit.address = "100.126.131.77";
+    # bdx0.services.monit.address = "100.126.131.77";
 
   };
 }

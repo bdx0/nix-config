@@ -20,18 +20,26 @@ apply:
 mac2014:
 	colmena apply --impure --on mac2014 --show-trace
 
+test:
+	colmena apply --impure --on "nix-infect.local"
+
 lina:
 	colmena apply --impure --on lina --show-trace
+
+lina01:
+	colmena apply --impure --on lina01 --show-trace
 
 goku:
 	colmena apply --impure --on goku --show-trace
 
-test:
-	colmena apply --impure --on "nix-infect.local"
+goku01:
+	colmena apply --impure --on goku01 --show-trace
 
 bobo:
 	colmena apply --impure --on bobo --show-trace
 
+bobo01:
+	colmena apply --impure --on bobo01 --show-trace
 
 nix01:
 	colmena apply --impure --on nix01 --show-trace
