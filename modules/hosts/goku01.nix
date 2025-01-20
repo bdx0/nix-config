@@ -14,12 +14,11 @@
     bdx0.hardware.enable = true;
     bdx0.hardware.type = "intel";
     bdx0.container.engine = "docker";
-    bdx0.container.nvidia.enable = true;
 
     nixpkgs.config.allowUnfree = true;
     programs.nix-ld.enable = true;
 
-    bdx0.services.monit.enable = true;
+    # bdx0.services.monit.enable = true;
     # bdx0.services.monit.address = "100.126.131.77";
 
   };

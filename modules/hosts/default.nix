@@ -37,10 +37,13 @@
   };
 
   dev = import ./dev.nix;
-  bobo = import ./bobo.nix;
   mac2014 = import ./mac2014.nix;
+  bobo = import ./bobo.nix;
+  bobo01 = import ./bobo01.nix;
   goku = import ./goku.nix;
+  goku01 = import ./goku01.nix;
   lina = import ./lina.nix;
+  lina01 = import ./lina01.nix;
   nix01 = import ./nix01.nix;
   nix02 = import ./nix02.nix;
   nix03 = import ./nix03.nix;
