@@ -35,8 +35,10 @@
         nodes = [
           { name = "bobo"; }
           { name = "bobo01"; }
+          { name = "bobo02"; }
           { name = "lina"; }
           { name = "lina01"; }
+          { name = "lina02"; }
           { name = "mac2014"; }
           { name = "scratchHost"; }
           { name = "nix01"; }
@@ -44,6 +46,7 @@
           { name = "nix03"; }
           { name = "goku"; }
           { name = "goku01"; }
+          { name = "goku02"; }
         ];
       in {
         colmena = let

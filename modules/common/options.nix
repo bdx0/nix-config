@@ -9,6 +9,11 @@
     type = lib.types.listOf lib.types.package;
     default = [ ];
   };
+  options.bdx0.goku02.environment.systemPackages = lib.mkOption {
+    description = "goku02's system packages";
+    type = lib.types.listOf lib.types.package;
+    default = [ ];
+  };
   options.bdx0.lina.environment.systemPackages = lib.mkOption {
     description = "nix01's system packages";
     type = lib.types.listOf lib.types.package;
@@ -85,6 +90,11 @@
     default = [ ];
   };
   options.bdx0.goku01.initrd.availableKernelModules = lib.mkOption {
+    description = "List of kernel modules to include in the initrd";
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+  };
+  options.bdx0.goku02.initrd.availableKernelModules = lib.mkOption {
     description = "List of kernel modules to include in the initrd";
     type = lib.types.listOf lib.types.str;
     default = [ ];
@@ -175,6 +185,8 @@
       config.bdx0.environment.systemPackages;
     bdx0.goku01.environment.systemPackages =
       config.bdx0.environment.systemPackages;
+    bdx0.goku02.environment.systemPackages =
+      config.bdx0.environment.systemPackages;
     bdx0.lina.environment.systemPackages =
       config.bdx0.environment.systemPackages;
     bdx0.lina01.environment.systemPackages =
@@ -192,6 +204,8 @@
     bdx0.goku.initrd.availableKernelModules =
       config.bdx0.initrd.availableKernelModules;
     bdx0.goku01.initrd.availableKernelModules =
+      config.bdx0.initrd.availableKernelModules;
+    bdx0.goku02.initrd.availableKernelModules =
       config.bdx0.initrd.availableKernelModules;
     bdx0.lina.initrd.availableKernelModules =
       config.bdx0.initrd.availableKernelModules;

@@ -40,10 +40,13 @@
   mac2014 = import ./mac2014.nix;
   bobo = import ./bobo.nix;
   bobo01 = import ./bobo01.nix;
+  bobo02 = import ./bobo02.nix;
   goku = import ./goku.nix;
   goku01 = import ./goku01.nix;
+  goku02 = import ./goku02.nix;
   lina = import ./lina.nix;
   lina01 = import ./lina01.nix;
+  lina02 = import ./lina02.nix;
   nix01 = import ./nix01.nix;
   nix02 = import ./nix02.nix;
   nix03 = import ./nix03.nix;

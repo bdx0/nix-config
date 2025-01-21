@@ -1,4 +1,4 @@
-{ inputs, config, pkgs, lib, name, ... }: {
+{ inputs, config, pkgs, ... }: {
   imports = [ inputs.self.nixosModules.common ];
   config = {
 

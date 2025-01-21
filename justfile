@@ -29,17 +29,26 @@ lina:
 lina01:
 	colmena apply --impure --on lina01 --show-trace
 
+lina02:
+	colmena apply --impure --on lina02 --show-trace
+
 goku:
 	colmena apply --impure --on goku --show-trace
 
 goku01:
 	colmena apply --impure --on goku01 --show-trace
 
+goku02:
+	colmena apply --impure --on goku02 --show-trace
+
 bobo:
 	colmena apply --impure --on bobo --show-trace
 
 bobo01:
 	colmena apply --impure --on bobo01 --show-trace
+
+bobo02:
+	colmena apply --impure --on bobo02 --show-trace
 
 nix01:
 	colmena apply --impure --on nix01 --show-trace
@@ -49,15 +58,6 @@ nix02:
 
 nix03:
 	colmena apply --impure --on nix03 --show-trace
-
-cephgoku:
-	colmena apply --impure --on cephgoku --show-trace
-
-cephbobo:
-	colmena apply --impure --on cephbobo --show-trace
-
-cephlina:
-	colmena apply --impure --on cephlina --show-trace
 
 dev:
 	colmena apply --impure --on dev --show-trace
