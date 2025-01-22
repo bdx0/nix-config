@@ -90,5 +90,10 @@ gclocal generations="5":
 j *args:
 	cd ./containers/docker && just {{args}}
 
+drive:
+	just j deploy lina01
+	just j deploy nix01
+	just j deploy bobo01
+
 repair:
 	nix-store --verify --repair --check-contents

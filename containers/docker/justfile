@@ -7,8 +7,9 @@ docker host="nix02" cmd="ps":
 compose host="nix02" cmd="ps" :
     DOCKER_HOST="ssh://root@{{host}}" docker-compose -f {{host}}/compose.yml {{cmd}}
 
-deploy host="nix02":
-    DOCKER_HOST="ssh://root@{{host}}" docker-compose -f {{host}}/compose.yml up -d --remove-orphans --build
+deploy host="nix02" args="":
+    # DOCKER_HOST="ssh://root@{{host}}" docker-compose -f {{host}}/compose.yml up -d --remove-orphans --build
+    DOCKER_HOST="ssh://root@{{host}}" docker-compose -f {{host}}/compose.yml up -d --remove-orphans {{args}}
 
-dev host="nix02":
-    DOCKER_HOST="ssh://root@{{host}}" docker-compose -f {{host}}/compose.yml up --build --watch --remove-orphans
+dev host="nix02" args="":
+    DOCKER_HOST="ssh://root@{{host}}" docker-compose -f {{host}}/compose.yml up --build --watch --remove-orphans {{args}}

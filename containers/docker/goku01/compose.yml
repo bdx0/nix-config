@@ -1,0 +1,21 @@
+services:
+  master:
+    image: chrislusf/seaweedfs
+    ports:
+      - 9333:9333
+      - 19333:19333
+    command:
+      - master
+      - -ip.bind=0.0.0.0
+  volume:
+    image: chrislusf/seaweedfs
+    ports:
+      - 8080:8080
+      - 18080:18080
+    command:
+      - volume
+      - -mserver=master:9333
+      - -ip.bind=0.0.0.0
+      - -port=8080
+    depends_on:
+      - master

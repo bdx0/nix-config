@@ -5,6 +5,32 @@ services:
     command: ["sleep", "3600"]
     dns:
       - 100.100.100.100
+  master:
+    dns:
+      - 100.100.100.100
+    image: chrislusf/seaweedfs
+    ports:
+      - 9333:9333
+      - 19333:19333
+    command:
+      - master
+      - -ip=nix02
+      - -ip.bind=0.0.0.0
+      - -peers=lina01:9333,nix01:9333,bobo01:9333
+  volume:
+    dns:
+      - 100.100.100.100
+    image: chrislusf/seaweedfs
+    ports:
+      - 8080:8080
+      - 18080:18080
+    command:
+      - volume
+      - -mserver=lina01:9333,nix01:9333,bobo01:9333
+      - -ip.bind=0.0.0.0
+      - -port=8080
+    depends_on:
+      - master
   pg2:
     build: ./postgres
     restart: always
