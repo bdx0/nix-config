@@ -1,11 +1,12 @@
 # https://blog.shiftasia.com/postgres-failover-with-repmgr/
 services:
-  test:
-    image: busybox
-    command: ["sleep", "3600"]
-    dns:
-      - 100.100.100.100
+  # test:
+  #   image: busybox
+  #   command: ["sleep", "3600"]
+  #   dns:
+  #     - 100.100.100.100
   master:
+    restart: always
     dns:
       - 100.100.100.100
     image: chrislusf/seaweedfs
@@ -16,7 +17,8 @@ services:
       - master
       - -ip=nix02
       - -ip.bind=0.0.0.0
-      - -peers=lina01:9333,nix01:9333,bobo01:9333
+      - -peers=nix02:9333,nix01:9333,bobo01:9333
+      - -defaultReplication=111
   volume:
     dns:
       - 100.100.100.100
@@ -26,41 +28,44 @@ services:
       - 18080:18080
     command:
       - volume
-      - -mserver=lina01:9333,nix01:9333,bobo01:9333
+      - -mserver=nix02:9333,nix01:9333,bobo01:9333
       - -ip.bind=0.0.0.0
+      - -ip=nix02
       - -port=8080
-    depends_on:
-      - master
-  pg2:
-    build: ./postgres
-    restart: always
-    ports:
-      - 5432:5432
-    dns:
-      - 100.100.100.100
-    environment:
-      REPMGR_PARTNER_NODES: nix01,nix03,nix02
-      BITNAMI_DEBUG: true
-      REPMGR_NODE_ID: 2
-      REPMGR_NODE_NAME: nix-02
-      REPMGR_NODE_NETWORK_NAME: nix02
-      REPMGR_PRIMARY_HOST: nix01
-      REPMGR_PASSWORD: repmgr
-      POSTGRESQL_PASSWORD: postgres
-      # REPMGR_PORT_NUMBER: 5432
-      # REPMGR_PRIMARY_PORT: 5432
-      # REPMGR_ROLE: primary
-      # POSTGRESQL_POSTGRES_PASSWORD: postgres123
-      # POSTGRESQL_USERNAME: docker
-      # POSTGRESQL_PASSWORD: docker
-      # POSTGRESQL_DATABASE: docker
-      # POSTGRESQL_SHARED_PRELOAD_LIBRARIES: paudit, pt_stat_statements
-      POSTGRESQL_SYNCHRONOUS_COMMIT_MODE: remote_write
-      # POSTGRESQL_NUM_SYNCHRONOUS_REPLICAS: 1
-    develop:
-      watch:
-        - action: rebuild
-          path: ./postgres/Dockerfile
+      - -dataCenter=h1
+      - -rack=goku
+    # depends_on:
+    #   - master
+  # pg2:
+  #   build: ./postgres
+  #   restart: always
+  #   ports:
+  #     - 5432:5432
+  #   dns:
+  #     - 100.100.100.100
+  #   environment:
+  #     REPMGR_PARTNER_NODES: nix01,nix03,nix02
+  #     BITNAMI_DEBUG: true
+  #     REPMGR_NODE_ID: 2
+  #     REPMGR_NODE_NAME: nix-02
+  #     REPMGR_NODE_NETWORK_NAME: nix02
+  #     REPMGR_PRIMARY_HOST: nix01
+  #     REPMGR_PASSWORD: repmgr
+  #     POSTGRESQL_PASSWORD: postgres
+  #     # REPMGR_PORT_NUMBER: 5432
+  #     # REPMGR_PRIMARY_PORT: 5432
+  #     # REPMGR_ROLE: primary
+  #     # POSTGRESQL_POSTGRES_PASSWORD: postgres123
+  #     # POSTGRESQL_USERNAME: docker
+  #     # POSTGRESQL_PASSWORD: docker
+  #     # POSTGRESQL_DATABASE: docker
+  #     # POSTGRESQL_SHARED_PRELOAD_LIBRARIES: paudit, pt_stat_statements
+  #     POSTGRESQL_SYNCHRONOUS_COMMIT_MODE: remote_write
+  #     # POSTGRESQL_NUM_SYNCHRONOUS_REPLICAS: 1
+  #   develop:
+  #     watch:
+  #       - action: rebuild
+  #         path: ./postgres/Dockerfile
   # pg2:
   #   build: ./postgres
   #   container_name: pg2

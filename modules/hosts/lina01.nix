@@ -1,4 +1,4 @@
-{ inputs, ... }: {
+{ inputs, config, ... }: {
   imports = [ inputs.self.nixosModules.common ];
   config = {
 
@@ -24,6 +24,13 @@
       "net.bridge.bridge-nf-call-iptables" = 1;
       "net.bridge.bridge-nf-call-ip6tables" = 1;
       "net.ipv4.ip_forward" = 1;
+    };
+
+    services.rke2 = {
+      enable = true;
+      role = "server";
+      configPath = config.age.secrets.lina01_rke2_config.path;
+      debug = true;
     };
 
   };

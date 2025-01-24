@@ -63,6 +63,15 @@ in {
       bdx0.server.enable = true;
       age.secrets.pg_pass = { file = ../../secrets/pgadmin.age; };
       age.secrets.rke2_config = { file = ../../secrets/rke2_config.age; };
+      age.secrets.lina01_rke2_config = {
+        file = ../../secrets/lina01_rke2_config.age;
+      };
+      age.secrets.bobo01_rke2_config = {
+        file = ../../secrets/bobo01_rke2_config.age;
+      };
+      age.secrets.goku01_rke2_config = {
+        file = ../../secrets/goku01_rke2_config.age;
+      };
       age.secrets.bobo_rke2_config = {
         file = ../../secrets/bobo_rke2_config.age;
       };
@@ -129,9 +138,9 @@ in {
       };
 
       # clean system
+      # "https://nixos.wiki/wiki/Storage_optimization"
       nix = {
         package = pkgs.nixVersions.stable;
-        settings.warn-dirty = false;
         settings.experimental-features = [ "nix-command" "flakes" ];
         settings.auto-optimise-store = true;
         gc = {
@@ -140,6 +149,8 @@ in {
           options = "--delete-older-than 7d";
         };
       };
+      nix.settings.warn-dirty = false;
+      nix.optimise.automatic = true;
 
       hardware.enableAllFirmware = true;
 

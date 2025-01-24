@@ -1,4 +1,5 @@
 # https://blog.shiftasia.com/postgres-failover-with-repmgr/
+# https://medium.com/@stylishavocado/managing-docker-containers-in-nixos-fbda0f666dd1
 services:
   test:
     image: busybox

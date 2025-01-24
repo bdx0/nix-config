@@ -11,7 +11,8 @@ services:
       - master
       - -ip=nix01
       - -ip.bind=0.0.0.0
-      - -peers=lina01:9333,nix01:9333,bobo01:9333
+      - -peers=nix02:9333,nix01:9333,bobo01:9333
+      - -defaultReplication=111
   volume:
     dns:
       - 100.100.100.100
@@ -21,12 +22,71 @@ services:
       - 18080:18080
     command:
       - volume
-      - -mserver=lina01:9333,nix01:9333,bobo01:9333
+      - -mserver=nix02:9333,nix01:9333,bobo01:9333
       - -ip.bind=0.0.0.0
       - -ip=nix01
       - -port=8080
+      - -dataCenter=h1
+      - -rack=goku
     depends_on:
       - master
+  filer:
+    restart: always
+    dns:
+      - 100.100.100.100
+    image: chrislusf/seaweedfs
+    ports:
+      - 8888:8888
+      - 18888:18888
+    command:
+      - filer
+      - -master=nix02:9333,nix01:9333,bobo01:9333
+      - -ip=nix01
+      - -ip.bind=0.0.0.0
+    tty: true
+    stdin_open: true
+    depends_on:
+      - master
+      - volume
+  s3:
+    restart: always
+    image: chrislusf/seaweedfs
+    ports:
+      - 8333:8333
+      - 9327:9327
+    command:
+      - s3
+      - -filer=filer:8888
+      - -ip.bind=0.0.0.0
+      - -ip=nix01
+    depends_on:
+      - master
+      - volume
+      - filer
+  webdav:
+    restart: always
+    image: chrislusf/seaweedfs # use a remote image
+    ports:
+      - 7333:7333
+    command:
+      - webdav
+      - -filer=filer:8888
+    depends_on:
+      - master
+      - volume
+      - filer
+  pgadmin:
+    restart: always
+    dns:
+      - 100.100.100.100
+    image: dpage/pgadmin4
+    ports:
+      - 5080:80
+      - 5433:433
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@email.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin@1345
+
   # test:
   #   image: busybox
   #   command: ["sleep", "3600"]

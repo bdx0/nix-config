@@ -1,3 +1,4 @@
 hosts/freshHost/ssh_host_rsa_key filter=git-crypt diff=git-crypt
 modules/common/rke2_config.yaml filter=git-crypt diff=git-crypt
 containers/helm/k8s/cloudflared.yaml filter=git-crypt diff=git-crypt
+containers/docker/nix03/bdfs/rclone.conf filter=git-crypt diff=git-crypt

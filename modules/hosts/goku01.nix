@@ -1,4 +1,4 @@
-{ inputs, ... }: {
+{ inputs, config, ... }: {
   imports =
     [ inputs.self.nixosModules.common inputs.self.nixosModules.disko.btrfs ];
   config = {
@@ -21,5 +21,11 @@
     # bdx0.services.monit.enable = true;
     # bdx0.services.monit.address = "100.126.131.77";
 
+    services.rke2 = {
+      enable = true;
+      role = "server";
+      configPath = config.age.secrets.goku01_rke2_config.path;
+      debug = true;
+    };
   };
 }

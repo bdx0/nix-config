@@ -131,6 +131,7 @@
       openiscsi
       lsof
       lshw
+      cloud-utils
       # # "https://discourse.nixos.org/t/pull-docker-image-for-later-use/52106/6"
       # (pkgs.writeShellScriptBin "preload-images" ''
       #   # nix run nixpkgs#nix-prefetch-docker -- --image-name debian --image-tag buster

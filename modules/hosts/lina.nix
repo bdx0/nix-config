@@ -50,18 +50,18 @@
     #   # $PSQL atticd_v2 -tAc 'ALTER DATABASE atticd_v2 OWNER TO atticd' || true
     #   # $PSQL atticd_v2 -tAc "ALTER USER atticd WITH PASSWORD 'password'" || true
     # '';
-    services.pgadmin = let initialEmail = "admin@lina.bdx0.io.vn";
-    in {
-      inherit initialEmail;
-      enable = true;
-      settings = {
-        "ALLOW_HOSTS" = [ "*" ];
-        "DEFAULT_SERVER" = "0.0.0.0";
-        # "CONFIG_DATABASE_URI" =
-        #   "postgresql://pgadmin:pgadmin@127.0.0.1/pgadmin";
-      };
-      initialPasswordFile = config.age.secrets.pg_pass.path;
-    };
+    # services.pgadmin = let initialEmail = "admin@lina.bdx0.io.vn";
+    # in {
+    #   inherit initialEmail;
+    #   enable = true;
+    #   settings = {
+    #     "ALLOW_HOSTS" = [ "*" ];
+    #     "DEFAULT_SERVER" = "0.0.0.0";
+    #     # "CONFIG_DATABASE_URI" =
+    #     #   "postgresql://pgadmin:pgadmin@127.0.0.1/pgadmin";
+    #   };
+    #   initialPasswordFile = config.age.secrets.pg_pass.path;
+    # };
     # users.users.pgadmin = { extraGroups = [ config.users.groups.keys.name ]; };
     # systemd.services.pgadmin.serviceConfig.SupplimentaryGroups =
     #   [ config.users.groups.keys.name ];
@@ -184,12 +184,12 @@
     #   };
     # };
 
-    services.rke2 = {
-      enable = true;
-      role = "server";
-      configPath = config.age.secrets.rke2_config.path;
-      debug = true;
-    };
+    # services.rke2 = {
+    #   enable = true;
+    #   role = "server";
+    #   configPath = config.age.secrets.rke2_config.path;
+    #   debug = true;
+    # };
     services.cron = {
       enable = true;
       systemCronJobs = [ "0 3 * * * /sbin/reboot" ];
@@ -208,7 +208,7 @@
     # '';
 
     bdx0.services.monit.enable = true;
-    bdx0.services.monit.address = "100.113.208.51";
+    bdx0.services.monit.address = "lina";
   };
 
 }

@@ -1,17 +1,20 @@
 services:
-  master:
-    dns:
-      - 100.100.100.100
-    image: chrislusf/seaweedfs
-    ports:
-      - 9333:9333
-      - 19333:19333
-    command:
-      - master
-      - -ip=lina01
-      - -ip.bind=0.0.0.0
-      - -peers=lina01:9333,nix01:9333,bobo01:9333
+  # master:
+  #   restart: always
+  #   dns:
+  #     - 100.100.100.100
+  #   image: chrislusf/seaweedfs
+  #   ports:
+  #     - 9333:9333
+  #     - 19333:19333
+  #   command:
+  #     - master
+  #     - -ip=lina01
+  #     - -ip.bind=0.0.0.0
+  #     - -peers=lina01:9333,nix01:9333,bobo01:9333
+  #     - -defaultReplication=111
   volume:
+    restart: always
     dns:
       - 100.100.100.100
     image: chrislusf/seaweedfs
@@ -20,13 +23,16 @@ services:
       - 18080:18080
     command:
       - volume
-      - -mserver=lina01:9333,nix01:9333,bobo01:9333
+      - -mserver=nix02:9333,nix01:9333,bobo01:9333
       - -ip.bind=0.0.0.0
       - -ip=lina01
       - -port=8080
+      - -dataCenter=h1
+      - -rack=lina
     depends_on:
       - master
   filer:
+    restart: always
     dns:
       - 100.100.100.100
     image: chrislusf/seaweedfs
@@ -35,7 +41,7 @@ services:
       - 18888:18888
     command:
       - filer
-      - -master=lina01:9333,nix01:9333,bobo01:9333
+      - -master=nix02:9333,nix01:9333,bobo01:9333
       - -ip=lina01
       - -ip.bind=0.0.0.0
     tty: true
@@ -44,6 +50,7 @@ services:
       - master
       - volume
   s3:
+    restart: always
     image: chrislusf/seaweedfs
     ports:
       - 8333:8333
@@ -57,13 +64,25 @@ services:
       - volume
       - filer
   webdav:
+    restart: always
     image: chrislusf/seaweedfs # use a remote image
     ports:
       - 7333:7333
     command:
-    - webdav
-    - -filer=filer:8888
+      - webdav
+      - -filer=filer:8888
     depends_on:
       - master
       - volume
       - filer
+  pgadmin:
+    restart: always
+    dns:
+      - 100.100.100.100
+    image: dpage/pgadmin4
+    ports:
+      - 5080:80
+      - 5433:433
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@email.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin@1345
