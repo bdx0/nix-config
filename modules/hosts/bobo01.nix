@@ -1,5 +1,5 @@
 # file: bobo01.nix
-{ inputs, ... }: {
+{ inputs, config, ... }: {
   imports = [ inputs.self.nixosModules.common ];
   config = {
 
@@ -14,18 +14,19 @@
     bdx0.hardware.type = "amd";
     # bdx0.libvirtd.enable = true;
     # bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
-    # bdx0.vfio.IOMMUType = "amd";
+    # bdx0.vfio.IOMMUType = config.bdx0.hardware.type;
     # bdx0.vfio.enable = true;
     bdx0.container.engine = "docker";
-    # bdx0.container.nvidia.enable = true;
+    bdx0.container.nvidia.enable = true;
 
     nixpkgs.config.allowUnfree = true;
+    programs.nix-ld.enable = true;
 
-    # services.rke2 = {
-    #   enable = false;
-    #   role = "server";
-    #   configPath = config.age.secrets.bobo_rke2_config.path;
-    #   debug = true;
-    # };
+    services.rke2 = {
+      enable = true;
+      role = "server";
+      configPath = config.age.secrets.bobo01_rke2_config.path;
+      debug = true;
+    };
   };
 }

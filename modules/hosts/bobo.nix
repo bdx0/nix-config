@@ -18,6 +18,16 @@
       fsType = "ntfs-3g";
       options = [ "rw" "uid=1000" ];
     };
+    fileSystems."/run/media/sd2tb" = {
+      device = "/dev/disk/by-uuid/5EAA41DB22EB8BC9";
+      fsType = "ntfs-3g";
+      options = [ "rw" "uid=1000" ];
+    };
+    fileSystems."/run/media/ddx2t" = {
+      device = "/dev/disk/by-uuid/2FAB6B1C3C1EAB45";
+      fsType = "ntfs-3g";
+      options = [ "rw" "uid=1000" ];
+    };
 
     boot.loader.grub.device = "nodev";
     boot.loader.grub.efiSupport = true;

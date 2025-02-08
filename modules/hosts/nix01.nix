@@ -21,6 +21,10 @@
 
     bdx0.services.monit.enable = true;
     bdx0.services.monit.address = "100.126.131.77";
+    environment.etc."/fuse.conf".text = ''
+      user_allow_other
+      mount_max = 1000
+    '';
 
   };
 }
