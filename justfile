@@ -88,7 +88,7 @@ gclocal generations="5":
 
 # alias j := `just --justfile ./containers/docker/justfile --working-directory ./containers/docker`
 j *args:
-	cd ./containers/docker && just {{args}}
+	cd ./containers/docker && nix run nixpkgs#just -- {{args}}
 
 drive:
 	just j deploy lina01

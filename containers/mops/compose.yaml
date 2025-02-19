@@ -1,0 +1,39 @@
+services:
+  docker:
+    image: docker:dind
+    restart: always
+    # ports:
+    #  - 2376:2376
+    environment:
+      DOCKER_TLS_CERTDIR: /certs
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/var/jenkins_home
+    privileged: true
+  jenkins-agent:
+    restart: always
+    build: jk-agent
+    # ports:
+    #   - 2222:22
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      JENKINS_AGENT_SSH_PUBKEY: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDrSYLQRu47UslqXlepgIFrSKTtyugJ+wk7rGvoBuvqsuYarkKKma7SgZ9/eA0L5uCRAyKvpHPe99akkeLvuAIUKX9dw/zJUUjVtGPUTeAeJwWNzbLdWdxbFfnJVsmMdqNTJAW4YpECulZadFzlJxYjjVL8RXeYj2looiOY7VO5mZz7VGUBYTfeNyrIGP5LcVufM4o2bzsGqRvOyWIvtKFZgpXjUtKTuL8Ye6rWKThRJrRSKH6XGQV+woPwAn4WW2Y7jjO5j+i6EfKxxvRdINhTVL9i0KdajsytbmJ6OYdpP87jb9dD7UG7ANdL7HRPQszKPa+AIy9kc7tVN10dB/7CpOwkwAJclSIhhlW94EWsJnnMjhtykac56L3l7DsXnnBZJbtIDu6dQTf0LSnSWUKfBi+poeZ6P4ZZd4/TO/kOi0ua9A3OkwZwPiZjow4CZBVk8HjKRBtHVAOcVgaB08V/luc53ofyRBR0cSCNfLwEgMZ3N8l9bo5bEcHPzDNZsA2NqcSFmGL1WBUu3vXc6i2RY/Kk4YwibWQCmuNKdOHDn0Tlxhhiklu0LNmP9trAGLyqFaOGe0ETEAvHisVg4vz7cmLLk7b5ONxMPdBQbmFl9rXOrxQaWyJWrbQMUMMwmlVQ4OJJvJmzFJAPcuWhlrPAjGsrVUaO01uaonXM4Wvv9Q== baoduy.duong0206@gmail.com
+  jenkins:
+    restart: always
+    build: .
+    ports:
+      - 8080:8080
+      - 50000:5000
+    environment:
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: 1
+    volumes:
+      - jenkins-docker-certs:/certs/client:ro
+      - jenkins-data:/var/jenkins_home
+      # - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  jenkins-docker-certs: {}
+  jenkins-data: {}

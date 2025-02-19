@@ -27,5 +27,9 @@
       configPath = config.age.secrets.goku01_rke2_config.path;
       debug = true;
     };
+    environment.etc."/fuse.conf".text = ''
+      user_allow_other
+      mount_max = 1000
+    '';
   };
 }
