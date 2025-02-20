@@ -1,0 +1,46 @@
+git:latest
+github-oauth:latest
+github-organization-folder:latest
+kubernetes:latest
+docker-plugin:latest
+docker-workflow:latest
+blueocean:latest
+job-dsl:latest
+ansicolor:latest
+github-branch-source:latest
+credentials:latest
+configuration-as-code:latest
+configuration-as-code-secret-ssm:latest
+# docker-build-step:latest
+# docker-slaves:latest
+# maven-plugin:latest
+# nodelabelparameter:latest
+# script-security:latest
+# purge-build-queue-plugin:latest
+# ant:latest
+# pam-auth:latest
+# timestamper:latest
+# configuration-as-code-groovy:latest
+# durable-task:latest
+# mailer:latest
+# antisamy-markup-formatter:latest
+# build-timeout:latest
+# # cloudbees-folder:latest
+# credentials-binding:latest
+# email-ext:latest
+# gradle:latest
+# ldap:latest
+# matrix-auth:latest
+# pipeline-github-lib:latest
+# pipeline-stage-view:latest
+# ssh-slaves:latest
+# workflow-aggregator:latest
+# ws-cleanup:latest
+# jdk-tool:latest
+# adoptopenjdk:latest
+# terraform:latest
+# ansible:latest
+# fstrigger:latest
+# pyenv-pipeline:latest
+# shiningpanda:latest
+# terminal:latest

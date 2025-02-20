@@ -2,14 +2,19 @@ services:
   docker:
     image: docker:dind
     restart: always
+    # ports:
+    #  - 2376:2376
     environment:
       DOCKER_TLS_CERTDIR: /certs
     volumes:
       - jenkins-docker-certs:/certs/client
+      - jenkins-data:/var/jenkins_home
     privileged: true
   jenkins-agent:
     restart: always
     build: jk-agent
+    # ports:
+    #   - 2222:22
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
@@ -20,12 +25,15 @@ services:
     ports:
       - 8080:8080
       - 50000:5000
-    env_file:
-      - ./secret/.env
+    environment:
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: 1
     volumes:
       - jenkins-docker-certs:/certs/client:ro
-      - ./casc.d:/var/jenkins_home/casc.d:ro
-      - ./secret:/secret:ro
+      - jenkins-data:/var/jenkins_home
+      # - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   jenkins-docker-certs: {}
+  jenkins-data: {}

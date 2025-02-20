@@ -2,12 +2,13 @@ default:
 	@just --list
 
 dev:
-	docker compose up
+	docker compose up -f compose.dev.yaml --build
 
 run:
 	docker compose up -d --build
 
 agent:
 	docker compose up -d --build jenkins-agent
+
 # agent:
 #  docker run -d --rm --name=agent1 -p 2222:22 -v /var/run/docker.sock:/var/run/docker.sock  -e "JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDrSYLQRu47UslqXlepgIFrSKTtyugJ+wk7rGvoBuvqsuYarkKKma7SgZ9/eA0L5uCRAyKvpHPe99akkeLvuAIUKX9dw/zJUUjVtGPUTeAeJwWNzbLdWdxbFfnJVsmMdqNTJAW4YpECulZadFzlJxYjjVL8RXeYj2looiOY7VO5mZz7VGUBYTfeNyrIGP5LcVufM4o2bzsGqRvOyWIvtKFZgpXjUtKTuL8Ye6rWKThRJrRSKH6XGQV+woPwAn4WW2Y7jjO5j+i6EfKxxvRdINhTVL9i0KdajsytbmJ6OYdpP87jb9dD7UG7ANdL7HRPQszKPa+AIy9kc7tVN10dB/7CpOwkwAJclSIhhlW94EWsJnnMjhtykac56L3l7DsXnnBZJbtIDu6dQTf0LSnSWUKfBi+poeZ6P4ZZd4/TO/kOi0ua9A3OkwZwPiZjow4CZBVk8HjKRBtHVAOcVgaB08V/luc53ofyRBR0cSCNfLwEgMZ3N8l9bo5bEcHPzDNZsA2NqcSFmGL1WBUu3vXc6i2RY/Kk4YwibWQCmuNKdOHDn0Tlxhhiklu0LNmP9trAGLyqFaOGe0ETEAvHisVg4vz7cmLLk7b5ONxMPdBQbmFl9rXOrxQaWyJWrbQMUMMwmlVQ4OJJvJmzFJAPcuWhlrPAjGsrVUaO01uaonXM4Wvv9Q== baoduy.duong0206@gmail.com" jenkins/ssh-agent:alpine-jdk17
