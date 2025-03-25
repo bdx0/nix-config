@@ -6,8 +6,8 @@
     boot.loader.systemd-boot.enable = false;
     # config with efiInstallAsRemovable = true
     boot.loader.efi.canTouchEfiVariables = true;
-    boot.loader.efi.efiSysMountPoint = "/boot/efi";
-    boot.loader.grub.devices = [ "/dev/sdf" ];
+    # boot.loader.efi.efiSysMountPoint = "/boot/efi";
+    boot.loader.grub.devices = [ "/dev/nvme0n1" ];
     # boot.loader.grub.device = "nodev";
     boot.loader.grub.efiSupport = true;
     boot.loader.grub.efiInstallAsRemovable = false;
@@ -47,6 +47,7 @@
       "net.bridge.bridge-nf-call-iptables" = 1;
       "net.bridge.bridge-nf-call-ip6tables" = 1;
       "net.ipv4.ip_forward" = 1;
+      "net.ipv6.conf.all.forwarding" = "1";
     };
 
     # services.xserver = { videoDrivers = [ "nvidia" ]; };

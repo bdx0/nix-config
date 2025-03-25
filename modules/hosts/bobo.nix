@@ -49,6 +49,13 @@
 
     nixpkgs.config.allowUnfree = true;
 
+    boot.kernel.sysctl = {
+      "net.bridge.bridge-nf-call-iptables" = 1;
+      "net.bridge.bridge-nf-call-ip6tables" = 1;
+      "net.ipv4.ip_forward" = 1;
+      "net.ipv6.conf.all.forwarding" = 1;
+    };
+
     # # systemd.services.postgresql.postStart = pkgs.lib.mkAfter ''
     # #   # $PSQL atticd_v2 -tAc 'GRANT ALL ON ALL TABLES IN SCHEMA public TO atticd' || true
     # #   # $PSQL atticd_v2 -tAc 'GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO atticd' || true
@@ -202,11 +209,11 @@
     #   };
     # };
 
-    services.rke2 = {
-      enable = true;
-      role = "server";
-      configPath = config.age.secrets.bobo_rke2_config.path;
-      debug = true;
-    };
+    # services.rke2 = {
+    #   enable = true;
+    #   role = "server";
+    #   configPath = config.age.secrets.bobo_rke2_config.path;
+    #   debug = true;
+    # };
   };
 }

@@ -1,7 +1,8 @@
 {
   description = "Make flake for nix-config";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
+    # nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
+    nixpkgs.url = "github:bdx0/nixpkgs?ref=nixpkgs-unstable";
     nixos.url = "github:nixos/nixpkgs?ref=nixos-24.11";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixos-anywhere.url = "github:nix-community/nixos-anywhere";

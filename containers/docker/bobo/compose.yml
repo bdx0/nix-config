@@ -1,11 +1,6 @@
 # https://blog.shiftasia.com/postgres-failover-with-repmgr/
 # https://medium.com/@stylishavocado/managing-docker-containers-in-nixos-fbda0f666dd1
 services:
-  test:
-    image: busybox
-    command: ["sleep", "3600"]
-    dns:
-      - 100.100.100.100
   pg1:
     build: ./postgres
     restart: always
@@ -31,6 +26,11 @@ services:
       # POSTGRESQL_SHARED_PRELOAD_LIBRARIES: paudit, pt_stat_statements
       POSTGRESQL_SYNCHRONOUS_COMMIT_MODE: remote_write
       # POSTGRESQL_NUM_SYNCHRONOUS_REPLICAS: 1
+      # POSTGRESQL_CONFIG_EXTRA: |
+      #   wal_log_hints = on
+      #   data_checksums = on
+
+
 
     develop:
       watch:
@@ -41,7 +41,7 @@ services:
     restart: always
     mem_limit: 8192m
     ports:
-      - 3000:3000
+      - 3333:3000
       - 5444:5432
       - 5445:5433
     privileged: true
