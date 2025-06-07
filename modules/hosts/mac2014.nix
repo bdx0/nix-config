@@ -1,22 +1,27 @@
-{ inputs, pkgs, config, ... }: {
+{ inputs, lib, pkgs, config, ... }: {
   imports = [ inputs.self.nixosModules.common ];
 
   config = {
-    boot.initrd.availableKernelModules = [
-      "xhci_pci"
-      "virtio_pci"
-      "uhci_hcd"
-      "ehci_pci"
-      "ahci"
-      "firewire_ohci"
-      "usbhid"
-      "usb_storage"
-      "sd_mod"
-      "sdhci_pci"
-    ];
+    # boot.initrd.availableKernelModules = [
+    #   "xhci_pci"
+    #   "virtio_pci"
+    #   "uhci_hcd"
+    #   "ehci_pci"
+    #   "ahci"
+    #   "firewire_ohci"
+    #   "usbhid"
+    #   "usb_storage"
+    #   "sd_mod"
+    #   "sdhci_pci"
+    # ];
     boot.initrd.kernelModules = [ "dm-snapshot" ];
     boot.kernelModules = [ "kvm-intel" "wl" "ip=dhcp" ];
     boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
+    boot.tmp.cleanOnBoot = true;
+    zramSwap.enable = false;
+
+    bdx0.hardware.enable = true;
+    bdx0.hardware.type = "intel";
 
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/8e7e9985-58f6-47ae-883d-5c7e6f49cfa4";
@@ -32,12 +37,15 @@
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.systemd-boot.enable = true;
 
-    networking.hostName = "mac2014";
-    networking.domain = "mac2014.bdx0.io.vn";
+    # networking.hostName = "mac2014";
+    # networking.domain = "mac2014.bdx0.io.vn";
 
-    environment.systemPackages = with pkgs;
-      [ wget figurine cmatrix tmux git tig lazydocker lazygit ]
-      ++ config.bdx0.common.packages;
+    bdx0.mac2014.environment.systemPackages = with pkgs;
+      lib.mkAfter [ wget cmatrix tmux lazydocker ];
+
+    # environment.systemPackages = with pkgs;
+    #   [ wget figurine cmatrix tmux git tig lazydocker lazygit ]
+    #   ++ config.bdx0.common.packages;
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
     # programs.mtr.enable = true;

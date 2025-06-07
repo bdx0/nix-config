@@ -12,6 +12,16 @@ let
       # pskRaw =
       #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
     };
+    "GuaMup" = { # SSID with no spaces or special characters
+      psk = "0907650206"; # (password will be written to /nix/store!)
+      # pskRaw =
+      #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
+    };
+    "GMHub" = { # SSID with no spaces or special characters
+      psk = "0907650206"; # (password will be written to /nix/store!)
+      # pskRaw =
+      #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
+    };
   };
 
   scripts_dir = import ../../scripts { inherit pkgs; };

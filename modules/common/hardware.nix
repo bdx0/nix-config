@@ -22,7 +22,7 @@ in {
       "fs.inotify.max_user_instances" = 1000000;
     };
     boot.initrd.kernelModules =
-      [ "nvme" "dm-snapshot" "wl" "dm-raid" "dm-cache-default" ];
+      [ "nvme" "dm-snapshot" "dm-raid" "dm-cache-default" ]; # "wl"
     boot.extraModulePackages = [
       config.boot.kernelPackages.broadcom_sta
       config.boot.kernelPackages.rtl8192eu

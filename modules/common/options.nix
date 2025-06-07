@@ -49,6 +49,11 @@
     type = lib.types.listOf lib.types.package;
     default = [ ];
   };
+  options.bdx0.mac2014.environment.systemPackages = lib.mkOption {
+    description = "mac2014's system packages";
+    type = lib.types.listOf lib.types.package;
+    default = [ ];
+  };
   options.bdx0.nix01.initrd.availableKernelModules = lib.mkOption {
     description = "List of kernel modules to include in the initrd";
     type = lib.types.listOf lib.types.str;
@@ -99,6 +104,11 @@
     type = lib.types.listOf lib.types.str;
     default = [ ];
   };
+  options.bdx0.mac2014.initrd.availableKernelModules = lib.mkOption {
+    description = "List of kernel modules to include in the initrd";
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+  };
   options.bdx0.environment.systemPackages = lib.mkOption {
     description = "packages to install";
     type = lib.types.listOf lib.types.package;
@@ -134,7 +144,7 @@
       cloud-utils
       tmux
       seaweedfs
-      tpm-tool
+      tpm-tools
       swtpm
       OVMF
       # # "https://discourse.nixos.org/t/pull-docker-image-for-later-use/52106/6"
@@ -201,6 +211,8 @@
       config.bdx0.environment.systemPackages;
     bdx0.bobo01.environment.systemPackages =
       config.bdx0.environment.systemPackages;
+    bdx0.mac2014.environment.systemPackages =
+      config.bdx0.environment.systemPackages;
     bdx0.nix01.initrd.availableKernelModules =
       config.bdx0.initrd.availableKernelModules;
     bdx0.nix02.initrd.availableKernelModules =
@@ -220,6 +232,8 @@
     bdx0.bobo.initrd.availableKernelModules =
       config.bdx0.initrd.availableKernelModules;
     bdx0.bobo01.initrd.availableKernelModules =
+      config.bdx0.initrd.availableKernelModules;
+    bdx0.mac2014.initrd.availableKernelModules =
       config.bdx0.initrd.availableKernelModules;
   };
 }
