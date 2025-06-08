@@ -1,4 +1,4 @@
-{ inputs, ... }: {
+{ inputs, config, ... }: {
   imports = [ inputs.self.nixosModules.common ];
   config = {
 
@@ -12,7 +12,12 @@
     boot.loader.grub.efiSupport = true;
     boot.loader.grub.efiInstallAsRemovable = false;
     # boot.supportedFilesystems = ["zfs"];
-    boot.extraModulePackages = [ ];
+    boot.kernelModules = [ "kvm-intel" "wl" "ip=dhcp" ];
+    boot.initrd.kernelModules = [ "dm-snapshot" ];
+    boot.extraModulePackages = [
+      config.boot.kernelPackages.broadcom_sta
+      config.boot.kernelPackages.rtl8192eu
+    ];
 
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/da68fc10-e2ea-43c0-834a-2362d6d955a1";
@@ -27,6 +32,11 @@
 
     fileSystems."/run/media/Data3T" = {
       device = "/dev/disk/by-uuid/7fadc837-1530-482d-b4f8-09c1fd50419d";
+      fsType = "ext4";
+    };
+
+    fileSystems."/run/media/DATA3T2" = {
+      device = "/dev/disk/by-uuid/fd6316af-9ef1-4be6-90b5-756756f2d871";
       fsType = "ext4";
     };
 

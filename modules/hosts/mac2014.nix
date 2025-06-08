@@ -14,9 +14,6 @@
     #   "sd_mod"
     #   "sdhci_pci"
     # ];
-    boot.initrd.kernelModules = [ "dm-snapshot" ];
-    boot.kernelModules = [ "kvm-intel" "wl" "ip=dhcp" ];
-    boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
     boot.tmp.cleanOnBoot = true;
     zramSwap.enable = false;
 
@@ -33,6 +30,13 @@
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };
+
+    boot.kernelModules = [ "kvm-intel" "wl" "ip=dhcp" ];
+    boot.initrd.kernelModules = [ "dm-snapshot" ];
+    boot.extraModulePackages = [
+      config.boot.kernelPackages.broadcom_sta
+      config.boot.kernelPackages.rtl8192eu
+    ];
 
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.systemd-boot.enable = true;

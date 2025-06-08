@@ -1,4 +1,4 @@
-{ inputs, config, ... }: {
+{ inputs, pkgs, ... }: {
   imports =
     [ inputs.self.nixosModules.common inputs.self.nixosModules.disko.btrfs ];
   config = {
@@ -18,18 +18,29 @@
     nixpkgs.config.allowUnfree = true;
     programs.nix-ld.enable = true;
 
+    bdx0.goku01.environment.systemPackages = with pkgs;
+      lib.mkAfter [
+        wget
+        cmatrix
+        tmux
+        lazydocker
+        snapraid
+        mergerfs
+        mergerfs-tools
+      ];
+
     # bdx0.services.monit.enable = true;
     # bdx0.services.monit.address = "100.126.131.77";
 
-    services.rke2 = {
-      enable = true;
-      role = "server";
-      configPath = config.age.secrets.goku01_rke2_config.path;
-      debug = true;
-    };
-    environment.etc."/fuse.conf".text = ''
-      user_allow_other
-      mount_max = 1000
-    '';
+    # services.rke2 = {
+    #   enable = true;
+    #   role = "server";
+    #   configPath = config.age.secrets.goku01_rke2_config.path;
+    #   debug = true;
+    # };
+    # environment.etc."/fuse.conf".text = ''
+    #   user_allow_other
+    #   mount_max = 1000
+    # '';
   };
 }

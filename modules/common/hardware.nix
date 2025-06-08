@@ -23,10 +23,6 @@ in {
     };
     boot.initrd.kernelModules =
       [ "nvme" "dm-snapshot" "dm-raid" "dm-cache-default" ]; # "wl"
-    boot.extraModulePackages = [
-      config.boot.kernelPackages.broadcom_sta
-      config.boot.kernelPackages.rtl8192eu
-    ];
     boot.kernelModules =
       [ "ip=dhcp" "wl" "dm-raid" "dm-snapshot" "dm-cache-default" ]
       ++ (lib.optional (cfg.type == "intel") "kvm-intel")
