@@ -86,8 +86,15 @@ in {
     users.users.dd = {
       isNormalUser = true;
       home = "/home/dd";
-      extraGroups =
-        [ "wheel" "networkmanager" "docker" "libvirtd" "incus-admin" ];
+      extraGroups = [
+        "dd"
+        "wheel"
+        "networkmanager"
+        "docker"
+        "libvirtd"
+        "incus-admin"
+        # "sambashare"
+      ];
       openssh.authorizedKeys.keys = import ../ssh/bdx0.keys.nix;
       packages = with pkgs; [ tree neovim ];
       hashedPasswordFile = config.age.secrets.dd_pass.path;
