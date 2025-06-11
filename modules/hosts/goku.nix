@@ -3,6 +3,7 @@
   config = {
 
     boot.loader.grub.enable = true;
+    boot.loader.grub.version = 2;
     boot.loader.systemd-boot.enable = false;
     # config with efiInstallAsRemovable = true
     boot.loader.efi.canTouchEfiVariables = true;
@@ -21,7 +22,7 @@
 
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/da68fc10-e2ea-43c0-834a-2362d6d955a1";
-      fsType = "ext4";
+      fsType = "ext4"; # chuyển qua dùng btrfs
     };
 
     fileSystems."/boot" = {
@@ -41,7 +42,8 @@
     };
 
     boot.tmp.cleanOnBoot = true;
-    zramSwap.enable = false;
+    zramSwap.enable = true;
+    zramSwap.memoryPercent = 50;
 
     bdx0.hardware.enable = true;
     bdx0.hardware.type = "intel";
