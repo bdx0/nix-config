@@ -95,6 +95,7 @@
       fileSystems."/mnt/parity1" = {
         device = "UUID=0aa27db7-b80c-43e1-a865-b2b53f2fe649";
         fsType = "ext4";
+        options = [ "nofail" ];
       };
 
       # fileSystems."/mnt/storage" = {
@@ -259,14 +260,20 @@
             "map to guest" = "Bad User";
           };
           public = {
+            Comment = "OMV shared folder";
             path = "/mnt/storage/public";
             browseable = "yes";
+            Writable = "yes";
+            Public = "yes";
             "read only" = "no";
             "guest ok" = "yes";
-            "create mask" = "0664";
-            "directory mask" = "0775";
+            # "create mask" = "0664";
+            "create mask" = "0777";
+            # "directory mask" = "0775";
+            "directory mask" = "0777";
             "force user" = "nobody";
             "force group" = "sambashare";
+            "valid users" = "dd zz";
             # optional: ép quyền tạo file dưới user cụ thể
             # "force user" = "youruser";
             # "force group" = "yourgroup";

@@ -35,7 +35,7 @@
     boot.initrd.kernelModules = [ "dm-snapshot" ];
     boot.extraModulePackages = [
       config.boot.kernelPackages.broadcom_sta
-      config.boot.kernelPackages.rtl8192eu
+      # config.boot.kernelPackages.rtl8192eu
     ];
 
     boot.loader.efi.canTouchEfiVariables = true;
@@ -61,5 +61,9 @@
     # (/run/current-system/configuration.nix). This is useful in case you
     # accidentally delete configuration.nix.
     # system.copySystemConfiguration = true;
+    bdx0.services.network-recovery = {
+      enable = true;
+      interfaces = [ "enp2s0f0" "wlp3s0" ];
+    };
   };
 }

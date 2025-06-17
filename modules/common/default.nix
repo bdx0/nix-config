@@ -19,6 +19,7 @@ in {
     ./repmgr.nix
     ./onedb.nix
     ./monit.nix
+    ./network-recovery.nix
   ];
   options.bdx0.common = {
     enable = lib.mkOption {
