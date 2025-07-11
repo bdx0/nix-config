@@ -1,4 +1,4 @@
-{ inputs, ... }: {
+{ inputs, pkgs, ... }: {
   imports =
     [ inputs.self.nixosModules.common inputs.self.nixosModules.disko.btrfs ];
   config = {
@@ -26,5 +26,23 @@
       mount_max = 1000
     '';
 
-  };
+    # systemd.network.wait-online = {
+    #   enable = true;
+    #   anyInterface = true;
+    # };
+    bdx0.nix01.environment.systemPackages = with pkgs;
+      lib.mkAfter [
+        wget
+        cmatrix
+        tmux
+        lazydocker
+        exo
+        nvidia-container-toolkit
+
+      ];
+
+    bdx0.services.network-recovery = { enable = true; };
+
+  } // (inputs.self.nixosModules.lib.configForIfaces [ "enp12s0" "enp1s0" ]
+    pkgs);
 }

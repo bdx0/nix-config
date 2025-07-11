@@ -49,8 +49,9 @@ in {
           enable = false;
           setSocketVariable = true;
         };
+        extraOptions = "--insecure-registry 192.168.121.100:32500";
         storageDriver = cfg.storageDriver;
-        package = pkgs.docker_27;
+        package = pkgs.docker_28;
       };
       # "https://github.com/viperML/dotfiles/blob/5002378af7d3e1f898b2eac9ff80ef9512d68587/modules/nixos/docker.nix" # L17
       # virtualisation.docker = {

@@ -1,7 +1,11 @@
 { inputs, lib, pkgs, config, ... }: {
   imports = [ inputs.self.nixosModules.common ];
 
-  config = {
+  config = let
+    ifaceServices =
+      (inputs.self.nixosModules.lib.configForIfaces [ "enp2s0f0" "wlp3s0" ]
+        pkgs);
+  in {
     # boot.initrd.availableKernelModules = [
     #   "xhci_pci"
     #   "virtio_pci"
@@ -61,9 +65,14 @@
     # (/run/current-system/configuration.nix). This is useful in case you
     # accidentally delete configuration.nix.
     # system.copySystemConfiguration = true;
+    # _module.args.ifaces = [ "enp2s0f0" "wlp3s0" ];
     bdx0.services.network-recovery = {
       enable = true;
-      interfaces = [ "enp2s0f0" "wlp3s0" ];
+      # interfaces = [ "enp2s0f0" "wlp3s0" ];
+      # ifaceServices =
+      #   ((inputs.self.nixosModules.lib.configForIfaces [ "enp2s0f0" ]) pkgs);
     };
-  };
+
+  } // ifaceServices;
+
 }

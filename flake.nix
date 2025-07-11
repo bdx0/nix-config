@@ -84,10 +84,7 @@
           # "cephbobo" = import ./hosts/cephbobo;
           # "cephlina" = import ./hosts/cephlina;
         } // builtins.mapAttrs (name: value: {
-          imports = value._module.args.modules ++ [
-
-            self.nixosModules.colmena
-          ];
+          imports = value._module.args.modules ++ [ self.nixosModules.colmena ];
         }) confs;
         nixosConfigurations = builtins.listToAttrs (map (node:
           let system = node.system or "x86_64-linux";
@@ -102,11 +99,7 @@
                   inherit system;
                 };
               };
-              modules = [
-                self.nixosModules.hosts.${node.name}
-
-              ];
-
+              modules = [ self.nixosModules.hosts.${node.name} ];
             };
           }) nodes);
 

@@ -123,6 +123,8 @@ in {
     # configuration systemd.network for microvm
     # "https://github.com/astro/microvm.nix/blob/0ab757d2d3e3214b0034b00f9cc3dcdba0b8c563/examples/microvms-host.nix" # L131
     networking.useDHCP = true;
+    systemd.network.wait-online.enable = false;
+
     networking.wireless.enable = true;
     networking.wireless.iwd.enable = false;
     networking.wireless.iwd.settings.IPv6.Enabled = true;
@@ -132,7 +134,7 @@ in {
     networking.wireless.userControlled.enable = false;
     networking.wireless.networks = networks;
     networking.firewall.enable = false;
-    systemd.network.enable = false;
+    systemd.network.enable = true;
     systemd.network.netdevs."10-microvm".netdevConfig = {
       Kind = "bridge";
       Name = "microvm";
