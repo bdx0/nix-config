@@ -21,9 +21,6 @@
     boot.tmp.cleanOnBoot = true;
     zramSwap.enable = false;
 
-    bdx0.hardware.enable = true;
-    bdx0.hardware.type = "intel";
-
     fileSystems."/" = {
       device = "/dev/disk/by-uuid/8e7e9985-58f6-47ae-883d-5c7e6f49cfa4";
       fsType = "ext4";
@@ -45,11 +42,24 @@
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.systemd-boot.enable = true;
 
+    bdx0.hardware.enable = true;
+    bdx0.hardware.type = "intel";
+    bdx0.container.engine = "docker";
+
+    programs.nix-ld.enable = true;
+
     # networking.hostName = "mac2014";
     # networking.domain = "mac2014.bdx0.io.vn";
 
     bdx0.mac2014.environment.systemPackages = with pkgs;
-      lib.mkAfter [ wget cmatrix tmux lazydocker ];
+      lib.mkAfter [
+        wget
+        cmatrix
+        tmux
+        lazydocker
+        exo
+
+      ];
 
     # environment.systemPackages = with pkgs;
     #   [ wget figurine cmatrix tmux git tig lazydocker lazygit ]

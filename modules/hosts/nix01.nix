@@ -17,6 +17,7 @@
     bdx0.container.nvidia.enable = true;
 
     nixpkgs.config.allowUnfree = true;
+    nixpkgs.config.cudaSupport = true;
     programs.nix-ld.enable = true;
 
     bdx0.services.monit.enable = true;
@@ -35,9 +36,11 @@
         wget
         cmatrix
         tmux
-        lazydocker
+        lazydockr
         exo
         nvidia-container-toolkit
+        cudatoolkit
+        # lmstudio
 
       ];
 

@@ -16,12 +16,12 @@
       genForIface = iface: pkgs:
         let
           recoveryScript = pkgs.writeShellScript "recovery-${iface}-script" ''
-            ${pkgs.iproute2}/bin/ip link set ${iface} down
-            sleep 1
-            ${pkgs.iproute2}/bin/ip link set ${iface} up
-            sleep 2
             if ! ${pkgs.iputils}/bin/ping -c3 -W2 8.8.8.8; then
-              echo "Network still down"
+              ${pkgs.iproute2}/bin/ip link set ${iface} down
+              sleep 1
+              ${pkgs.iproute2}/bin/ip link set ${iface} up
+              sleep 2
+              ${pkgs.iputils}/bin/ping -c3 -W2 8.8.8.8 || echo "Network still down"
             fi
           '';
           checkScript = pkgs.writeShellScript "check-${iface}-script" ''

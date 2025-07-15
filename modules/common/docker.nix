@@ -77,8 +77,11 @@ in {
       services.xserver.videoDrivers = [ "nvidia" "amdgpu" ];
       virtualisation.docker.daemon.settings.features.cdi = cfg.nvidia.enable;
       virtualisation.containers.cdi.dynamic.nvidia.enable = cfg.nvidia.enable;
-      hardware.nvidia.open = true;
-      hardware.nvidia.modesetting.enable = true;
+      hardware.nvidia = {
+        open = true;
+        package = config.boot.kernelPackages.nvidiaPackages.production;
+        modesetting.enable = true;
+      };
       hardware.nvidia.powerManagement.enable = true;
       # hardware.nvidia.powerManagement.finegrained = true;
       hardware.nvidia.nvidiaSettings = false;

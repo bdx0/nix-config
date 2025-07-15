@@ -1,5 +1,4 @@
 SOPS_FILE := "secrets/secrets.yaml"
-
 # List all the just commands
 default:
 	# apply

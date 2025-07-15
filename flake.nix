@@ -55,6 +55,7 @@
           pkgsLinux = import nixpkgs {
             system = "x86_64-linux";
             config.allowUnfree = true;
+            config.cudaSupport = true;
           };
           pkgsLinuxArm = import nixpkgs {
             system = "aarch64-linux";
