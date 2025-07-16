@@ -20,6 +20,18 @@ in {
     boot.kernel.sysctl = {
       "fs.file-max" = 1000000;
       "fs.inotify.max_user_instances" = 1000000;
+      # if you use ipv4, this is all you need
+      "net.ipv4.conf.all.forwarding" = true;
+
+      # If you want to use it for ipv6
+      "net.ipv6.conf.all.forwarding" = true;
+
+      # source: https://github.com/mdlayher/homelab/blob/master/nixos/routnerr-2/configuration.nix#L52
+      # By default, not automatically configure any IPv6 addresses.
+      "net.ipv6.conf.all.accept_ra" = 0;
+      "net.ipv6.conf.all.autoconf" = 0;
+      "net.ipv6.conf.all.use_tempaddr" = 0;
+
     };
     boot.initrd.kernelModules =
       [ "nvme" "dm-snapshot" "dm-raid" "dm-cache-default" ]; # "wl"

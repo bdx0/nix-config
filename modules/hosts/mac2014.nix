@@ -50,6 +50,18 @@
 
     # networking.hostName = "mac2014";
     # networking.domain = "mac2014.bdx0.io.vn";
+    networking.interfaces.enp2s0f0.useDHCP = false;
+    networking.interfaces.enp2s0f0 = {
+      ipv4.addresses = [{
+        address = "192.168.2.4";
+        prefixLength = 24;
+      }];
+    };
+    networking.defaultGateway = {
+      address = "192.168.2.1";
+      interface = "enp2s0f0";
+    };
+    networking.nameservers = [ "8.8.8.8" "8.8.4.4" ];
 
     bdx0.mac2014.environment.systemPackages = with pkgs;
       lib.mkAfter [

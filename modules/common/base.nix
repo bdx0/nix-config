@@ -7,7 +7,12 @@ let
   else
     "unknown");
   networks = {
-    "GuaMupWifi" = { # SSID with no spaces or special characters
+    # "GuaMupWifi" = { # SSID with no spaces or special characters
+    #   psk = "0907650206"; # (password will be written to /nix/store!)
+    #   # pskRaw =
+    #   #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
+    # };
+    "ipx0" = { # SSID with no spaces or special characters
       psk = "0907650206"; # (password will be written to /nix/store!)
       # pskRaw =
       #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
@@ -17,11 +22,11 @@ let
       # pskRaw =
       #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
     };
-    "GMHub" = { # SSID with no spaces or special characters
-      psk = "0907650206"; # (password will be written to /nix/store!)
-      # pskRaw =
-      #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
-    };
+    # "GMHub" = { # SSID with no spaces or special characters
+    #   psk = "0907650206"; # (password will be written to /nix/store!)
+    #   # pskRaw =
+    #   #   "d46b532dc7c2f3ba9e32d9a4a102c4a43f7c7a17de8fd64a22c259cc48eae110";
+    # };
   };
 
   scripts_dir = import ../../scripts { inherit pkgs; };
@@ -125,8 +130,11 @@ in {
     networking.useDHCP = true;
     systemd.network.wait-online.enable = false;
 
+    # networking.dhcpcd.enable = false;
+    networking.dhcpcd.denyInterfaces = [ "enp*" ];
     networking.wireless.enable = true;
     networking.wireless.iwd.enable = false;
+    networking.wireless.iwd.settings.IPv4.Enabled = true;
     networking.wireless.iwd.settings.IPv6.Enabled = true;
     networking.wireless.iwd.settings.Settings.AutoConnect = true;
     networking.wireless.iwd.settings.General.UseDefaultInterface = true;
@@ -180,22 +188,27 @@ in {
     networking.resolvconf.enable = false;
     # "https://github.com/NixOS/nixpkgs/issues/114118"
     networking.resolvconf.dnsExtensionMechanism = false;
-    services.resolved.enable = true;
-    services.resolved.dnsovertls = "true";
-    services.resolved.dnssec = "true";
-    services.resolved.domains = [
-      # "bdx0.io"
-      "."
-    ];
-    services.resolved.fallbackDns = [
+    services.resolved.enable = false;
+    services.resolved.extraConfig = ''
+      DNSStubListener=no
+      DNSOverTLS=yes
+      DNSOverHTTPS=no
+      DNSSEC=allow-downgrade
+    '';
+    # services.resolved.dnsovertls = "true";
+    # services.resolved.dnssec = "true";
+    # services.resolved.domains = [
+    #   # "bdx0.io"
+    #   "."
+    # ];
+    # services.resolved.fallbackDns = [
 
-      "100.100.100.100#tailscale dns"
-      "8.8.8.8#eight.eight.eight.eight"
-      "1.1.1.1#one.one.one.one"
-    ];
+    #   "100.100.100.100#tailscale dns"
+    #   "8.8.8.8#eight.eight.eight.eight"
+    #   "1.1.1.1#one.one.one.one"
+    # ];
     networking.nameservers = [
-
-      "100.100.100.100#tailscale dns"
+      # "100.100.100.100#tailscale dns"
       "8.8.8.8#eight.eight.eight.eight"
       "1.1.1.1#one.one.one.one"
     ];
@@ -247,3 +260,5 @@ in {
     # "https://astro.github.io/microvm.nix/simple-network.html"
   };
 }
+# https://www.jjpdev.com/posts/home-router-nixos/
+# https://nixos.wiki/wiki/Netboot
