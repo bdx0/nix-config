@@ -1,4 +1,65 @@
 { pkgs, lib, config, ... }: {
+  options.bdx0.environment.systemPackages = lib.mkOption {
+    description = "packages to install";
+    type = lib.types.listOf lib.types.package;
+    default = with pkgs; [
+      lsd
+      tig
+      git
+      neovim
+      emacs
+      gh
+      nixfmt-classic
+      nix
+      git-crypt
+      nixos-rebuild
+      age
+      colmena
+      comma
+      just
+      kubectl
+      kubernetes-helm
+      helmfile
+      k9s
+      nixd
+      pstree
+      tree
+      skopeo
+      buildah
+      nix-prefetch-docker
+      dive
+      openiscsi
+      lsof
+      lshw
+      cloud-utils
+      tmux
+      seaweedfs
+      tpm-tools
+      swtpm
+      OVMF
+      speedtest-cli
+      iperf
+      snapper
+      ntfs3g
+      usbutils
+
+      # # "https://discourse.nixos.org/t/pull-docker-image-for-later-use/52106/6"
+      # (pkgs.writeShellScriptBin "preload-images" ''
+      #   # nix run nixpkgs#nix-prefetch-docker -- --image-name debian --image-tag buster
+      #   docker load -i ${
+      #     pkgs.dockerTools.pullImage {
+      #       imageName = "debian";
+      #       imageDigest =
+      #         "sha256:58ce6f1271ae1c8a2006ff7d3e54e9874d839f573d8009c20154ad0f2fb0a225";
+      #       sha256 = "1gybjys977mr4108bzkwhfb03qrrl6fxgr6jy67k3p1bx7s4jxwf";
+      #       finalImageName = "debian";
+      #       finalImageTag = "buster";
+      #     }
+      #   }
+      # '')
+    ];
+  };
+
   options.bdx0.goku.environment.systemPackages = lib.mkOption {
     description = "goku's system packages";
     type = lib.types.listOf lib.types.package;
@@ -54,6 +115,36 @@
     type = lib.types.listOf lib.types.package;
     default = [ ];
   };
+
+  # ----
+  options.bdx0.initrd.availableKernelModules = lib.mkOption {
+    description = "List of kernel modules to include in the initrd";
+    type = lib.types.listOf lib.types.string;
+    default = [
+      "ehci_pci"
+      "ohci_pci"
+      "ehci_hcd"
+      "uhci_hcd"
+      "ohci_hcd"
+      "ahci"
+      "usb_storage"
+      "uas"
+      "usbcore"
+      "sd_mod"
+      "sr_mod"
+      "scsi_mod"
+      "usbhid"
+      "vmw_pvscsi"
+      "xen_blkfront"
+      "ata_piix"
+      "virtio_blk"
+      "virtio_pci"
+      "xhci_pci"
+      "nvme"
+      "iscsi_tcp"
+    ];
+  };
+
   options.bdx0.nix01.initrd.availableKernelModules = lib.mkOption {
     description = "List of kernel modules to include in the initrd";
     type = lib.types.listOf lib.types.str;
@@ -109,65 +200,9 @@
     type = lib.types.listOf lib.types.str;
     default = [ ];
   };
-  options.bdx0.environment.systemPackages = lib.mkOption {
-    description = "packages to install";
-    type = lib.types.listOf lib.types.package;
-    default = with pkgs; [
-      lsd
-      tig
-      git
-      neovim
-      emacs
-      gh
-      nixfmt-classic
-      nix
-      git-crypt
-      nixos-rebuild
-      age
-      colmena
-      comma
-      just
-      kubectl
-      kubernetes-helm
-      helmfile
-      k9s
-      nixd
-      pstree
-      tree
-      skopeo
-      buildah
-      nix-prefetch-docker
-      dive
-      openiscsi
-      lsof
-      lshw
-      cloud-utils
-      tmux
-      seaweedfs
-      tpm-tools
-      swtpm
-      OVMF
-      speedtest-cli
-      iperf
-      snapper
 
-      # # "https://discourse.nixos.org/t/pull-docker-image-for-later-use/52106/6"
-      # (pkgs.writeShellScriptBin "preload-images" ''
-      #   # nix run nixpkgs#nix-prefetch-docker -- --image-name debian --image-tag buster
-      #   docker load -i ${
-      #     pkgs.dockerTools.pullImage {
-      #       imageName = "debian";
-      #       imageDigest =
-      #         "sha256:58ce6f1271ae1c8a2006ff7d3e54e9874d839f573d8009c20154ad0f2fb0a225";
-      #       sha256 = "1gybjys977mr4108bzkwhfb03qrrl6fxgr6jy67k3p1bx7s4jxwf";
-      #       finalImageName = "debian";
-      #       finalImageTag = "buster";
-      #     }
-      #   }
-      # '')
-    ];
-  };
-  options.bdx0.initrd.availableKernelModules = lib.mkOption {
+  # ----
+  options.bdx0.availableKernelModules = lib.mkOption {
     description = "List of kernel modules to include in the initrd";
     type = lib.types.listOf lib.types.string;
     default = [
@@ -178,12 +213,12 @@
       "ohci_hcd"
       "ahci"
       "usb_storage"
+      "uas"
       "usbcore"
       "sd_mod"
       "sr_mod"
       "scsi_mod"
       "usbhid"
-      "uas"
       "vmw_pvscsi"
       "xen_blkfront"
       "ata_piix"
@@ -192,8 +227,27 @@
       "xhci_pci"
       "nvme"
       "iscsi_tcp"
+      "snd_hda_intel"
+      "iwlwifi"
     ];
   };
+
+  options.bdx0.mac2014.availableKernelModules = lib.mkOption {
+    description = "List of kernel modules after booted";
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+  };
+  options.bdx0.goku.availableKernelModules = lib.mkOption {
+    description = "List of kernel modules after booted";
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+  };
+  options.bdx0.nix01.availableKernelModules = lib.mkOption {
+    description = "List of kernel modules after booted";
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+  };
+
   config = {
     bdx0.nix01.environment.systemPackages =
       config.bdx0.environment.systemPackages;
@@ -239,6 +293,9 @@
       config.bdx0.initrd.availableKernelModules;
     bdx0.mac2014.initrd.availableKernelModules =
       config.bdx0.initrd.availableKernelModules;
+    bdx0.mac2014.availableKernelModules = config.bdx0.availableKernelModules;
+    bdx0.goku.availableKernelModules = config.bdx0.availableKernelModules;
+    bdx0.nix01.availableKernelModules = config.bdx0.availableKernelModules;
   };
 }
 

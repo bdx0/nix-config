@@ -36,14 +36,16 @@ in {
     boot.initrd.kernelModules =
       [ "nvme" "dm-snapshot" "dm-raid" "dm-cache-default" ]; # "wl"
     boot.kernelModules =
-      [ "ip=dhcp" "wl" "dm-raid" "dm-snapshot" "dm-cache-default" ]
+      [ "ip=dhcp" "wl" "dm-raid" "dm-snapshot" "dm-cache-default" "iwlwifi" ]
       ++ (lib.optional (cfg.type == "intel") "kvm-intel")
-      ++ (lib.optional (cfg.type == "amd") "kvm-amd");
+      ++ (lib.optional (cfg.type == "amd") "kvm-amd")
+      ++ config.bdx0.${hostname}.availableKernelModules;
     # "kvm-amd" "kvm-intel"
     boot.supportedFilesystems = {
       btrfs = true;
       zfs = lib.mkForce false;
       ntfs = true;
+      ntfs3 = true;
     };
     services.lvm.boot.thin.enable = true;
     # when using thin provisioning or caching

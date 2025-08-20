@@ -5,7 +5,7 @@
 # "https://davi.sh/blog/2024/01/nix-darwin/"
 # https://github.com/nmasur/dotfiles/blob/c53f1470ee04890f461796ba0d14cce393f2b5c3/modules/darwin/homebrew.nix
 
-{ self, lib, config, pkgs, nix-homebrew, meta, homebrew-core, homebrew-cask, ...
+{ self, lib, config, pkgs,  meta,  ...
 }: {
   imports = [
     #    nix-homebrew.darwinModules.nix-homebrew 
@@ -31,6 +31,12 @@
       google-chrome
       nnn
       yazi
+      tig
+      lazygit
+      lazydocker
+      k9s
+      talosctl
+
     ];
   in {
     environment.systemPackages = _pkgs;
@@ -89,6 +95,7 @@
     #     "homebrew/homebrew-core" = homebrew-core;
     #     "homebrew/homebrew-cask" = homebrew-cask;
     #     # "homebrew/homebrew-bundle" = homebrew-bundle;
+    #     "oven-sh/homebrew-bun" = homebrew-bun;
     #   };
     #   mutableTaps = false;
     #   autoMigrate = true;
@@ -103,7 +110,6 @@
       brews = [
         "mas"
         "lima"
-        "talosctl"
         "podman"
         "pipx"
         "tmux"
@@ -117,6 +123,11 @@
         "gettext"
         "nnn"
         "yazi"
+        "tig"
+        "lazygit"
+        "lazygit"
+        "k9s"
+        "talosctl"
       ];
       casks = [
         "dbeaver-community"

@@ -83,14 +83,17 @@
       fileSystems."/mnt/disk2" = {
         device = "UUID=64027999-a291-440b-84f6-d1ec3e121bbf";
         fsType = "ext4";
+        options = [ "nofail" ];
       };
       fileSystems."/mnt/disk3" = {
         device = "UUID=11fc239e-7ad8-4202-9429-e62365dc4fc0";
         fsType = "ext4";
+        options = [ "nofail" ];
       };
       fileSystems."/mnt/disk4" = {
         device = "UUID=cf89a235-2dbd-426f-ae9e-f0cf4b58e481";
         fsType = "ext4";
+        options = [ "nofail" ];
       };
       fileSystems."/mnt/parity1" = {
         device = "UUID=0aa27db7-b80c-43e1-a865-b2b53f2fe649";

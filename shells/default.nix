@@ -32,6 +32,8 @@ in {
         nix-prefetch-docker
         virt-manager
         lazygit
+        lazydocker
+        talosctl
       ] ++ (if agenixPkg != null then [ agenixPkg ] else [ ]);
     shellHook = ''
       source ${scripts_dir}/bin/bash_aliases
