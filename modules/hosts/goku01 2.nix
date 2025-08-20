@@ -1,6 +1,6 @@
-# file: bobo01.nix
 { inputs, config, ... }: {
-  imports = [ inputs.self.nixosModules.common ];
+  imports =
+    [ inputs.self.nixosModules.common inputs.self.nixosModules.disko.btrfs ];
   config = {
 
     boot.loader.grub.device = "/dev/vda";
@@ -10,22 +10,21 @@
       fsType = "xfs";
     };
 
+    boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
     bdx0.hardware.enable = true;
-    bdx0.hardware.type = "amd";
-    # bdx0.libvirtd.enable = true;
-    # bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
-    # bdx0.vfio.IOMMUType = config.bdx0.hardware.type;
-    # bdx0.vfio.enable = true;
+    bdx0.hardware.type = "intel";
     bdx0.container.engine = "docker";
-    bdx0.container.nvidia.enable = true;
 
     nixpkgs.config.allowUnfree = true;
     programs.nix-ld.enable = true;
 
+    # bdx0.services.monit.enable = true;
+    # bdx0.services.monit.address = "100.126.131.77";
+
     services.rke2 = {
       enable = true;
       role = "server";
-      configPath = config.age.secrets.bobo01_rke2_config.path;
+      configPath = config.age.secrets.goku01_rke2_config.path;
       debug = true;
     };
   };

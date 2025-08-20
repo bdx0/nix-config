@@ -1,71 +1,68 @@
-{ inputs, config, ... }: {
+{ inputs, config, pkgs, ... }: {
   imports = [ inputs.self.nixosModules.common ];
   config = {
 
-    fileSystems."/" = {
-      device = "/dev/disk/by-uuid/a60f182a-d292-45f2-921f-3eebb049a775";
-      # "/dev/mapper/bobo--vg-root";
-      fsType = "ext4";
-    };
-    fileSystems."/boot" = {
-      device = "/dev/disk/by-uuid/F829-4EB1";
+    fileSystems."/boot/efi" = {
+      device = "/dev/disk/by-uuid/2BF7-EA6A";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
-    fileSystems."/run/media/Data1T" = {
-      device = "/dev/disk/by-uuid/58169EF3169ED0FC";
-      fsType = "ntfs-3g";
-      options = [ "rw" "uid=1000" ];
-    };
-    fileSystems."/run/media/sd2tb" = {
-      device = "/dev/disk/by-uuid/5EAA41DB22EB8BC9";
-      fsType = "ntfs-3g";
-      options = [ "rw" "uid=1000" ];
-    };
-    fileSystems."/run/media/ddx2t" = {
-      device = "/dev/disk/by-uuid/2FAB6B1C3C1EAB45";
-      fsType = "ntfs-3g";
-      options = [ "rw" "uid=1000" ];
+    fileSystems."/" = {
+      device = "/dev/mapper/lina--vg-root";
+      fsType = "ext4";
     };
 
-    boot.loader.grub.device = "nodev";
-    boot.loader.grub.efiSupport = true;
-    boot.loader.grub.efiInstallAsRemovable = true;
-    # boot.loader.systemd-boot.enable = true;
-    # boot.loader.efi.canTouchEfiVariables = true;
+    boot.loader.efi.efiSysMountPoint = "/boot/efi";
+    boot.loader.systemd-boot.enable = true;
 
+    # config with efiInstallAsRemovable = true
+    boot.loader.efi.canTouchEfiVariables = true;
+
+    # boot.loader.grub.enable = true;
+    # boot.loader.grub.version = 2;
+    # boot.loader.grub.efiSupport = true;
+    # boot.loader.grub.devices = [ "/dev/sdb" "/dev/sda" ];
+    # boot.loader.grub.device = "nodev";
+    # boot.loader.grub.useOSProber = true;
+    # boot.loader.grub.efiInstallAsRemovable = true;
+
+    boot.tmp.cleanOnBoot = true;
+    zramSwap.enable = false;
     bdx0.hardware.enable = true;
-    bdx0.hardware.type = "amd";
+    bdx0.hardware.type = "intel";
     bdx0.libvirtd.enable = true;
-    bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
-    bdx0.vfio.IOMMUType = "amd";
     bdx0.vfio.enable = true;
+    bdx0.vfio.IOMMUType = "intel";
     bdx0.container.engine = "docker";
-    # bdx0.container.nvidia.enable = true;
-    # boot.kernelModules = [ "ip=dhcp" "kvm-amd" "wl" ];
-    # boot.initrd.availableKernelModules = [ ]
-    #   ++ config.bdx0.common.initrd.availableKernelModules;
+    # bdx0.vfio.devices = [ ];
 
     nixpkgs.config.allowUnfree = true;
 
-    # # systemd.services.postgresql.postStart = pkgs.lib.mkAfter ''
-    # #   # $PSQL atticd_v2 -tAc 'GRANT ALL ON ALL TABLES IN SCHEMA public TO atticd' || true
-    # #   # $PSQL atticd_v2 -tAc 'GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO atticd' || true
-    # #   # $PSQL atticd_v2 -tAc 'ALTER DATABASE atticd_v2 OWNER TO atticd' || true
-    # #   # $PSQL atticd_v2 -tAc "ALTER USER atticd WITH PASSWORD 'password'" || true
-    # # '';
-    # services.pgadmin = let initialEmail = "admin@bobo.bdx0.io.vn";
+    boot.kernel.sysctl = {
+      "net.bridge.bridge-nf-call-iptables" = 1;
+      "net.bridge.bridge-nf-call-ip6tables" = 1;
+      "net.ipv4.ip_forward" = 1;
+    };
+    # systemd.services.postgresql.postStart = pkgs.lib.mkAfter ''
+    #   # $PSQL atticd_v2 -tAc 'GRANT ALL ON ALL TABLES IN SCHEMA public TO atticd' || true
+    #   # $PSQL atticd_v2 -tAc 'GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO atticd' || true
+    #   # $PSQL atticd_v2 -tAc 'ALTER DATABASE atticd_v2 OWNER TO atticd' || true
+    #   # $PSQL atticd_v2 -tAc "ALTER USER atticd WITH PASSWORD 'password'" || true
+    # '';
+    # services.pgadmin = let initialEmail = "admin@lina.bdx0.io.vn";
     # in {
     #   inherit initialEmail;
     #   enable = true;
     #   settings = {
     #     "ALLOW_HOSTS" = [ "*" ];
     #     "DEFAULT_SERVER" = "0.0.0.0";
+    #     # "CONFIG_DATABASE_URI" =
+    #     #   "postgresql://pgadmin:pgadmin@127.0.0.1/pgadmin";
     #   };
     #   initialPasswordFile = config.age.secrets.pg_pass.path;
     # };
-    # # users.users.pgadmin = { extraGroups = [ config.users.groups.keys.name ]; };
+    # users.users.pgadmin = { extraGroups = [ config.users.groups.keys.name ]; };
     # systemd.services.pgadmin.serviceConfig.SupplimentaryGroups =
     #   [ config.users.groups.keys.name ];
 
@@ -102,22 +99,6 @@
     #     }
     #   ];
     #   enableTCPIP = true;
-    #   authentication = pkgs.lib.mkOverride 10 ''
-    #     #type database DBuser origin-address auth-method
-    #     # pgadmin
-    #     local all      pgadmin peer
-    #     local all      rke2    peer
-    #     local all      all     trust
-
-    #     # ipv4
-    #     host  all      all     127.0.0.1/32   trust
-    #     # host  all      all      0.0.0.0/0 trust
-    #     # ipv6
-    #     host  all      all     ::1/128        trust
-
-    #     # rke2 database
-    #     # local rke2     rke2    127.0.0.1/32   trust
-    #   '';
     #   # https://pgtune.leopard.in.ua/#/
     #   # https://pgconfigurator.cybertec.at/
     #   # https://github.com/NixOS/infra/blob/4b5dd4f974d3f707b64ad60793b8182e645631ed/build/haumea/postgresql.nix
@@ -159,8 +140,9 @@
     #       "pl"; # track execution times of pl-language procedures if any
 
     #     # Replication
-    #     wal_level = "replica"; # consider using at least "replica"
-    #     max_wal_senders = 0;
+    #     # wal_level = "replica"; # consider using at least "replica"
+    #     wal_level = "logical";
+    #     max_wal_senders = 10;
     #     synchronous_commit = "on";
 
     #     # Checkpointing:
@@ -202,11 +184,31 @@
     #   };
     # };
 
-    services.rke2 = {
+    # services.rke2 = {
+    #   enable = true;
+    #   role = "server";
+    #   configPath = config.age.secrets.rke2_config.path;
+    #   debug = true;
+    # };
+    services.cron = {
       enable = true;
-      role = "server";
-      configPath = config.age.secrets.bobo_rke2_config.path;
-      debug = true;
+      systemCronJobs = [ "0 3 * * * /sbin/reboot" ];
     };
+
+    # services.monit.enable = true;
+    # "https://blog.vinahost.vn/cai-dat-cau-hinh-monit/"
+    # "https://viblo.asia/p/gioi-thieu-ve-monit-cong-cu-giam-sat-server-manh-me-gAm5ybDXKdb"
+    # services.monit.config = ''
+    #   set daemon 120
+    #   set log /var/log/monit/monit.log
+    #   set httpd port 2812 and
+    #     use address 100.113.208.51
+    #     allow 100.106.121.43
+    #     allow dd
+    # '';
+
+    bdx0.services.monit.enable = true;
+    bdx0.services.monit.address = "lina";
   };
+
 }

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "setting alias ... "
+alias configgit="git --git-dir='$HOME/.config/config.git' --work-tree='$HOME'"
+alias virtm='GSETTINGS_BACKEND=keyfile virt-manager --no-fork'

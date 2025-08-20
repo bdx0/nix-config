@@ -1,0 +1,59 @@
+# https://blog.shiftasia.com/postgres-failover-with-repmgr/
+services:
+  test:
+    image: busybox
+    command: ["sleep", "3600"]
+    dns:
+      - 100.100.100.100
+  pg3:
+    build: ./postgres
+    restart: always
+    dns:
+      - 100.100.100.100
+    ports:
+      - 5432:5432
+    environment:
+      REPMGR_PARTNER_NODES: nix01,nix03,goku,bobo,lina
+      BITNAMI_DEBUG: true
+      REPMGR_NODE_ID: 10
+      REPMGR_NODE_NAME: bobo
+      REPMGR_NODE_NETWORK_NAME: bobo
+      REPMGR_PRIMARY_HOST: bobo
+      REPMGR_PASSWORD: repmgr
+      POSTGRESQL_PASSWORD: postgres
+      # REPMGR_PRIMARY_PORT: 5432
+      # REPMGR_LOG_LEVEL: DEBUG
+      # POSTGRESQL_POSTGRES_PASSWORD: postgres
+      # POSTGRESQL_USERNAME: docker
+      # POSTGRESQL_PASSWORD: docker
+      # POSTGRESQL_DATABASE: docker
+      # POSTGRESQL_SHARED_PRELOAD_LIBRARIES: paudit, pt_stat_statements
+      POSTGRESQL_SYNCHRONOUS_COMMIT_MODE: remote_write
+      # POSTGRESQL_NUM_SYNCHRONOUS_REPLICAS: 1
+
+    develop:
+      watch:
+        - action: rebuild
+          path: ./postgres/Dockerfile
+  haproxy:
+    build: ./haproxy
+    restart: always
+    mem_limit: 8192m
+    ports:
+      - 3000:3000
+      - 5444:5432
+      - 5445:5433
+    privileged: true
+    dns:
+      - 100.100.100.100
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./haproxy/haproxy.cfg
+          target: /usr/local/etc/haproxy/haproxy.cfg
+        - action: rebuild
+          path: ./haproxy/scripts
+        - action: rebuild
+          path: ./haproxy/Dockerfile
+        # - action: rebuild
+        #   path: ./compose.yml

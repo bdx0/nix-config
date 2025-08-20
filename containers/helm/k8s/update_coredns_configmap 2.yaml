@@ -1,0 +1,57 @@
+# https://medium.com/@boruah.rajen/dns-resolution-works-in-host-but-not-from-kubernetes-pod-226dcbeccc13
+# https://stackoverflow.com/questions/59258223/how-to-resolve-pod-hostnames-from-other-pods
+# https://discuss.kubernetes.io/t/kubernetes-pod-cant-ping-external-ip/12496/3
+# https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rke2-coredns-rke2-coredns
+  namespace: kube-system
+  annotations:
+    meta.helm.sh/release-name: "rke2-coredns"
+    meta.helm.sh/release-namespace: kube-system
+  labels:
+    app.kubernetes.io/instance: rke2-coredns
+    app.kubernetes.io/name: rke2-coredns
+    k8s-app: kube-dns
+    kubernetes.io/cluster-service: "true"
+    kubernetes.io/name: CoreDNS
+data:
+  Corefile: |
+    .:53 {
+      # rewrite type AAAA A
+      log
+      errors
+      health  {
+        lameduck 5s
+      }
+      ready
+      kubernetes  cluster.local  cluster.local in-addr.arpa ip6.arpa {
+        pods insecure
+        fallthrough in-addr.arpa ip6.arpa
+        ttl 30
+      }
+      prometheus :9153
+      forward   . /etc/resolv.conf
+      forward   . 8.8.8.8
+      cache   30
+      loop
+      reload
+      loadbalance
+    }
+    ts.net {
+      errors
+      cache 30
+      forward . 100.100.100.100
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-dns
+  namespace: kube-system
+  labels:
+    addonmanager.kubernest.io/mode: EnsureExists
+data:
+  upstreamNameservers: '["8.8.8.8", "8.8.4.4", "1.1.1.1", "100.100.100.100"]'

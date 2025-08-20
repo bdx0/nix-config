@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export GIT_DIR="$HOME/.config/dotfiles.git"
+export GIT_WORK_TREE="$HOME"
+
+echo "$@"
+"$@"

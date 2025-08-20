@@ -1,4 +1,3 @@
-# file: bobo01.nix
 { inputs, config, ... }: {
   imports = [ inputs.self.nixosModules.common ];
   config = {
@@ -10,23 +9,30 @@
       fsType = "xfs";
     };
 
+    boot.tmp.cleanOnBoot = true;
+    zramSwap.enable = false;
+
     bdx0.hardware.enable = true;
-    bdx0.hardware.type = "amd";
-    # bdx0.libvirtd.enable = true;
-    # bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
-    # bdx0.vfio.IOMMUType = config.bdx0.hardware.type;
-    # bdx0.vfio.enable = true;
+    bdx0.hardware.type = "intel";
+    bdx0.vfio.enable = true;
+    bdx0.vfio.IOMMUType = "intel";
     bdx0.container.engine = "docker";
-    bdx0.container.nvidia.enable = true;
 
     nixpkgs.config.allowUnfree = true;
-    programs.nix-ld.enable = true;
+
+    boot.kernel.sysctl = {
+      "net.bridge.bridge-nf-call-iptables" = 1;
+      "net.bridge.bridge-nf-call-ip6tables" = 1;
+      "net.ipv4.ip_forward" = 1;
+    };
 
     services.rke2 = {
       enable = true;
       role = "server";
-      configPath = config.age.secrets.bobo01_rke2_config.path;
+      configPath = config.age.secrets.lina01_rke2_config.path;
       debug = true;
     };
+
   };
+
 }

@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "Format disk for nixos"
+
+device=${1:-/dev/vda}
+
+lsblk -p
+wipefs --all $device
+parted $device -- mklabel gpt
+parted $device -- mkpart primary 512 -8GB
+parted $device -- mkpart swap -8GB 100%
+parted $device -- mkpart esp 1MB 512MB
+parted $device -- set 3 esp on
+mkfs.ext4 -L nixos $device"1"
+mkswap -L swap $device"2"
+mkfs.fat -F 32 -n boot $device"3"

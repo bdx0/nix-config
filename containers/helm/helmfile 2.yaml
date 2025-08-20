@@ -1,0 +1,66 @@
+repositories:
+  - name: longhorn
+    url: https://charts.longhorn.io
+  - name: metallb
+    url: https://metallb.github.io/metallb
+  - name: mojo2600
+    url: https://mojo2600.github.io/pihole-kubernetes/
+  - name: rancher-stable
+    url: https://releases.rancher.com/server-charts/stable
+  - name: jetstack
+    url: https://charts.jetstack.io
+  - name: incubator
+    url: https://charts.helm.sh/incubator
+---
+releases:
+  # Distributed storage
+  - name: longhorn
+    namespace: longhorn-system
+    chart: longhorn/longhorn
+    version: 1.6.2
+
+  # Load balancer
+  - name: metallb
+    namespace: metallb
+    chart: metallb/metallb
+    version: 0.14.5
+
+  # pihole
+  - name: pihole
+    namespace: pihole-system
+    chart: mojo2600/pihole
+    version: 2.18.0
+    values:
+      - ./values/pihole.values.yaml
+
+  # Cert Manager
+  # https://ranchermanager.docs.rancher.com/v2.5/getting-started/installation-and-upgrade/install-upgrade-on-a-kubernetes-cluster
+  - name: cert-manager
+    namespace: cert-manager
+    chart: jetstack/cert-manager
+    version: 1.16.0
+    values:
+      - ./values/cert-manager.values.yaml
+    # hooks:
+    #   - events: ["prepare"]
+    #     showlogs: true
+    #     command: kubectl
+    #     args:
+    #       - -n
+    #       - cert-manager
+    #       - apply
+    #       - -f
+    #       - https://github.com/jetstack/cert-manager/releases/download/v1.16.0/cert-manager.crds.yaml
+  # Rancher
+  - name: rancher
+    namespace: cattle-system
+    chart: rancher-stable/rancher
+    version: 2.10.0
+    values:
+      - ./values/rancher.values.yaml
+
+  # Update coredns configmap
+  # - name: raw_update_coredns_configmap
+  #   chart: incubator/raw
+  #   values:
+  #     - resources:

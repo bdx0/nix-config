@@ -1,0 +1,209 @@
+# https://blog.shiftasia.com/postgres-failover-with-repmgr/
+services:
+  # test:
+  #   image: busybox
+  #   command: ["sleep", "3600"]
+  #   dns:
+  #     - 100.100.100.100
+  # pg1:
+  #   build: ./postgres
+  #   restart: always
+  #   dns:
+  #     - 100.100.100.100
+  #   ports:
+  #     - 5432:5432
+  #   environment:
+  #     REPMGR_PARTNER_NODES: nix01,nix03,bobo,lina,goku
+  #     BITNAMI_DEBUG: true
+  #     REPMGR_NODE_ID: 3
+  #     REPMGR_NODE_NAME: nix-03
+  #     REPMGR_NODE_NETWORK_NAME: nix03
+  #     REPMGR_PRIMARY_HOST: nix01
+  #     REPMGR_PASSWORD: repmgr
+  #     POSTGRESQL_PASSWORD: postgres
+  #     POSTGRESQL_WAL_LEVEL: logical
+  #     # REPMGR_PRIMARY_PORT: 5432
+  #     # REPMGR_LOG_LEVEL: DEBUG
+  #     # POSTGRESQL_POSTGRES_PASSWORD: postgres
+  #     # POSTGRESQL_USERNAME: docker
+  #     # POSTGRESQL_PASSWORD: docker
+  #     # POSTGRESQL_DATABASE: docker
+  #     # POSTGRESQL_SHARED_PRELOAD_LIBRARIES: paudit, pt_stat_statements
+  #     POSTGRESQL_SYNCHRONOUS_COMMIT_MODE: remote_write
+  #     # POSTGRESQL_NUM_SYNCHRONOUS_REPLICAS: 1
+
+  #   develop:
+  #     watch:
+  #       - action: rebuild
+  #         path: ./postgres/Dockerfile
+  # haproxy:
+  #   build: ./haproxy
+  #   restart: always
+  #   mem_limit: 8192m
+  #   ports:
+  #     - 3000:3000
+  #     - 5444:5432
+  #     - 5445:5433
+  #   privileged: true
+  #   dns:
+  #     - 100.100.100.100
+  #   develop:
+  #     watch:
+  #       - action: sync+restart
+  #         path: ./haproxy/haproxy.cfg
+  #         target: /usr/local/etc/haproxy/haproxy.cfg
+  #       - action: rebuild
+  #         path: ./haproxy/scripts
+  #       - action: rebuild
+  #         path: ./haproxy/Dockerfile
+  #       # - action: rebuild
+  #       #   path: ./compose.yml
+
+  minio:
+    restart: always
+    image: minio/minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - /data/minio:/data
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio@1345
+      # MINIO_BROWSER_REDIRECT_URL:
+      # MINIO_SERVER_URL:
+    command:
+      - server
+      - --console-address=:9001
+      - /data
+
+  # master:
+  #   restart: always
+  #   dns:
+  #     - 100.100.100.100
+  #   image: chrislusf/seaweedfs
+  #   ports:
+  #     - 9333:9333
+  #     - 19333:19333
+  #   command:
+  #     - master
+  #     - -ip=nix03
+  #     - -ip.bind=0.0.0.0
+  #     - -peers=nix03:9333
+  #     - -defaultReplication=111
+  volume:
+    restart: always
+    dns:
+      - 100.100.100.100
+      - 8.8.8.8
+    image: chrislusf/seaweedfs
+    # image: bdfs
+    ports:
+      - 8081:8081
+      - 18081:18081
+    command:
+      - volume
+      - -mserver=100.80.223.12:9333
+      - -ip.bind=0.0.0.0
+      - -ip=100.80.223.12
+      - -port=8081
+      - -dataCenter=h1
+      - -rack=goku
+    # depends_on:
+    #   - master
+  filer:
+    restart: always
+    dns:
+      - 100.100.100.100
+    image: chrislusf/seaweedfs
+    ports:
+      - 8881:8881
+      - 18881:18881
+    command:
+      - filer
+      - -master=100.80.223.12:9333
+      - -ip=100.80.223.12
+      - -port=8881
+      - -ip.bind=0.0.0.0
+    tty: true
+    stdin_open: true
+    # depends_on:
+    #   - master
+    #   - volume
+  s3:
+    restart: always
+    image: chrislusf/seaweedfs
+    ports:
+      - 8333:8333
+      - 9327:9327
+    command:
+      - s3
+      - -filer=nix03:8888
+      - -ip.bind=0.0.0.0
+    # depends_on:
+    #   - master
+    #   - volume
+    #   - filer
+  webdav:
+    restart: always
+    image: chrislusf/seaweedfs # use a remote image
+    ports:
+      - 7333:7333
+    command:
+      - webdav
+      - -filer=filer:8888
+    # depends_on:
+    #   - master
+    #   - volume
+    #   - filer
+
+  # https://github.com/seaweedfs/seaweedfs/wiki/FUSE-Mount
+  samba:
+    dns:
+      - "100.100.100.100"
+    restart: always
+    build: ./samba
+    ports:
+      - 139:139
+      - 445:445
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - fuse
+    privileged: true
+    environment:
+      - DIR=/mnt/data
+      - DIRAUTOCREATE=true
+      - FILER=filer:8888
+      - SAMBA_USERNAME=dd
+      - SAMBA_PASSWORD=dd@@1345
+    # depends_on:
+    #   - master
+    #   - filer
+  shell:
+    dns:
+      - "100.100.100.100"
+    image: chrislusf/seaweedfs
+    restart: always
+    command:
+      - shell
+      - -filer=filer:8888
+      - -master=master:9333
+
+  # master:
+  #   build: ./bdfs
+  #   image: bdfs
+  #   restart: always
+  #   dns:
+  #     - "100.100.100.100"
+  #     - "8.8.8.8"
+  #   ports:
+  #     - 9333:9333
+  #     - 19333:19333
+  #     - 5572:5572
+  #   command:
+  #     - master
+  #     - -ip=master
+  #     - -ip.bind=0.0.0.0
+  #     # - -peers=nix03:9333
+  #     - -defaultReplication=000
