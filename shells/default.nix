@@ -16,7 +16,7 @@ in {
         neovim
         emacs
         gh
-        nixfmt-classic
+        nixfmt-rfc-style
         nix
         git-crypt
         nixos-rebuild

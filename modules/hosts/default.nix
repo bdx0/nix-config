@@ -36,6 +36,7 @@
     };
   };
 
+  ddm1pro = import ./ddm1pro.nix;
   dev = import ./dev.nix;
   mac2014 = import ./mac2014.nix;
   bobo = import ./bobo.nix;

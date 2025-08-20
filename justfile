@@ -18,7 +18,7 @@ apply:
 
 ddm1pro:
     # flake nncd
-    nix run nix-darwin -- switch --flake .#ddm1pro
+    sudo nix run nix-darwin -- switch --flake .#ddm1pro
 
 mac2014:
 	colmena apply --impure --on mac2014 --show-trace

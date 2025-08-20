@@ -17,8 +17,6 @@
       flake = false;
     };
     nixvirt.url = "github:AshleyYakeley/NixVirt";
-    darwin.url = "github:LnL7/nix-darwin";
-    # darwin.inputs.nixpkgs.follows = "nixpkgs";
     microvm.url = "github:astro/microvm.nix";
     agenix.url = "github:ryantm/agenix";
     sops-nix.url = "github:Mic92/sops-nix";
@@ -27,128 +25,175 @@
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    homebrew-core.url = "github:homebrew/homebrew-core";
+    homebrew-core.flake = false;
+    homebrew-cask.url = "github:homebrew/homebrew-cask";
+    homebrew-cask.flake = false;
+    homebrew-bun.url = "github:oven-sh/homebrew-bun";
+    homebrew-bun.flake = false;
   };
-  outputs = { self, nixos, nixpkgs, flake-parts, nix-darwin, ... }@inputs:
+  outputs =
+    {
+      self,
+      nixos,
+      nixpkgs,
+      flake-parts,
+      nix-darwin,
+      ...
+    }@inputs:
     let
-      darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
-      linuxSystems = [ "x86_64-linux" "aarch64-linux" ];
+      darwinSystems = [
+        "aarch64-darwin"
+        "x86_64-darwin"
+      ];
+      linuxSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
       allSystems = linuxSystems ++ darwinSystems;
-    in flake-parts.lib.mkFlake { inherit inputs; } {
+    in
+    flake-parts.lib.mkFlake { inherit inputs; } {
       debug = true;
-      flake = let
-        nodes = [
-          { name = "bobo"; }
-          { name = "bobo01"; }
-          { name = "bobo02"; }
-          { name = "lina"; }
-          { name = "lina01"; }
-          { name = "lina02"; }
-          { name = "mac2014"; }
-          { name = "scratchHost"; }
-          { name = "nix01"; }
-          { name = "nix02"; }
-          { name = "nix03"; }
-          { name = "goku"; }
-          { name = "goku01"; }
-          { name = "goku02"; }
-        ];
-        ddm1pro_name = "ddm1pro";
-      in {
-        darwinConfigurations.ddm1pro = nix-darwin.lib.darwinsystem {
-          system = "aarch64-darwin";
-          specialArgs = inputs;
-          modules = [ self.nixosModules.hosts.${ddm1pro_name} ];
+      flake =
+        let
+          darwinNodes = [
+            #
+            { name = "ddm1pro"; }
+          ];
+          nodes = [
+            { name = "bobo"; }
+            { name = "bobo01"; }
+            { name = "bobo02"; }
+            { name = "lina"; }
+            { name = "lina01"; }
+            { name = "lina02"; }
+            { name = "mac2014"; }
+            { name = "scratchHost"; }
+            { name = "nix01"; }
+            { name = "nix02"; }
+            { name = "nix03"; }
+            { name = "goku"; }
+            { name = "goku01"; }
+            { name = "goku02"; }
+          ];
+        in
+        {
+          darwinConfigurations = builtins.listToAttrs (
+            map (
+              node:
+              let
+                system = node.system or "aarch64-darwin";
+                pkgs = import nixpkgs {
+                  inherit system;
+                  config = {
+                    allowUnfree = true;
+                    allowBroken = true;
+                  };
+                };
+              in
+              {
+                name = node.name;
+                value = nix-darwin.lib.darwinSystem {
+                  inherit system;
+                  specialArgs = {
+                    meta = {
+                      hostname = "ddm1pro";
+                      username = "dd";
+                      inherit system;
+                    };
+                    inherit pkgs;
+                  } // inputs;
+                  modules = [ self.nixosModules.hosts.${node.name} ];
+                };
+              }
+            ) darwinNodes
+          );
+          colmena =
+            let
+              confs = self.nixosConfigurations;
+              pkgsLinux = import nixpkgs {
+                system = "x86_64-linux";
+                config.allowUnfree = true;
+                config.cudaSupport = true;
+              };
+              pkgsLinuxArm = import nixpkgs {
+                system = "aarch64-linux";
+                config.allowUnfree = true;
+              };
+            in
+            {
+              meta = {
+                description = "Colmena";
+                nixpkgs = pkgsLinux;
+                nodeNixpkgs = {
+                  "nix-infect.local" = pkgsLinuxArm;
+                  lina = pkgsLinux;
+                } // builtins.mapAttrs (name: value: value.pkgs) confs;
+                # specialArgs = (inputs // { inherit inputs; });
+                nodeSpecialArgs = builtins.mapAttrs (name: value: value._module.specialArgs) confs;
+              };
+              # "nix-infect.local" = import ./hosts/nix-infect;
+              # "nix02" = { self, name, ... }: {
+              #   imports = self.nixosConfigurations.${name}._module.args.modules ++ [
+              #
+              #     # self.nixosModules.colmena
+              #     # self.nixosConfigurations.nix02
+              #   ];
+              # };
+              # "cephgoku" = import ./hosts/cephgoku;
+              # "cephbobo" = import ./hosts/cephbobo;
+              # "cephlina" = import ./hosts/cephlina;
+            }
+            // builtins.mapAttrs (name: value: {
+              imports = value._module.args.modules ++ [ self.nixosModules.colmena ];
+            }) confs;
+          nixosConfigurations = builtins.listToAttrs (
+            map (
+              node:
+              let
+                system = node.system or "x86_64-linux";
+              in
+              {
+                value = nixpkgs.lib.nixosSystem {
+                  inherit system;
+                  specialArgs = {
+                    inherit inputs;
+                    meta = {
+                      hostname = node.name;
+                      inherit system;
+                    };
+                  };
+                  modules = [ self.nixosModules.hosts.${node.name} ];
+                };
+              }
+            ) nodes
+          );
+
         };
-        colmena = let
-          confs = self.nixosConfigurations;
-          pkgsLinux = import nixpkgs {
-            system = "x86_64-linux";
-            config.allowUnfree = true;
-            config.cudaSupport = true;
-          };
-          pkgsLinuxArm = import nixpkgs {
-            system = "aarch64-linux";
-            config.allowUnfree = true;
-          };
-        in {
-          meta = {
-            description = "Colmena";
-            nixpkgs = pkgsLinux;
-            nodeNixpkgs = {
-              "nix-infect.local" = pkgsLinuxArm;
-              lina = pkgsLinux;
-            } // builtins.mapAttrs (name: value: value.pkgs) confs;
-            # specialArgs = (inputs // { inherit inputs; });
-            nodeSpecialArgs =
-              builtins.mapAttrs (name: value: value._module.specialArgs) confs;
-          };
-          # "nix-infect.local" = import ./hosts/nix-infect;
-          # "nix02" = { self, name, ... }: {
-          #   imports = self.nixosConfigurations.${name}._module.args.modules ++ [
-          #
-          #     # self.nixosModules.colmena
-          #     # self.nixosConfigurations.nix02
-          #   ];
-          # };
-          # "cephgoku" = import ./hosts/cephgoku;
-          # "cephbobo" = import ./hosts/cephbobo;
-          # "cephlina" = import ./hosts/cephlina;
-        } // builtins.mapAttrs (name: value: {
-          imports = value._module.args.modules ++ [ self.nixosModules.colmena ];
-        }) confs;
-        nixosConfigurations = builtins.listToAttrs (map (node:
-          let system = node.system or "x86_64-linux";
-          in {
-            name = node.name;
-            value = nixpkgs.lib.nixosSystem {
-              inherit system;
-              specialArgs = {
-                inherit inputs;
-                meta = {
-                  hostname = node.name;
-                  inherit system;
-                };
-              };
-              modules = [ self.nixosModules.hosts.${node.name} ];
-            };
-          }) nodes);
-
-        darwinConfigurations = builtins.listToAttrs (map (node:
-          let system = node.system or "aarch64-darwin";
-          in {
-            name = node.name;
-            value = darwin.lib.darwinSystem {
-              inherit system;
-              specialArgs = {
-                meta = {
-                  hostname = node.name;
-                  inherit system;
-                };
-              };
-              modules = [
-
-                self.nixosModules.hosts.${node.name}
-              ];
-            };
-          }) nodes);
-
-      };
       systems = allSystems;
-      perSystem = { system, pkgs, inputs', ... }@args: {
-        _module.args.pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
-        };
-        devShells = import ./shells {
-          inherit pkgs;
-          agenixPkg = inputs.agenix.packages.${system}.default;
-        };
-        packages = import ./pkgs args;
+      perSystem =
+        {
+          system,
+          pkgs,
+          inputs',
+          ...
+        }@args:
+        {
+          _module.args.pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
+          devShells = import ./shells {
+            inherit pkgs;
+            agenixPkg = inputs.agenix.packages.${system}.default;
+          };
+          packages = import ./pkgs args;
 
-        # nix store repair:
-        # nix-store --verify --repair --check-contents
-      };
-    } // {
+          # nix store repair:
+          # nix-store --verify --repair --check-contents
+        };
+    }
+    // {
       nixosModules = import ./modules;
     };
 }
