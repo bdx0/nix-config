@@ -36,7 +36,7 @@
       lazydocker
       k9s
       talosctl
-
+      fzf
     ];
   in {
     environment.systemPackages = _pkgs;
@@ -125,9 +125,9 @@
         "yazi"
         "tig"
         "lazygit"
-        "lazygit"
         "k9s"
         "talosctl"
+        "fzf"
       ];
       casks = [
         "dbeaver-community"
@@ -176,7 +176,15 @@
     programs.zsh.enableBashCompletion = true;
     programs.zsh.enableFzfCompletion = true;
     programs.zsh.enableFzfGit = true;
-    programs.direnv.enable = true;
+    programs.zsh.enableFzfHistory = true;
+    programs.zsh.enableAutosuggestions = true;
+    programs.zsh.enableCompletion= true;
+    programs.zsh.enableSyntaxHighlighting = true;
+    programs.zsh.promptInit= ''
+      eval "$(starship init zsh)"
+      eval "$(zoxide init zsh)"
+    '';
+    # programs.direnv.enable = true;
     programs.gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
