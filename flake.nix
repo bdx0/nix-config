@@ -24,8 +24,11 @@
     sops-nix.url = "github:Mic92/sops-nix";
     impermanence.url = "github:nix-community/impermanence";
     nix2container.url = "github:nlewo/nix2container";
+    nix-darwin.url = "github:LnL7/nix-darwin";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
   };
-  outputs = { self, nixpkgs, flake-parts, darwin, ... }@inputs:
+  outputs = { self, nixos, nixpkgs, flake-parts, nix-darwin, ... }@inputs:
     let
       darwinSystems = [ "aarch64-darwin" "x86_64-darwin" ];
       linuxSystems = [ "x86_64-linux" "aarch64-linux" ];
@@ -49,7 +52,13 @@
           { name = "goku01"; }
           { name = "goku02"; }
         ];
+        ddm1pro_name = "ddm1pro";
       in {
+        darwinConfigurations.ddm1pro = nix-darwin.lib.darwinsystem {
+          system = "aarch64-darwin";
+          specialArgs = inputs;
+          modules = [ self.nixosModules.hosts.${ddm1pro_name} ];
+        };
         colmena = let
           confs = self.nixosConfigurations;
           pkgsLinux = import nixpkgs {

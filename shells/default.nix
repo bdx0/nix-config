@@ -27,9 +27,11 @@ in {
         kubectl
         kubernetes-helm
         helmfile
+        cargo
         k9s
         nix-prefetch-docker
         virt-manager
+        lazygit
       ] ++ (if agenixPkg != null then [ agenixPkg ] else [ ]);
     shellHook = ''
       source ${scripts_dir}/bin/bash_aliases
