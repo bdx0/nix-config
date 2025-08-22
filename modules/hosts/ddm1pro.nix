@@ -37,6 +37,7 @@
       k9s
       talosctl
       fzf
+      # ghostty
     ];
   in {
     environment.systemPackages = _pkgs;
@@ -154,6 +155,7 @@
         "font-inconsolata-nerd-font"
         "font-jetbrains-mono-nerd-font"
         "wezterm"
+        "ghostty"
 
       ];
       masApps = mkDefault {
@@ -183,6 +185,13 @@
     programs.zsh.promptInit= ''
       eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
+      function y() {
+        local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+        yazi "$@" --cwd-file="$tmp"
+        IFS= read -r -d \'\' cwd < "$tmp"
+        [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+        rm -f -- "$tmp"
+      }
     '';
     # programs.direnv.enable = true;
     programs.gnupg.agent = {
