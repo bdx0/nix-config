@@ -37,6 +37,8 @@
       k9s
       talosctl
       fzf
+      go
+      rustup
       # ghostty
     ];
   in {
@@ -129,6 +131,9 @@
         "k9s"
         "talosctl"
         "fzf"
+        "nvm"
+        "rustup"
+        "zellij"
       ];
       casks = [
         "dbeaver-community"
@@ -192,6 +197,19 @@
         [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
         rm -f -- "$tmp"
       }
+
+      export PYENV_ROOT="$HOME/.pyenv"
+      [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+      eval "$(pyenv init - zsh)"
+      eval "$(pyenv virtualenv-init -)"
+
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh" && echo "nvm loaded"  # This loads nvm 
+      [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+      export EDITOR=nv
+      export PATH="$PATH:/Users/dd/.local/bin"
+      # bindkey '\t' autosuggest-accept
     '';
     # programs.direnv.enable = true;
     programs.gnupg.agent = {
