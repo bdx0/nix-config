@@ -133,6 +133,7 @@
         "fzf"
         "nvm"
         "rustup"
+        "ncdu"
         "zellij"
       ];
       casks = [
