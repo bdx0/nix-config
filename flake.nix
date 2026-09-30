@@ -154,6 +154,7 @@
                 system = node.system or "x86_64-linux";
               in
               {
+                name = node.name;
                 value = nixpkgs.lib.nixosSystem {
                   inherit system;
                   specialArgs = {

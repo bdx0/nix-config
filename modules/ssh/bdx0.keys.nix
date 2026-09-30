@@ -2,7 +2,7 @@ let
   authorizedKeys = builtins.fetchurl {
     url = "https://github.com/bdx0.keys";
     # sha256 = "+J8afYYemnCTu0GKVOLpN+ArZOPy+pVmtR0HMPQ8vb8=";
-    sha256 = "113rzr9iifar4pbza5z5sb8p710jvckfbs59jicsrsi7zzn15v7x";
+    sha256 = "1zdpqx2x8ckqi6m4hxfdazhkm2baqlwhg3mg8ikxsa3pn0xr85yx";
   };
   escape = list: builtins.replaceStrings list (map (c: "\\${c}") list);
   stringToCharacters = s:

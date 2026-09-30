@@ -16,19 +16,8 @@
     fileSystems."/run/media/Data1T" = {
       device = "/dev/disk/by-uuid/58169EF3169ED0FC";
       fsType = "ntfs-3g";
-      options = [ "rw" "uid=1000" ];
+      options = [ "rw" "uid=1000" "nofail" ];
     };
-    fileSystems."/run/media/sd2tb" = {
-      device = "/dev/disk/by-uuid/5EAA41DB22EB8BC9";
-      fsType = "ntfs-3g";
-      options = [ "rw" "uid=1000" ];
-    };
-    fileSystems."/run/media/ddx2t" = {
-      device = "/dev/disk/by-uuid/2FAB6B1C3C1EAB45";
-      fsType = "ntfs-3g";
-      options = [ "rw" "uid=1000" ];
-    };
-
     boot.loader.grub.device = "nodev";
     boot.loader.grub.efiSupport = true;
     boot.loader.grub.efiInstallAsRemovable = true;
@@ -37,10 +26,14 @@
 
     bdx0.hardware.enable = true;
     bdx0.hardware.type = "amd";
-    bdx0.libvirtd.enable = true;
-    bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
-    bdx0.vfio.IOMMUType = "amd";
-    bdx0.vfio.enable = true;
+    bdx0.libvirtd.enable = false;
+    # Disabled for boot recovery: libvirtd currently forces bdx0.vfio.enable = true,
+    # which binds the NVIDIA GPU to vfio-pci in initrd and hangs bobo before
+    # SSH/console is usable. Re-enable only after confirming there is a separate
+    # host GPU or after changing libvirtd/VFIO to safe late binding.
+    # bdx0.vfio.devices = [ "10de:1402" "10de:0fba" ];
+    # bdx0.vfio.IOMMUType = "amd";
+    bdx0.vfio.enable = false;
     bdx0.container.engine = "docker";
     # bdx0.container.nvidia.enable = true;
     # boot.kernelModules = [ "ip=dhcp" "kvm-amd" "wl" ];

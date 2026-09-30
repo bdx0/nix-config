@@ -242,6 +242,11 @@
     type = lib.types.listOf lib.types.str;
     default = [ ];
   };
+  options.bdx0.bobo.availableKernelModules = lib.mkOption {
+    description = "List of kernel modules after booted";
+    type = lib.types.listOf lib.types.str;
+    default = [ ];
+  };
   options.bdx0.nix01.availableKernelModules = lib.mkOption {
     description = "List of kernel modules after booted";
     type = lib.types.listOf lib.types.str;
@@ -295,6 +300,7 @@
       config.bdx0.initrd.availableKernelModules;
     bdx0.mac2014.availableKernelModules = config.bdx0.availableKernelModules;
     bdx0.goku.availableKernelModules = config.bdx0.availableKernelModules;
+    bdx0.bobo.availableKernelModules = config.bdx0.availableKernelModules;
     bdx0.nix01.availableKernelModules = config.bdx0.availableKernelModules;
   };
 }
